@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The plugin bootstrap file
  *
@@ -31,11 +30,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
+ * Global constants for plugin
  */
 define( 'ADDONIFY_VARIATION_SWATCHES_VERSION', '1.0.0' );
+define( 'ADDONIFY_VARIATION_SWATCHES_DB_INITIALS', 'addonify_variation_swatches_' );
 
 /**
  * The code that runs during plugin activation.
