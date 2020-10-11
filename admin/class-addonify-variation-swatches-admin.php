@@ -19,7 +19,10 @@
  * @subpackage Addonify_Variation_Swatches/admin
  * @author     Addonify <info@addonify.com>
  */
-class Addonify_Variation_Swatches_Admin {
+
+require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-helper.php';
+
+class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admin_Helper {
 
 	/**
 	 * The ID of this plugin.
@@ -28,7 +31,7 @@ class Addonify_Variation_Swatches_Admin {
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
-	private $plugin_name;
+	protected $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -55,7 +58,7 @@ class Addonify_Variation_Swatches_Admin {
 	 * @access   private
 	 * @var      string    $default_input_values
 	 */
-	private $default_input_values;
+	protected $default_input_values;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -122,17 +125,6 @@ class Addonify_Variation_Swatches_Admin {
 		}
 
 	}
-
-
-	/**
-	 * Check if woocommerce is active
-	 *
-	 * @since    1.0.0
-	 */
-	private function is_woocommerce_active() {
-		return ( class_exists( 'woocommerce' ) ) ? true : false;
-	}
-
 
 	/**
 	 * Generate admin menu for this plugin
@@ -214,7 +206,7 @@ class Addonify_Variation_Swatches_Admin {
 		$settings_args = array(
 			'settings_group_name' => 'wishlist_settings',
 			'section_id'          => 'general_options',
-			'section_label'       => __( 'General Options', 'addonify-variation-swatches' ),
+			'section_label'       => __( 'Global Options', 'addonify-variation-swatches' ),
 			'section_callback'    => '',
 			'screen'              => $this->settings_page_slug . '-general_options',
 			'fields'              => array(
@@ -246,12 +238,12 @@ class Addonify_Variation_Swatches_Admin {
 					'field_callback'      => array( $this, 'select' ),
 					'field_callback_args' => array(
 						array(
-							'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'shape',
-							'options'  => array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'shape',
+							'options'   => array(
 								'rounded' => __( 'Rounded Shape', 'addonify-variation-swatches' ),
 								'square'  => __( 'Square Shape', 'addonify-variation-swatches' ),
 							),
-							'end_label'=> __( 'Attribute Shape Style', 'addonify-variation-swatches' ),
+							'end_label' => __( 'Attribute Shape Style', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -278,11 +270,7 @@ class Addonify_Variation_Swatches_Admin {
 					'field_callback_args' => array(
 						array(
 							'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
-							'options'  => array(
-								'thumbnail' => __( 'Thumbnail', 'addonify-variation-swatches' ),
-								'medium'    => __( 'Medium', 'addonify-variation-swatches' ),
-								'large'     => __( 'Large', 'addonify-variation-swatches' ),
-							),
+							'options'  => $this->list_thumbnail_sizes(),
 							'end_label' => __( 'Attribute image size.', 'addonify-variation-swatches' ),
 						),
 					),
@@ -296,7 +284,7 @@ class Addonify_Variation_Swatches_Admin {
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_width',
 							'default'   => 30,
 							'end_label' => __( 'Variation item width.', 'addonify-variation-swatches' ),
-							'css_class' => 'number'
+							'css_class' => 'number',
 						),
 					),
 				),
@@ -309,7 +297,7 @@ class Addonify_Variation_Swatches_Admin {
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_height',
 							'default'   => 30,
 							'end_label' => __( 'Variation item height.', 'addonify-variation-swatches' ),
-							'css_class' => 'number'
+							'css_class' => 'number',
 						),
 					),
 				),
@@ -322,7 +310,7 @@ class Addonify_Variation_Swatches_Admin {
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_font_size',
 							'default'   => 16,
 							'end_label' => __( 'Single product variation item font size.', 'addonify-variation-swatches' ),
-							'css_class' => 'number'
+							'css_class' => 'number',
 						),
 					),
 				),
@@ -387,53 +375,55 @@ class Addonify_Variation_Swatches_Admin {
 					),
 				),
 				array(
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_width',
+					'field_label'         => __( 'Width', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_width',
+							'default'   => 30,
+							'end_label' => __( 'Variation item width.', 'addonify-variation-swatches' ),
+							'css_class' => 'number',
+						),
+					),
+				),
+				array(
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_height',
+					'field_label'         => __( 'Height', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_height',
+							'default'   => 30,
+							'end_label' => __( 'Variation item height.', 'addonify-variation-swatches' ),
+							'css_class' => 'number',
+						),
+					),
+				),
+				array(
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_font_size',
+					'field_label'         => __( 'Font Size', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_font_size',
+							'default'   => 16,
+							'end_label' => __( 'Single product variation item font size.', 'addonify-variation-swatches' ),
+							'css_class' => 'number',
+						),
+					),
+				),
+				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'visible_attributes',
 					'field_label'         => __( 'Visible Attributes', 'addonify-variation-swatches' ),
 					'field_callback'      => array( $this, 'checkbox_group' ),
-					'field_callback_args' => array(
-						array(
-							'label' => __( 'Attrinute Name', 'addonify-quick-view' ),
-							'name'  => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attrinute_name',
-						),
-						array(
-							'label' => __( 'Attrinute Name 1', 'addonify-quick-view' ),
-							'name'  => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attrinute_name 1',
-						),
-					),
+					'field_callback_args' => $this->get_all_attributes(),
 				),
 			),
 		);
 
 		// create settings fields.
 		$this->create_settings( $settings_args );
-	}
-
-
-	/**
-	 * This will create settings section, fields and register that settings in a database from the provided array data
-	 *
-	 * @since    1.0.0
-	 * @param string $args Options for settings field.
-	 */
-	private function create_settings( $args ) {
-
-		add_settings_section( $args['section_id'], $args['section_label'], $args['section_callback'], $args['screen'] );
-
-		foreach ( $args['fields'] as $field ) {
-			// create label.
-			add_settings_field( $field['field_id'], $field['field_label'], $field['field_callback'], $args['screen'], $args['section_id'], $field['field_callback_args'] );
-
-			foreach ( $field['field_callback_args'] as $sub_field ) {
-				$this->default_input_values[ $sub_field['name'] ] = ( isset( $sub_field['default'] ) ) ? $sub_field['default'] : '';
-				register_setting(
-					$args['settings_group_name'],
-					$sub_field['name'],
-					array(
-						'sanitize_callback' => ( isset( $sub_field['sanitize_callback'] ) ) ? array( $this, $sub_field['sanitize_callback'] ) : 'sanitize_text_field',
-					)
-				);
-			}
-		}
 	}
 
 
@@ -466,161 +456,75 @@ class Addonify_Variation_Swatches_Admin {
 	}
 
 
-	// -------------------------------------------------
-	// form helpers for admin setting screen
-	// -------------------------------------------------
-
 	/**
-	 * Output markups for text field
+	 * Delete transient cache for "_get_all_attributes"
 	 *
 	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
 	 */
-	public function text_box( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$default  = isset( $args['default'] ) ? $args['default'] : '';
-			$db_value = get_option( $args['name'], $default );
+	public function delete_transient_get_all_attributes() {
+		// delete transient cache.
+		delete_transient( $this->plugin_name . '_get_all_attributes' );
+	}
 
-			if ( ! isset( $args['css_class'] ) ) {
-				$args['css_class'] = '';
+
+	/**
+	 * Add custom form fields into "Add Attributes" page
+	 *
+	 * @since    1.0.0
+	 */
+	public function product_attributes_add_form_fields() {
+		$id    = $this->plugin_name . '_taxonomy-type';
+		$value = $id ? get_option( $id ) : '';
+
+		$this->taxonomy_form_markup( 
+			array(
+				'input_field_type' => 'select',
+				'label'            => 'Addonify Type',
+				'name'             => $id,
+				'description'      => __( 'Determines how this attribute\'s values are displayed.', 'addonify-variation-swatches' ),
+				'options'          => array(
+					''       => 'Select',
+					'color'  => 'Color',
+					'image'  => 'Image',
+					'button' => 'Button',
+				),
+			)
+		);
+	}
+
+
+	/**
+	 * Woocommerce - Save custom form fields 
+	 *
+	 * @since    1.0.0
+	 */
+	public function product_attributes_save_form_fields() {
+
+		if ( ! is_admin() ) {
+			return;
+		}
+		
+		foreach ( $_POST as $post_key => $post_val ) {
+			$pos = strpos( $post_key, $this->plugin_name );
+			if ( 0 === $pos ) {
+				update_option( $post_key, $post_val );
 			}
-
-			if ( ! isset( $args['type'] ) ) {
-				$args['type'] = 'text';
-			}
-
-			if ( ! isset( $args['end_label'] ) ) {
-				$args['end_label'] = '';
-			}
-
-			if ( ! isset( $args['other_attr'] ) ) {
-				$args['other_attr'] = '';
-			}
-
-			require dirname( __FILE__ ) . '/templates/input_textbox.php';
 		}
-	}
 
-	/**
-	 * Output markups for toggle switch
-	 *
-	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
-	 */
-	public function toggle_switch( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$args['attr'] = ' class="lc_switch"';
-			$this->checkbox( $args );
-		}
+
+// 		$term = get_queried_object();
+// $attr_id = wc_attribute_taxonomy_id_by_name( $term->taxonomy );
+// $my_field = get_option( "wc_attribute_my_field-$attr_id" );
 	}
 
 
 	/**
-	 * Output markups for color picker input field
+	 * Woocommerce taxonomy is deleted
 	 *
 	 * @since    1.0.0
-	 * @param string $args Options for generating contents.
 	 */
-	public function color_picker_group( $args ) {
-		foreach ( $args as $arg ) {
-			$default  = isset( $arg['default'] ) ? $arg['default'] : '';
-			$db_value = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
-
-			require dirname( __FILE__ ) . '/templates/input_colorpicker.php';
-		}
-	}
-
-
-	/**
-	 * Output markups for checkbox input field
-	 *
-	 * @since    1.0.0
-	 * @param string $args Options for generating contents.
-	 */
-	public function checkbox( $args ) {
-		$default_state = ( array_key_exists( 'checked', $args ) ) ? $args['checked'] : 1;
-		$db_value      = get_option( $args['name'], $default_state );
-		$is_checked    = ( $db_value ) ? 'checked' : '';
-		$attr          = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
-		$end_label     = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
-
-		require dirname( __FILE__ ) . '/templates/input_checkbox.php';
-	}
-
-	/**
-	 * Output markups for checkbox group
-	 *
-	 * @since    1.0.0
-	 * @param string $args Options for generating contents.
-	 */
-	public function checkbox_group( $args ) {
-		foreach( $args as $arg ) {
-			require dirname( __FILE__ ) . '/templates/checkbox_group.php';
-		}
-	}
-
-
-	/**
-	 * Output markups for select input field
-	 *
-	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
-	 */
-	public function select( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$options  = ( array_key_exists( 'options', $args ) ) ? $args['options'] : array();
-			$default  = ( array_key_exists( 'default', $args ) ) ? $args['default'] : '';
-			$db_value = get_option( $args['name'], $default );
-
-			require dirname( __FILE__ ) . '/templates/input_select.php';
-		}
-	}
-
-
-	/**
-	 * Output markups for select pages select field
-	 *
-	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
-	 */
-	public function select_page( $arguments ) {
-
-		$options = array();
-
-		foreach ( get_pages() as $page ) {
-			$options[ $page->ID ] = $page->post_title;
-		}
-
-		$args                     = $arguments[0];
-		$db_value                 = get_option( $args['name'] );
-		$default_wishlist_page_id = get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'page_id' );
-
-		if ( ! $db_value ) {
-			$db_value = $default_wishlist_page_id;
-		}
-
-		if ( $db_value != $default_wishlist_page_id ) {
-			$args['end_label'] = esc_html( 'Please insert "[addonify_wishlist]" shortcode into the content area of the page' );
-		}
-
-		require dirname( __FILE__ ) . '/templates/input_select.php';
-	}
-
-
-	/**
-	 * Output markups for text area
-	 *
-	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
-	 */
-	public function text_area( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$placeholder = isset( $args['placeholder'] ) ? $args['placeholder'] : '';
-			$db_value    = get_option( $args['name'], $placeholder );
-			$attr        = isset( $args['attr'] ) ? $args['attr'] : '';
-
-			require dirname( __FILE__ ) . '/templates/input_textarea.php';
-		}
+	public function product_attributes_is_deleted( $attribute_id ) {
+		// delete_option( "wc_attribute_my_field-$id" );
 	}
 
 }
