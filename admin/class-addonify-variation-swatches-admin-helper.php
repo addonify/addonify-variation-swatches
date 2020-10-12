@@ -89,38 +89,92 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @since    1.0.0
 	 */
 	protected function get_all_attributes() {
-
-		$return_data = get_transient( $this->plugin_name . '_get_all_attributes' );
-		if ( false === $return_data ) {
+		// delete_transient( $this->plugin_name . '_get_all_attributes' );
+		// $return_data = get_transient( $this->plugin_name . '_get_all_attributes' );
+		// if ( false === $return_data ) {
 
 			$return_data    = array();
-			$all_attributes = array();
-			$args = array( 
-				'type' => array( 'variable' ),
-			);
+			// $all_attributes = array();
+			// $args = array( 
+			// 	'type' => array( 'variable' ),
+			// );
 
-			foreach ( wc_get_products( $args ) as $product ) {
+			foreach ( wc_get_attribute_taxonomies() as $attr ) {
 
-				foreach ( $product->get_attributes() as $attr_name => $attr ) {
-
-					if ( ! in_array( $attr_name, $all_attributes ) ) {
-						$all_attributes[] = $attr_name;
-						$return_data[]    = array( 
-							'label' => wc_attribute_label( $attr_name ),
-							'name'  => $attr['name'],
-						);
-					}
-				}
+				// if ( ! in_array( $attr->attribute_name, $all_attributes ) ) {
+					// $all_attributes[] = $attr->attribute_name;
+					$return_data[]    = array( 
+						'label' => $attr->attribute_label,
+						'name'  => $attr->attribute_name,
+					);
+				// }
 			}
 			
 			// store data for 1 week.
 			// clear cache if attributes is updated or added in post.
-			set_transient( $this->plugin_name . '_get_all_attributes', $return_data, WEEK_IN_SECONDS );
+			// set_transient( $this->plugin_name . '_get_all_attributes', $return_data, WEEK_IN_SECONDS );
 
-		}
+		// }
 
 		return $return_data;
 	}
+
+
+	
+
+	public function taxonomy_form_markup( $options ) {
+
+		$input_field_markups = '';
+
+		$input_field_type = isset( $options['input_field_type'] ) ? $options['input_field_type'] : '';
+
+		if( $input_field_type ){
+			ob_start();
+			// $this->select( 
+			$this->$input_field_type( $options['options'] );
+			$input_field_markups = ob_get_clean();
+		}
+
+		// if ( $options['input_field_type'] == 'select' ) {
+		// }
+
+		$label       = isset( $options['label'] ) ? $options['label'] : '';
+		$name        = isset( $options['name'] ) ? $options['name'] : '';
+		$description = isset( $options['description'] ) ? $options['description'] : '';
+
+		require dirname( __FILE__ ) . '/templates/taxonomy-form-markups.php';
+	}
+
+
+
+	protected function available_attributes_types( $type = false ) {
+		$types = array();
+		
+		$types[ 'color' ] = array(
+			'title'   => esc_html__( 'Color', 'addonify-variation-swatchs' ),
+			// 'output'  => 'wvs_color_variation_attribute_options',
+			// 'preview' => 'wvs_color_variation_attribute_preview'
+		);
+		
+		$types[ 'image' ] = array(
+			'title'   => esc_html__( 'Image', 'addonify-variation-swatchs' ),
+			// 'output'  => 'wvs_image_variation_attribute_options',
+			// 'preview' => 'wvs_image_variation_attribute_preview'
+		);
+		
+		$types[ 'button' ] = array(
+			'title'   => esc_html__( 'Button', 'addonify-variation-swatchs' ),
+			// 'output'  => 'wvs_button_variation_attribute_options',
+			// 'preview' => 'wvs_button_variation_attribute_preview'
+		);
+		
+		if ( $type ) {
+			return isset( $types[ $type ] ) ? $types[ $type ] : array();
+		}
+		
+		return $types;
+	}
+
 
 
 
@@ -181,8 +235,9 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 */
 	public function color_picker_group( $args ) {
 		foreach ( $args as $arg ) {
-			$default  = isset( $arg['default'] ) ? $arg['default'] : '';
-			$db_value = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
+			$default       = isset( $arg['default'] ) ? $arg['default'] : '';
+			$transparency  = isset( $arg['transparency'] ) ? $arg['transparency'] : true;
+			$db_value      = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
 
 			require dirname( __FILE__ ) . '/templates/input_colorpicker.php';
 		}
@@ -279,31 +334,6 @@ class Addonify_Variation_Swatches_Admin_Helper {
 
 			require dirname( __FILE__ ) . '/templates/input_textarea.php';
 		}
-	}
-
-
-	public function taxonomy_form_markup( $options ) {
-
-		$input_field_markups = '';
-
-		if ( $options['input_field_type'] == 'select' ) {
-			ob_start();
-			$this->select( 
-				array( 
-					array(
-						'name' => $options['name'],
-						'options' => $options['options'],
-					),
-				),
-			);
-			$input_field_markups = ob_get_clean();
-		}
-
-		$label       = isset( $options['label'] ) ? $options['label'] : '';
-		$name        = isset( $options['name'] ) ? $options['name'] : '';
-		$description = isset( $options['description'] ) ? $options['description'] : '';
-
-		require dirname( __FILE__ ) . '/templates/taxonomy-form-markups.php';
 	}
 
 }
