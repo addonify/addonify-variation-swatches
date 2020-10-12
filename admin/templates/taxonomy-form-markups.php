@@ -1,4 +1,4 @@
-<?php if( isset( $_GET['edit'] ) && intval( $_GET['edit'] ) == 1 ): ?>
+<?php if( isset( $_GET['edit'] ) ): ?>
 	<tr class="form-field form-required">
 		<th scope="row" valign="top">
 			<label for="<?php echo esc_attr( $name );?>"><?php echo esc_html( $label );?></label>

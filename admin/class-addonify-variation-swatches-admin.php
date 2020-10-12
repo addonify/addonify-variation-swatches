@@ -1,4 +1,5 @@
 <?php
+require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-helper.php';
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -19,9 +20,6 @@
  * @subpackage Addonify_Variation_Swatches/admin
  * @author     Addonify <info@addonify.com>
  */
-
-require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-helper.php';
-
 class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admin_Helper {
 
 	/**
@@ -95,6 +93,9 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 			// admin css.
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
 		}
+		elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+			wp_enqueue_style( 'wp-color-picker' );
+		}
 
 		// admin menu icon fix.
 		wp_enqueue_style( 'addonify-icon-fix', plugin_dir_url( __FILE__ ) . 'css/addonify-icon-fix.css', array(), $this->version, 'all' );
@@ -122,6 +123,10 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
 
+		}
+		elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+			wp_enqueue_script( 'wp-color-picker' );
+			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
 		}
 
 	}
@@ -157,6 +162,21 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 			// redirects to main plugin link.
 			add_submenu_page( $parent_menu_slug, 'Addonify Wishlist Settings', 'Wishlist', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
 		}
+	}
+
+
+	// function that needs to run on admin init hook
+	public function admin_init_callback(){
+
+		// show settings page ui.
+		$this->settings_page_ui();
+
+		// show woocommerce not active notice.
+		$this->show_woocommerce_not_active_notice_callback();
+
+		// show custom form element for all attributes
+		$this->generate_taxonomy_form_fields();
+		
 	}
 
 
@@ -461,32 +481,82 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 *
 	 * @since    1.0.0
 	 */
-	public function delete_transient_get_all_attributes() {
-		// delete transient cache.
-		delete_transient( $this->plugin_name . '_get_all_attributes' );
+	// public function delete_transient_get_all_attributes() {
+	// 	// delete transient cache.
+	// 	delete_transient( $this->plugin_name . '_get_all_attributes' );
+	// }
+
+
+	
+	
+	// show "type" in "attributes" page in admin
+	public function product_attributes_types_callback( $selector ) {
+		
+		foreach ( $this->available_attributes_types() as $key => $options ) {
+			$selector[ $key ] = $options['title'];
+		}
+
+		return $selector;
+	}
+
+
+	// show custom form fields in all product attributes taxonomy
+	public function generate_taxonomy_form_fields() {
+		if ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+			// show form
+			add_action( $_GET['taxonomy'] . '_add_form_fields', array( $this, 'term_add_custom_form_fields' ) );
+			add_action( $_GET['taxonomy'] . '_edit_form_fields', array( $this, 'term_add_custom_form_fields' ) );
+
+			// on save or update
+			add_action( 'edited_' . $_GET['taxonomy'], array( $this, 'term_save_custom_form_fields' ) );
+			add_action( 'edited_' . $_GET['taxonomy'], array( $this, 'term_save_custom_form_fields' ) );
+
+			// echo '<pre>';
+			// var_dump( wc_get_attribute_taxonomies() );
+			// echo '</pre>';
+			// die;
+		}
+
 	}
 
 
 	/**
+	 * Show custom form fields in edit-tags.php page
 	 * Add custom form fields into "Add Attributes" page
 	 *
 	 * @since    1.0.0
 	 */
-	public function product_attributes_add_form_fields() {
-		$id    = $this->plugin_name . '_taxonomy-type';
-		$value = $id ? get_option( $id ) : '';
+	public function term_add_custom_form_fields() {
+
+		$attribute_type = '';
+		foreach ( wc_get_attribute_taxonomies() as $attr ) {
+			if ( 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) {
+				$attribute_type = strtolower( $attr->attribute_type );
+				break;
+			}
+		}
+
+		if ( ! $attribute_type ) {
+			return;
+		}
+
+		$id    = $this->plugin_name . '_attr_' . $attribute_type;
+		if ( isset( $_GET['edit'] ) ) {
+			$id .= '_' . intval( $_GET['edit'] );
+		}
+
 
 		$this->taxonomy_form_markup( 
 			array(
-				'input_field_type' => 'select',
-				'label'            => 'Addonify Type',
+				'input_field_type' => 'color_picker_group',
+				'label'            => 'Addonify Color',
 				'name'             => $id,
-				'description'      => __( 'Determines how this attribute\'s values are displayed.', 'addonify-variation-swatches' ),
+				'description'      => __( 'Choose a color.', 'addonify-variation-swatches' ),
 				'options'          => array(
-					''       => 'Select',
-					'color'  => 'Color',
-					'image'  => 'Image',
-					'button' => 'Button',
+					array(
+						'transparency' => false,
+						'name'         => $id,
+					),
 				),
 			)
 		);
@@ -494,16 +564,18 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 
 	/**
-	 * Woocommerce - Save custom form fields 
+	 * Woocommerce - Save custom form fields
 	 *
 	 * @since    1.0.0
 	 */
-	public function product_attributes_save_form_fields() {
+	public function term_save_custom_form_fields() {
 
 		if ( ! is_admin() ) {
 			return;
 		}
-		
+
+		// continue here
+
 		foreach ( $_POST as $post_key => $post_val ) {
 			$pos = strpos( $post_key, $this->plugin_name );
 			if ( 0 === $pos ) {
@@ -511,20 +583,20 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 			}
 		}
 
-
-// 		$term = get_queried_object();
-// $attr_id = wc_attribute_taxonomy_id_by_name( $term->taxonomy );
-// $my_field = get_option( "wc_attribute_my_field-$attr_id" );
 	}
 
 
 	/**
-	 * Woocommerce taxonomy is deleted
+	 * Woocommerce taxonomy is deleted, Delete all custom attributes data
 	 *
 	 * @since    1.0.0
+	 * @param int    $attribute_id   attribute id.
+	 * @param string $attribute_name attribute id.
 	 */
-	public function product_attributes_is_deleted( $attribute_id ) {
-		// delete_option( "wc_attribute_my_field-$id" );
+	public function term_is_deleted( $attribute_id, $attribute_name ) {
+		// delete all custom attributes data
+		// delete_option( $this->plugin_name . '_taxonomy-type_' . $attribute_id );
 	}
+
 
 }

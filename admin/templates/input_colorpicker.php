@@ -13,9 +13,10 @@
     }
 
     printf(
-        '<input type="text" value="%2$s" name="%1$s" id="%1$s" class="color-picker" data-alpha="true" />',
+        '<input type="text" value="%2$s" name="%1$s" id="%1$s" class="color-picker" data-alpha="%3$s" />',
         $arg['name'],
-        $db_value
+        $db_value,
+        $transparency
     );
 
     echo '</div>';
