@@ -9,6 +9,56 @@
 		}
 
 
+		// wp media uploader
+		var wp_media_obj;
+ 
+		$('.addonify-vs_select_image_button').click(function(e) {
+			e.preventDefault();
+
+			// If the upload object has already been created, reopen the dialog
+			if (wp_media_obj) {
+				wp_media_obj.open();
+				return;
+			}
+
+			// Extend the wp.media object
+			wp_media_obj = wp.media.frames.file_frame = wp.media(
+				{
+					title: 'Select an Image',
+					button: {
+						text: 'Use Image'
+					},
+					library: {
+						type: [ 'image' ]
+					},
+					multiple: false 
+				}
+			);
+		
+			// When a file is selected, grab the URL and set it as the text field's value
+			wp_media_obj.on('select', function() {
+				var attachment = wp_media_obj.state().get('selection').first().toJSON();
+				$('#addonify-vs-term-image-url').val(attachment.url);
+				$('.image-preview img').attr('src', attachment.url);
+
+				$('.addonify-vs_remove_image_button').show();
+			});
+
+			// Open the upload dialog
+			wp_media_obj.open();
+
+		});
+
+		$('.addonify-vs_remove_image_button').click(function(){
+			$('#addonify-vs-term-image-url').val('');
+			
+			var placeholder_img = $( '.image-preview img').data('placeholder');
+			$('.image-preview img').attr('src', placeholder_img);
+		})
+
+		// end wp media uploader
+
+
 		// var $require_login_btn = $('#addonify_wishlist_require_login');
 		// var $redirect_to_login_btn = $('#addonify_wishlist_redirect_to_login');
 

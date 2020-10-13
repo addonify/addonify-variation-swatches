@@ -116,3 +116,25 @@
     border: solid 1px #e8e8e8;
     border-radius: 4px;
 }
+
+
+/* term image selector / uploader */
+.addonify-vs-image-field-wrapper{
+    overflow: hidden;
+    width: 205px;
+}
+
+.addonify-vs-image-field-wrapper .image-preview{
+    width: 80px;
+    float: left;
+}
+
+.addonify-vs-image-field-wrapper button{
+    margin-top: 3px !important;
+}
+
+.addonify-vs-image-field-wrapper button.button-danger{
+    background: #bb0707 !important;
+    color: #fff !important;
+    border-color: #bb0707 !important;
+}

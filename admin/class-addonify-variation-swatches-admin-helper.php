@@ -21,6 +21,10 @@
  */
 class Addonify_Variation_Swatches_Admin_Helper {
 
+
+	private $all_attributes;
+	private $all_attribute_taxonomies;
+
 	/**
 	 * Check if woocommerce is active
 	 *
@@ -89,34 +93,50 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @since    1.0.0
 	 */
 	protected function get_all_attributes() {
-		// delete_transient( $this->plugin_name . '_get_all_attributes' );
-		// $return_data = get_transient( $this->plugin_name . '_get_all_attributes' );
-		// if ( false === $return_data ) {
 
-			$return_data    = array();
-			// $all_attributes = array();
-			// $args = array( 
-			// 	'type' => array( 'variable' ),
-			// );
-
-			foreach ( wc_get_attribute_taxonomies() as $attr ) {
-
-				// if ( ! in_array( $attr->attribute_name, $all_attributes ) ) {
-					// $all_attributes[] = $attr->attribute_name;
-					$return_data[]    = array( 
-						'label' => $attr->attribute_label,
-						'name'  => $attr->attribute_name,
-					);
-				// }
-			}
+		if ( empty( $this->all_attributes ) ) {
 			
-			// store data for 1 week.
-			// clear cache if attributes is updated or added in post.
-			// set_transient( $this->plugin_name . '_get_all_attributes', $return_data, WEEK_IN_SECONDS );
+			// delete_transient( $this->plugin_name . '_get_all_attributes' );
+			// $return_data = get_transient( $this->plugin_name . '_get_all_attributes' );
+			// if ( false === $return_data ) {
 
-		// }
+				$this->all_attributes = array();
+				// $all_attributes = array();
+				// $args = array( 
+				// 	'type' => array( 'variable' ),
+				// );
 
-		return $return_data;
+				foreach ( wc_get_attribute_taxonomies() as $attr ) {
+
+					// if ( ! in_array( $attr->attribute_name, $all_attributes ) ) {
+						// $all_attributes[] = $attr->attribute_name;
+						$this->all_attributes[]    = array( 
+							'label' => $attr->attribute_label,
+							'name'  => $attr->attribute_name,
+						);
+					// }
+				}
+				
+				// store data for 1 week.
+				// clear cache if attributes is updated or added in post.
+				// set_transient( $this->plugin_name . '_get_all_attributes', $return_data, WEEK_IN_SECONDS );
+
+			// }
+		}
+
+
+		// return $return_data;
+		return $this->all_attributes;
+	}
+
+
+
+	protected function get_all_attribute_taxonomies() {
+		if ( empty( $this->all_attribute_taxonomies ) ){
+			$this->all_attribute_taxonomies = wc_get_attribute_taxonomies();
+		}
+
+		return $this->all_attribute_taxonomies;
 	}
 
 
@@ -130,17 +150,18 @@ class Addonify_Variation_Swatches_Admin_Helper {
 
 		if( $input_field_type ){
 			ob_start();
-			// $this->select( 
 			$this->$input_field_type( $options['options'] );
 			$input_field_markups = ob_get_clean();
 		}
 
-		// if ( $options['input_field_type'] == 'select' ) {
-		// }
-
 		$label       = isset( $options['label'] ) ? $options['label'] : '';
 		$name        = isset( $options['name'] ) ? $options['name'] : '';
+		$is_edit     = isset( $options['is_edit_form'] ) ? $options['is_edit_form'] : false;
 		$description = isset( $options['description'] ) ? $options['description'] : '';
+
+		if( isset( $_GET['tag_ID'] ) ) {
+			$name .= '_' . intval( $_GET['tag_ID'] );
+		}
 
 		require dirname( __FILE__ ) . '/templates/taxonomy-form-markups.php';
 	}
@@ -173,6 +194,37 @@ class Addonify_Variation_Swatches_Admin_Helper {
 		}
 		
 		return $types;
+	}
+
+	
+	
+	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
+
+		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? strval( $_GET['taxonomy'] ) : false;
+
+		if ( ! $cur_taxonomy ) {
+			return;
+		}
+		
+		$attribute_type = '';
+
+		// figure out attribute type
+		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
+			if ( 'pa_' . $attr->attribute_name === $cur_taxonomy ) {
+				$attribute_type = strtolower( $attr->attribute_type );
+				break;
+			}
+		}
+		
+		if ( 'addonify_custom_attr' === $column_name ) {
+			if ( $attribute_type === 'color' ) {
+				return sprintf( 
+					'<div class="addonify-vs-color-preview" style="background-color:%1$s; border: solid 1px #ccc; width: 35px; height: 35px;" ></div>',
+					get_option( $this->plugin_name . '_attr_color' . '_' . $term_id )
+				);
+			}
+		}
+
 	}
 
 
@@ -334,6 +386,14 @@ class Addonify_Variation_Swatches_Admin_Helper {
 
 			require dirname( __FILE__ ) . '/templates/input_textarea.php';
 		}
+	}
+
+
+	public function wp_media_select( $args ){
+		$default_img = plugin_dir_url( __FILE__ ) . '/images/placeholder.png';
+		$img_url = ''; //get_option( $this->plugin_name . '_attr_image' . '_' . $args['term'] );
+		
+		require dirname( __FILE__ ) . '/templates/media-selector.php';
 	}
 
 }
