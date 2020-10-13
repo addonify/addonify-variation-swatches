@@ -95,6 +95,9 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		}
 		elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
 			wp_enqueue_style( 'wp-color-picker' );
+
+			// admin css.
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
 		}
 
 		// admin menu icon fix.
@@ -126,6 +129,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		}
 		elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
 			wp_enqueue_script( 'wp-color-picker' );
+			wp_enqueue_media();
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
 		}
 
@@ -175,7 +179,10 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		$this->show_woocommerce_not_active_notice_callback();
 
 		// show custom form element for all attributes
-		$this->generate_taxonomy_form_fields();
+		$this->register_action_for_custom_term_fields();
+
+		// register action to show custom column in term table
+		$this->register_filters_for_custom_columns();
 		
 	}
 
@@ -487,8 +494,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	// }
 
 
-	
-	
+
+	// -------------------------------------------------
+	// add / edit attributes screen
+	// -------------------------------------------------
+
 	// show "type" in "attributes" page in admin
 	public function product_attributes_types_callback( $selector ) {
 		
@@ -500,21 +510,22 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	}
 
 
-	// show custom form fields in all product attributes taxonomy
-	public function generate_taxonomy_form_fields() {
-		if ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+	// register action to show custom form fields in product attributes term
+	private function register_action_for_custom_term_fields() {
+
+		foreach( $this->get_all_attributes() as $attr ) {
+			
+			$term_name = 'pa_' . $attr['name'];
+
 			// show form
-			add_action( $_GET['taxonomy'] . '_add_form_fields', array( $this, 'term_add_custom_form_fields' ) );
-			add_action( $_GET['taxonomy'] . '_edit_form_fields', array( $this, 'term_add_custom_form_fields' ) );
+			add_action( $term_name . '_add_form_fields', array( $this, 'term_add_custom_form_fields' ) );
+			add_action( $term_name . '_edit_form_fields', array( $this, 'term_edit_custom_form_fields' ) );
 
-			// on save or update
-			add_action( 'edited_' . $_GET['taxonomy'], array( $this, 'term_save_custom_form_fields' ) );
-			add_action( 'edited_' . $_GET['taxonomy'], array( $this, 'term_save_custom_form_fields' ) );
+			// on create or update
+			add_action( 'edited_' . $term_name, array( $this, 'term_save_custom_form_fields' ) );
+			add_action( 'create_' . $term_name, array( $this, 'term_save_custom_form_fields' ) );
 
-			// echo '<pre>';
-			// var_dump( wc_get_attribute_taxonomies() );
-			// echo '</pre>';
-			// die;
+			add_action( 'delete_' . $term_name, array( $this, 'term_is_deleted' ) );
 		}
 
 	}
@@ -522,14 +533,33 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 	/**
 	 * Show custom form fields in edit-tags.php page
-	 * Add custom form fields into "Add Attributes" page
 	 *
 	 * @since    1.0.0
 	 */
 	public function term_add_custom_form_fields() {
+		$this->term_show_custom_form_fields();
+	}
+
+
+	/**
+	 * Show custom form fields in edit taxonomy form
+	 *
+	 * @since    1.0.0
+	 */
+	public function term_edit_custom_form_fields() {
+		$this->term_show_custom_form_fields( true );
+	}
+
+
+	/**
+	 * Add custom form fields into "Add Attributes" page
+	 *
+	 * @since    1.0.0
+	 */
+	private function term_show_custom_form_fields( $is_edit_form = false ) {
 
 		$attribute_type = '';
-		foreach ( wc_get_attribute_taxonomies() as $attr ) {
+		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
 			if ( 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) {
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
@@ -541,25 +571,39 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		}
 
 		$id    = $this->plugin_name . '_attr_' . $attribute_type;
-		if ( isset( $_GET['edit'] ) ) {
-			$id .= '_' . intval( $_GET['edit'] );
+
+		if ( $attribute_type === 'color' ) {
+			
+			$this->taxonomy_form_markup( 
+				array(
+					'input_field_type' => 'color_picker_group',
+					'label'            => 'Addonify Color',
+					'name'             => $id,
+					'description'      => __( 'Choose a color.', 'addonify-variation-swatches' ),
+					'is_edit_form'     => $is_edit_form,
+					'options'          => array(
+						array(
+							'transparency' => false,
+							'name'         => $id,
+						),
+					),
+				)
+			);
+		} elseif ( $attribute_type === 'image' ) {
+			
+			$this->taxonomy_form_markup( 
+				array(
+					'input_field_type' => 'wp_media_select',
+					'label'            => 'Addonify Image Select',
+					'name'             => $id,
+					'description'      => __( 'Choose an image.', 'addonify-variation-swatches' ),
+					'is_edit_form'     => $is_edit_form,
+					'options'          => array(),
+				)
+			);
 		}
 
 
-		$this->taxonomy_form_markup( 
-			array(
-				'input_field_type' => 'color_picker_group',
-				'label'            => 'Addonify Color',
-				'name'             => $id,
-				'description'      => __( 'Choose a color.', 'addonify-variation-swatches' ),
-				'options'          => array(
-					array(
-						'transparency' => false,
-						'name'         => $id,
-					),
-				),
-			)
-		);
 	}
 
 
@@ -568,18 +612,24 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 *
 	 * @since    1.0.0
 	 */
-	public function term_save_custom_form_fields() {
+	public function term_save_custom_form_fields( $term_id ) {
 
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		// continue here
+		$option_key = '';
 
 		foreach ( $_POST as $post_key => $post_val ) {
-			$pos = strpos( $post_key, $this->plugin_name );
-			if ( 0 === $pos ) {
-				update_option( $post_key, $post_val );
+			if ( 0 === strpos( $post_key, $this->plugin_name ) ) {
+
+				$option_key = $post_key;
+
+				if ( false === strpos( $term_id, $post_key ) ) {
+					$option_key .= '_' . $term_id;
+				}
+
+				update_option( $option_key, $post_val );
 			}
 		}
 
@@ -593,10 +643,54 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * @param int    $attribute_id   attribute id.
 	 * @param string $attribute_name attribute id.
 	 */
-	public function term_is_deleted( $attribute_id, $attribute_name ) {
+	public function term_is_deleted( $term ) {
+
 		// delete all custom attributes data
-		// delete_option( $this->plugin_name . '_taxonomy-type_' . $attribute_id );
+		delete_option( $this->plugin_name . '_attr_color' . '_' . $term );
+		delete_option( $this->plugin_name . '_attr_image' . '_' . $term );
+		delete_option( $this->plugin_name . '_attr_button' . '_' . $term );
 	}
 
+
+
+	// -------------------------------------------------
+	// custom columns 
+	// -------------------------------------------------
+
+	/**
+	 * Register action to show custom columns in "attributes" terms display table
+	 *
+	 * @since    1.0.0
+	 */
+	private function register_filters_for_custom_columns() {
+
+		foreach( $this->get_all_attributes() as $attr ) {
+			$term_name = 'pa_' . $attr['name'];
+			add_filter('manage_edit-' . $term_name . '_columns', array( $this, 'custom_column_heading_for_attributes' ) );
+			add_filter('manage_' . $term_name . '_custom_column', array( $this, 'my_custom_taxonomy_columns_content' ), 10, 3 );
+		}
+
+	}
+
+
+	public function custom_column_heading_for_attributes( $columns ) {
+
+		$new = array();
+		foreach ( $columns as $key => $title ) {
+
+			if ( $key == 'name' ) {
+				$new['addonify_custom_attr'] = 'Color';				
+			}
+
+			$new[ $key ] = $title;
+		}
+		
+		return $new;
+	}
+
+
+	public function my_custom_taxonomy_columns_content( $content, $column_name, $term_id ) {
+		return $this->get_attr_type_preview_for_term( $column_name, $term_id );
+	}
 
 }
