@@ -38,7 +38,7 @@
 			// When a file is selected, grab the URL and set it as the text field's value
 			wp_media_obj.on('select', function() {
 				var attachment = wp_media_obj.state().get('selection').first().toJSON();
-				$('#addonify-vs-term-image-url').val(attachment.url);
+				$('#addonify-vs-term-image-id').val(attachment.id);
 				$('.image-preview img').attr('src', attachment.url);
 
 				$('.addonify-vs_remove_image_button').show();

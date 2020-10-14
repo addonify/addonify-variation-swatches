@@ -34,23 +34,11 @@
                     <!-- display form fields -->
 
                     <div class="addonify-section">
-                        <?php do_settings_sections($this->settings_page_slug.'-general_options'); ?>
+                        <?php do_settings_sections($this->settings_page_slug.'-global_options'); ?>
                     </div>
 
                     <div class="addonify-section">
-                        <?php do_settings_sections($this->settings_page_slug.'-button_settings'); ?>
-                    </div>
-
-                    <div class="addonify-section">
-                        <?php do_settings_sections($this->settings_page_slug.'-popup_options'); ?>
-                    </div>
-
-                    <div class="addonify-section">
-                        <?php do_settings_sections($this->settings_page_slug.'-sidebar_options'); ?>
-                    </div>
-
-                    <div class="addonify-section">
-                        <?php do_settings_sections($this->settings_page_slug.'-sidebar_btn_options'); ?>
+                        <?php do_settings_sections($this->settings_page_slug.'-archives_page_settings'); ?>
                     </div>
 
                 </div><!--addonify-settings-container-->
