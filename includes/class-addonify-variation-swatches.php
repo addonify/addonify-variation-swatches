@@ -163,50 +163,14 @@ class Addonify_Variation_Swatches {
 		// custom link in plugins.php page in wp-admin.
 		$this->loader->add_action( 'plugin_action_links', $plugin_admin, 'custom_plugin_link_callback', 10, 2 );
 
-		// show settings page ui.
-		// $this->loader->add_action( 'admin_init', $plugin_admin, 'settings_page_ui' );
-
 		// on admin init
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init_callback' );
-
-		// show notice if woocommerce is not active.
-		// $this->loader->add_action( 'admin_init', $plugin_admin, 'show_woocommerce_not_active_notice_callback' );
 
 		// show admin notices after form submission.
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'form_submission_notification_callback' );
 
-		// clear transient cache.
-		// $this->loader->add_action( 'woocommerce_attribute_added', $plugin_admin, 'delete_transient_get_all_attributes' );
-		// $this->loader->add_action( 'woocommerce_attribute_updated', $plugin_admin, 'delete_transient_get_all_attributes' );
-
-
-		// add custom form fields into woocommerce taxonomy edit screen.
-		// $this->loader->add_action( 'woocommerce_after_add_attribute_fields', $plugin_admin, 'product_attributes_add_form_fields' );
-		// $this->loader->add_action( 'woocommerce_after_edit_attribute_fields', $plugin_admin, 'product_attributes_add_form_fields' );
-
-		// save custom form fields.
-		// $this->loader->add_action( 'woocommerce_attribute_added', $plugin_admin, 'product_attributes_save_form_fields' );
-		// $this->loader->add_action( 'woocommerce_attribute_updated', $plugin_admin, 'product_attributes_save_form_fields' );
-
-		// on product attributes deletion.
-		// $this->loader->add_action( 'woocommerce_attribute_deleted', $plugin_admin, 'product_attributes_is_deleted', 10, 2 );
-
 		// show "type" in "attributes" page in admin
 		$this->loader->add_action( 'product_attributes_type_selector', $plugin_admin, 'product_attributes_types_callback');
-
-		// $this->loader->add_action( 'pa_color_add_form_fields', $plugin_admin, 'product_attributes_add_form_fields' );
-		// $this->loader->add_action( 'pa_color_edit_form_fields', $plugin_admin, 'product_attributes_add_form_fields' );
-
-		// function manage_my_category_columns($columns) {
-		// 	// add 'My Column'
-		// 	$columns['my_column'] = 'My Column';
-
-		// 	return $columns;
-		// }
-		// add_filter('manage_edit-pa_color_columns','manage_my_category_columns');
-
-
-
 
 	}
 

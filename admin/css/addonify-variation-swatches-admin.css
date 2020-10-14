@@ -79,7 +79,7 @@
     float: left;
 }
 
-.addonify-content .colorpicker-group p{
+.addonify-content .colorpicker-group p, .addonify-content p.label {
     font-weight: 600;
     margin-bottom: 3px;
 } 

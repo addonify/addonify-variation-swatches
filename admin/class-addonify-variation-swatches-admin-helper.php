@@ -21,9 +21,25 @@
  */
 class Addonify_Variation_Swatches_Admin_Helper {
 
-
+	/**
+	 * List all attributes data, used in plugin settings page
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $all_attributes    List all attributes data
+	 */
 	private $all_attributes;
+
+
+	/**
+	 * Store values of wc_get_attribute_taxonomies()
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string  $all_attribute_taxonomies Store values of wc_get_attribute_taxonomies()
+	 */
 	private $all_attribute_taxonomies;
+
 
 	/**
 	 * Check if woocommerce is active
@@ -95,44 +111,28 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	protected function get_all_attributes() {
 
 		if ( empty( $this->all_attributes ) ) {
-			
-			// delete_transient( $this->plugin_name . '_get_all_attributes' );
-			// $return_data = get_transient( $this->plugin_name . '_get_all_attributes' );
-			// if ( false === $return_data ) {
 
-				$this->all_attributes = array();
-				// $all_attributes = array();
-				// $args = array( 
-				// 	'type' => array( 'variable' ),
-				// );
+			$this->all_attributes = array();
 
-				foreach ( wc_get_attribute_taxonomies() as $attr ) {
+			foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
 
-					// if ( ! in_array( $attr->attribute_name, $all_attributes ) ) {
-						// $all_attributes[] = $attr->attribute_name;
-						$this->all_attributes[]    = array( 
-							'label' => $attr->attribute_label,
-							'name'  => $attr->attribute_name,
-						);
-					// }
-				}
-				
-				// store data for 1 week.
-				// clear cache if attributes is updated or added in post.
-				// set_transient( $this->plugin_name . '_get_all_attributes', $return_data, WEEK_IN_SECONDS );
-
-			// }
+				$this->all_attributes[] = array(
+					'label' => $attr->attribute_label,
+					'name'  => $attr->attribute_name,
+				);
+			}
 		}
-
-
-		// return $return_data;
 		return $this->all_attributes;
 	}
 
 
-
+	/**
+	 * Return all attributes
+	 *
+	 * @since    1.0.0
+	 */
 	protected function get_all_attribute_taxonomies() {
-		if ( empty( $this->all_attribute_taxonomies ) ){
+		if ( empty( $this->all_attribute_taxonomies ) ) {
 			$this->all_attribute_taxonomies = wc_get_attribute_taxonomies();
 		}
 
@@ -140,93 +140,131 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	}
 
 
-	
+	/**
+	 * Output markups for form fields to show in attribute term add / edit page
+	 *
+	 * @since    1.0.0
+	 * @param string  $attribute_type Type of attributes.
+	 * @param boolean $is_edit is this edit form page or not.
+	 */
+	public function taxonomy_form_markup( $attribute_type, $is_edit ) {
+		$attributes  = $this->available_attributes_types( $attribute_type );
+		$id          = $this->plugin_name . '_attr_' . $attribute_type;
+		$label       = $attributes['title'];
+		$name        = $id;
+		$description = $attributes['description'];
+		$term_id     = isset( $_GET['tag_ID'] ) ? intval( $_GET['tag_ID'] ) : '';
 
-	public function taxonomy_form_markup( $options ) {
-
-		$input_field_markups = '';
-
-		$input_field_type = isset( $options['input_field_type'] ) ? $options['input_field_type'] : '';
-
-		if( $input_field_type ){
-			ob_start();
-			$this->$input_field_type( $options['options'] );
-			$input_field_markups = ob_get_clean();
+		if ( $term_id ) {
+			$name .= '_' . $term_id;
 		}
 
-		$label       = isset( $options['label'] ) ? $options['label'] : '';
-		$name        = isset( $options['name'] ) ? $options['name'] : '';
-		$is_edit     = isset( $options['is_edit_form'] ) ? $options['is_edit_form'] : false;
-		$description = isset( $options['description'] ) ? $options['description'] : '';
+		// get markups for input field.
 
-		if( isset( $_GET['tag_ID'] ) ) {
-			$name .= '_' . intval( $_GET['tag_ID'] );
+		ob_start();
+
+		if ( 'color' === $attribute_type ) {
+			$this->color_picker_group(
+				array(
+					array(
+						'transparency' => false,
+						'name'         => $id,
+					),
+				)
+			);
+		} elseif ( 'image' === $attribute_type ) {
+			$this->wp_media_select( $name, $term_id );
 		}
 
+		$input_field_markups = ob_get_clean();
+
+		// end ob buffer.
+
+		// get templates for showing form elements.
 		require dirname( __FILE__ ) . '/templates/taxonomy-form-markups.php';
 	}
 
 
-
+	/**
+	 * List of attributes types and their properties
+	 *
+	 * @since    1.0.0
+	 * @param string $type Attribute type to return.
+	 */
 	protected function available_attributes_types( $type = false ) {
 		$types = array();
-		
-		$types[ 'color' ] = array(
-			'title'   => esc_html__( 'Color', 'addonify-variation-swatchs' ),
-			// 'output'  => 'wvs_color_variation_attribute_options',
-			// 'preview' => 'wvs_color_variation_attribute_preview'
+
+		$types['color'] = array(
+			'title'       => __( 'Color', 'addonify-variation-swatchs' ),
+			'description' => __( 'Select a color', 'addonify-variation-swatchs' ),
 		);
-		
-		$types[ 'image' ] = array(
-			'title'   => esc_html__( 'Image', 'addonify-variation-swatchs' ),
-			// 'output'  => 'wvs_image_variation_attribute_options',
-			// 'preview' => 'wvs_image_variation_attribute_preview'
+
+		$types['image'] = array(
+			'title'       => __( 'Image', 'addonify-variation-swatchs' ),
+			'description' => __( 'Choose an image', 'addonify-variation-swatchs' ),
 		);
-		
-		$types[ 'button' ] = array(
-			'title'   => esc_html__( 'Button', 'addonify-variation-swatchs' ),
-			// 'output'  => 'wvs_button_variation_attribute_options',
-			// 'preview' => 'wvs_button_variation_attribute_preview'
+
+		$types['button'] = array(
+			'title'       => __( 'Button', 'addonify-variation-swatchs' ),
+			'description' => __( 'Button', 'addonify-variation-swatchs' ),
 		);
-		
+
 		if ( $type ) {
 			return isset( $types[ $type ] ) ? $types[ $type ] : array();
 		}
-		
+
 		return $types;
 	}
 
-	
-	
+
+	/**
+	 * Output markups to show preview of either image or color in term display table
+	 *
+	 * @since    1.0.0
+	 * @param string $column_name Name of the column to inject the markups.
+	 * @param int    $term_id Taxonomy term id.
+	 */
 	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
 
-		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? strval( $_GET['taxonomy'] ) : false;
+		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? strval( wp_unslash( $_GET['taxonomy'] ) ) : false;
 
 		if ( ! $cur_taxonomy ) {
 			return;
 		}
-		
-		$attribute_type = '';
 
-		// figure out attribute type
+		// figure out attribute type.
+		$attribute_type = '';
 		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
 			if ( 'pa_' . $attr->attribute_name === $cur_taxonomy ) {
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
 			}
 		}
-		
+
+		if ( ! $attribute_type ) {
+			return;
+		}
+
 		if ( 'addonify_custom_attr' === $column_name ) {
-			if ( $attribute_type === 'color' ) {
-				return sprintf( 
+			if ( 'color' === $attribute_type ) {
+				return sprintf(
 					'<div class="addonify-vs-color-preview" style="background-color:%1$s; border: solid 1px #ccc; width: 35px; height: 35px;" ></div>',
-					get_option( $this->plugin_name . '_attr_color' . '_' . $term_id )
+					get_option( "{$this->plugin_name}_attr_color_{$term_id}" )
+				);
+			} elseif ( 'image' === $attribute_type ) {
+
+				$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
+				$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
+
+				return sprintf(
+					'<div class="addonify-vs-image-preview" ><img src="%2$s" width="35" height="35" ></div>',
+					get_option( "{$this->plugin_name}_attr_color_{$term_id}" ),
+					$img_url
 				);
 			}
 		}
 
 	}
-
 
 
 
@@ -259,6 +297,10 @@ class Addonify_Variation_Swatches_Admin_Helper {
 
 			if ( ! isset( $args['other_attr'] ) ) {
 				$args['other_attr'] = '';
+			}
+
+			if ( ! isset( $args['label'] ) ) {
+				$args['label'] = '';
 			}
 
 			require dirname( __FILE__ ) . '/templates/input_textbox.php';
@@ -389,10 +431,18 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	}
 
 
-	public function wp_media_select( $args ){
-		$default_img = plugin_dir_url( __FILE__ ) . '/images/placeholder.png';
-		$img_url = ''; //get_option( $this->plugin_name . '_attr_image' . '_' . $args['term'] );
-		
+	/**
+	 * Output markups for media select input field
+	 *
+	 * @since    1.0.0
+	 * @param string $name Name of the input field.
+	 * @param int    $term_id Taxonomy term id.
+	 */
+	public function wp_media_select( $name, $term_id ) {
+		$default_img   = plugin_dir_url( __FILE__ ) . '/images/placeholder.png';
+		$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
+		$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
+
 		require dirname( __FILE__ ) . '/templates/media-selector.php';
 	}
 

@@ -1,5 +1,7 @@
 <?php
+
 require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-helper.php';
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -23,6 +25,15 @@ require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-hel
 class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admin_Helper {
 
 	/**
+	 * Settings page slug
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $settings_page_slug    Default settings page slug for this plugin
+	 */
+	 private $settings_page_slug = 'addonify_variation_swatches';
+
+	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
@@ -39,15 +50,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
-
-	/**
-	 * Settings page slug
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $settings_page_slug    Default settings page slug for this plugin
-	 */
-	private $settings_page_slug = 'addonify_variation_swatches';
 
 	/**
 	 * Store default values for input fields in admin screen
@@ -81,6 +83,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 		// load styles in this plugin page only.
 		if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
+
 			// toggle switch.
 			wp_enqueue_style( 'lc_switch', plugin_dir_url( __FILE__ ) . 'css/lc_switch.css', array(), $this->version );
 
@@ -92,8 +95,9 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 			// admin css.
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
-		}
-		elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+
+		} elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+
 			wp_enqueue_style( 'wp-color-picker' );
 
 			// admin css.
@@ -126,8 +130,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
 
-		}
-		elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+		} elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) && 'product' === strval( $_GET['post_type'] ) ) {
 			wp_enqueue_script( 'wp-color-picker' );
 			wp_enqueue_media();
 			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
@@ -169,8 +172,13 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	}
 
 
-	// function that needs to run on admin init hook
-	public function admin_init_callback(){
+
+	/**
+	 * Functions that needs to be run on admin init hook
+	 *
+	 * @since    1.0.0
+	 */
+	public function admin_init_callback() {
 
 		// show settings page ui.
 		$this->settings_page_ui();
@@ -178,14 +186,12 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		// show woocommerce not active notice.
 		$this->show_woocommerce_not_active_notice_callback();
 
-		// show custom form element for all attributes
+		// show custom form element for all attributes.
 		$this->register_action_for_custom_term_fields();
 
-		// register action to show custom column in term table
+		// register action to show custom column in term table.
 		$this->register_filters_for_custom_columns();
-		
 	}
-
 
 
 	/**
@@ -231,11 +237,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		// ---------------------------------------------
 
 		$settings_args = array(
-			'settings_group_name' => 'wishlist_settings',
-			'section_id'          => 'general_options',
+			'settings_group_name' => 'variation_swatches_settings',
+			'section_id'          => 'global_options',
 			'section_label'       => __( 'Global Options', 'addonify-variation-swatches' ),
 			'section_callback'    => '',
-			'screen'              => $this->settings_page_slug . '-general_options',
+			'screen'              => $this->settings_page_slug . '-global_options',
 			'fields'              => array(
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'enable_tooltip',
@@ -244,7 +250,19 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'enable_tooltip',
-							'end_label' => __( 'Enable Tooltip on each product attributes', 'addonify-variation-swatches' ),
+						),
+					),
+				),
+				array(
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_image_width',
+					'field_label'         => __( 'Tooltip image width', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_image_width',
+							'default'   => 100,
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
+							'css_class' => 'number',
 						),
 					),
 				),
@@ -270,7 +288,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 								'rounded' => __( 'Rounded Shape', 'addonify-variation-swatches' ),
 								'square'  => __( 'Square Shape', 'addonify-variation-swatches' ),
 							),
-							'end_label' => __( 'Attribute Shape Style', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -298,7 +315,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
 							'options'  => $this->list_thumbnail_sizes(),
-							'end_label' => __( 'Attribute image size.', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -310,7 +326,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_width',
 							'default'   => 30,
-							'end_label' => __( 'Variation item width.', 'addonify-variation-swatches' ),
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
 							'css_class' => 'number',
 						),
 					),
@@ -323,7 +339,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_height',
 							'default'   => 30,
-							'end_label' => __( 'Variation item height.', 'addonify-variation-swatches' ),
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
 							'css_class' => 'number',
 						),
 					),
@@ -336,7 +352,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_font_size',
 							'default'   => 16,
-							'end_label' => __( 'Single product variation item font size.', 'addonify-variation-swatches' ),
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
 							'css_class' => 'number',
 						),
 					),
@@ -352,11 +368,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		// ---------------------------------------------
 
 		$settings_args = array(
-			'settings_group_name' => 'wishlist_settings',
-			'section_id'          => 'button_options',
+			'settings_group_name' => 'variation_swatches_settings',
+			'section_id'          => 'archives_page_options',
 			'section_label'       => __( 'Archives / Shop Page Options', 'addonify-variation-swatches' ),
 			'section_callback'    => '',
-			'screen'              => $this->settings_page_slug . '-button_settings',
+			'screen'              => $this->settings_page_slug . '-archives_page_settings',
 			'fields'              => array(
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'show_on_archives',
@@ -365,7 +381,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'show_on_archives',
-							'end_label' => __( 'Show swatches on archives/shop page.', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -381,7 +396,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 								'after_add_to_cart'  => __( 'After Add to Cart button', 'addonify-variation-swatches' ),
 							),
 							'default'   => 'after_add_to_cart',
-							'end_label' => __( 'Show swatches position on archives/shop page.', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -397,7 +411,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 								'right'  => __( 'Right', 'addonify-variation-swatches' ),
 								'center' => __( 'Center', 'addonify-variation-swatches' ),
 							),
-							'end_label' => __( 'Swatches align on archives/shop page.', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -409,7 +422,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_width',
 							'default'   => 30,
-							'end_label' => __( 'Variation item width.', 'addonify-variation-swatches' ),
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
 							'css_class' => 'number',
 						),
 					),
@@ -422,7 +435,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_height',
 							'default'   => 30,
-							'end_label' => __( 'Variation item height.', 'addonify-variation-swatches' ),
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
 							'css_class' => 'number',
 						),
 					),
@@ -435,7 +448,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_font_size',
 							'default'   => 16,
-							'end_label' => __( 'Single product variation item font size.', 'addonify-variation-swatches' ),
+							'end_label' => __( 'px', 'addonify-variation-swatches' ),
 							'css_class' => 'number',
 						),
 					),
@@ -451,6 +464,154 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 		// create settings fields.
 		$this->create_settings( $settings_args );
+
+
+		// ---------------------------------------------
+		// Styles Options
+		// ---------------------------------------------
+
+		$settings_args = array(
+			'settings_group_name'	=> 'variation_swatches_styles',
+			'section_id' 			=> 'style_options',
+			'section_label'			=> __('STYLE OPTIONS', 'addonify-variation-swatches'),
+			'section_callback'		=> '',
+			'screen'				=> $this->settings_page_slug.'-styles',
+			'fields'				=> array(
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'load_styles_from_plugin',
+					'field_label'			=> __('Load Styles From Plugin', 'addonify-variation-swatches'),
+					'field_callback'		=> array($this, "toggle_switch"),
+					'field_callback_args'	=> array( 
+						array(
+							'name' 				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'load_styles_from_plugin', 
+							'checked' 			=> 0,
+						)
+					) 
+				),
+			)
+		);
+
+		// create settings fields
+		$this->create_settings( $settings_args );
+
+
+		// ---------------------------------------------
+		// Content Colors
+		// ---------------------------------------------
+
+		$settings_args = array(
+			'settings_group_name' => 'variation_swatches_settings',
+			'section_id'          => 'content_color_options',
+			'section_label'       => __( 'Content Colors', 'addonify-variation-swatches' ),
+			'section_callback'    => '',
+			'screen'              => $this->settings_page_slug . '-content-colors',
+			'fields'				=> array(
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'variation_swatches_btn_colors',
+					'field_label'			=> __('Tooltip', 'addonify-variation-swatches'),
+					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback_args'	=> array( 
+						array(
+							'label'				=> __('Text Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_text_color',
+							'default'			=> '#fff',
+						),
+						array(
+							'label'				=> __('Background Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_bck_color',
+							'default'			=> '#000',
+						),
+					),
+				),
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_colors',
+					'field_label'			=> __( 'Attributes / Item', 'addonify-variation-swatches' ),
+					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback_args'	=> array( 
+						array(
+							'label'				=> __('Text Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_text_color',
+							'default'			=> '#000000',
+						),
+						array(
+							'label'				=> __('Background Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_bck_color',
+							'default'			=> '#000000',
+						),
+					),
+				),
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_colors_hover',
+					'field_label'			=> '',
+					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback_args'	=> array( 
+						array(
+							'label'				=> __('Text Color On Hover', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_text_color_hover',
+							'default'			=> '#000000',
+						),
+						array(
+							'label'				=> __('Background Color On Hover', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_bck_color_hover',
+							'default'			=> '#000000',
+						),
+					),
+				),
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_colors',
+					'field_label'			=> __( 'Selected Attribute / Item', 'addonify-variation-swatches' ),
+					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback_args'	=> array( 
+						array(
+							'label'				=> __('Text Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_text_color',
+							'default'			=> '#000000',
+						),
+						array(
+							'label'				=> __('Background Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_bck_color',
+							'default'			=> '#000000',
+						),
+						array(
+							'label'				=> __('Border Color', 'addonify-variation-swatches'),
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_color',
+							'default'			=> '#000000',
+						),
+					),
+				),
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
+					'field_label'			=> '',
+					'field_callback'		=> array($this, "text_box"),
+					'field_callback_args'	=> array( 
+						array(
+							'label'	    => __('Border Width', 'addonify-variation-swatches'),
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
+							'default'   => '1',
+							'end_label' => __( 'px', 'addonify_variation-swatches' ),
+							'css_class' => 'number',
+						),
+						
+					),
+				),
+				array(
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'custom_css',
+					'field_label'			=> __('Custom CSS', 'addonify-variation-swatches'),
+					'field_callback'		=> array($this, "text_area"),
+					'field_callback_args'	=> array( 
+						array(
+							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'custom_css',
+							'attr'				=> 'rows="5" class="large-text code"',
+						),
+						
+					),
+				),
+			)
+		);
+
+		// create settings fields.
+		$this->create_settings( $settings_args );
+
 	}
 
 
@@ -483,25 +644,19 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	}
 
 
+
+	// -------------------------------------------------
+	// add / edit attributes screen.
+	// -------------------------------------------------
+
+
 	/**
-	 * Delete transient cache for "_get_all_attributes"
+	 * Show "type" dropdown field in "add attributes" page
 	 *
 	 * @since    1.0.0
+	 * @param string $selector filter callback options.
 	 */
-	// public function delete_transient_get_all_attributes() {
-	// 	// delete transient cache.
-	// 	delete_transient( $this->plugin_name . '_get_all_attributes' );
-	// }
-
-
-
-	// -------------------------------------------------
-	// add / edit attributes screen
-	// -------------------------------------------------
-
-	// show "type" in "attributes" page in admin
 	public function product_attributes_types_callback( $selector ) {
-		
 		foreach ( $this->available_attributes_types() as $key => $options ) {
 			$selector[ $key ] = $options['title'];
 		}
@@ -510,18 +665,21 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	}
 
 
-	// register action to show custom form fields in product attributes term
+	/**
+	 * Register action to show custom form fields in product attributes term page
+	 *
+	 * @since    1.0.0
+	 */
 	private function register_action_for_custom_term_fields() {
 
-		foreach( $this->get_all_attributes() as $attr ) {
-			
+		foreach ( $this->get_all_attributes() as $attr ) {
 			$term_name = 'pa_' . $attr['name'];
 
-			// show form
+			// show form.
 			add_action( $term_name . '_add_form_fields', array( $this, 'term_add_custom_form_fields' ) );
 			add_action( $term_name . '_edit_form_fields', array( $this, 'term_edit_custom_form_fields' ) );
 
-			// on create or update
+			// on create or update.
 			add_action( 'edited_' . $term_name, array( $this, 'term_save_custom_form_fields' ) );
 			add_action( 'create_' . $term_name, array( $this, 'term_save_custom_form_fields' ) );
 
@@ -552,15 +710,16 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 
 	/**
-	 * Add custom form fields into "Add Attributes" page
+	 * Output markups for custom form fields to show in term add / edit page
 	 *
 	 * @since    1.0.0
+	 * @param boolean $is_edit_form Is this edit form or not.
 	 */
 	private function term_show_custom_form_fields( $is_edit_form = false ) {
 
 		$attribute_type = '';
 		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
-			if ( 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) {
+			if ( isset( $_GET['taxonomy'] ) && 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) {
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
 			}
@@ -570,39 +729,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 			return;
 		}
 
-		$id    = $this->plugin_name . '_attr_' . $attribute_type;
-
-		if ( $attribute_type === 'color' ) {
-			
-			$this->taxonomy_form_markup( 
-				array(
-					'input_field_type' => 'color_picker_group',
-					'label'            => 'Addonify Color',
-					'name'             => $id,
-					'description'      => __( 'Choose a color.', 'addonify-variation-swatches' ),
-					'is_edit_form'     => $is_edit_form,
-					'options'          => array(
-						array(
-							'transparency' => false,
-							'name'         => $id,
-						),
-					),
-				)
-			);
-		} elseif ( $attribute_type === 'image' ) {
-			
-			$this->taxonomy_form_markup( 
-				array(
-					'input_field_type' => 'wp_media_select',
-					'label'            => 'Addonify Image Select',
-					'name'             => $id,
-					'description'      => __( 'Choose an image.', 'addonify-variation-swatches' ),
-					'is_edit_form'     => $is_edit_form,
-					'options'          => array(),
-				)
-			);
-		}
-
+		$this->taxonomy_form_markup( $attribute_type, $is_edit_form );
 
 	}
 
@@ -611,6 +738,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * Woocommerce - Save custom form fields
 	 *
 	 * @since    1.0.0
+	 * @param int $term_id Term ID.
 	 */
 	public function term_save_custom_form_fields( $term_id ) {
 
@@ -625,7 +753,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 
 				$option_key = $post_key;
 
-				if ( false === strpos( $term_id, $post_key ) ) {
+				if ( false === strpos( $post_key, strval( $term_id ) ) ) {
 					$option_key .= '_' . $term_id;
 				}
 
@@ -640,21 +768,19 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * Woocommerce taxonomy is deleted, Delete all custom attributes data
 	 *
 	 * @since    1.0.0
-	 * @param int    $attribute_id   attribute id.
-	 * @param string $attribute_name attribute id.
+	 * @param int $term   term id.
 	 */
 	public function term_is_deleted( $term ) {
 
-		// delete all custom attributes data
-		delete_option( $this->plugin_name . '_attr_color' . '_' . $term );
-		delete_option( $this->plugin_name . '_attr_image' . '_' . $term );
-		delete_option( $this->plugin_name . '_attr_button' . '_' . $term );
+		// delete all custom attributes data.
+		delete_option( "{$this->plugin_name}_attr_color_{$term}" );
+		delete_option( "{$this->plugin_name}_attr_image{$term}" );
+		delete_option( "{$this->plugin_name}_attr_button{$term}" );
 	}
 
 
-
 	// -------------------------------------------------
-	// custom columns 
+	// custom columns.
 	// -------------------------------------------------
 
 	/**
@@ -664,31 +790,61 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	private function register_filters_for_custom_columns() {
 
-		foreach( $this->get_all_attributes() as $attr ) {
+		foreach ( $this->get_all_attributes() as $attr ) {
 			$term_name = 'pa_' . $attr['name'];
-			add_filter('manage_edit-' . $term_name . '_columns', array( $this, 'custom_column_heading_for_attributes' ) );
-			add_filter('manage_' . $term_name . '_custom_column', array( $this, 'my_custom_taxonomy_columns_content' ), 10, 3 );
+			add_filter( 'manage_edit-' . $term_name . '_columns', array( $this, 'custom_column_heading_for_attributes' ) );
+			add_filter( 'manage_' . $term_name . '_custom_column', array( $this, 'my_custom_taxonomy_columns_content' ), 10, 3 );
 		}
 
 	}
 
 
+	/**
+	 * Show custom "column" in term table
+	 *
+	 * @since    1.0.0
+	 * @param string $columns Name of columns for term table.
+	 */
 	public function custom_column_heading_for_attributes( $columns ) {
+
+		if ( ! isset( $_GET['taxonomy'] ) ) {
+			return;
+		}
+
+		$attribute_type = '';
+		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
+			if ( strval( wp_unslash( $_GET['taxonomy'] ) ) === 'pa_' . $attr->attribute_name ) {
+				$attribute_type = strtolower( $attr->attribute_type );
+				break;
+			}
+		}
+
+		if ( ! $attribute_type ) {
+			return;
+		}
 
 		$new = array();
 		foreach ( $columns as $key => $title ) {
 
-			if ( $key == 'name' ) {
-				$new['addonify_custom_attr'] = 'Color';				
+			if ( 'name' === $key && in_array( $attribute_type, array( 'color', 'image' ) ) ) {
+				$new['addonify_custom_attr'] = '';
 			}
 
 			$new[ $key ] = $title;
 		}
-		
+
 		return $new;
 	}
 
 
+	/**
+	 * Show "type" dropdown field in  "attributes" page in admin
+	 *
+	 * @since    1.0.0
+	 * @param string $content Content to outout.
+	 * @param string $column_name Name of the column.
+	 * @param int    $term_id Term ID.
+	 */
 	public function my_custom_taxonomy_columns_content( $content, $column_name, $term_id ) {
 		return $this->get_attr_type_preview_for_term( $column_name, $term_id );
 	}
