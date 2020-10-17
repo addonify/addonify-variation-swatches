@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-helper.php';
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -22,7 +20,7 @@ require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-hel
  * @subpackage Addonify_Variation_Swatches/admin
  * @author     Addonify <info@addonify.com>
  */
-class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admin_Helper {
+class Addonify_Variation_Swatches_Admin {
 
 	/**
 	 * Settings page slug
@@ -61,6 +59,15 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	protected $default_input_values;
 
 	/**
+	 * Instance of helper class
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $helper    Instance of helper class
+	 */
+	private $helper;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since 1.0.0
@@ -69,8 +76,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	public function __construct( $plugin_name, $version ) {
 
+		require_once dirname( __FILE__ ) . '/class-addonify-variation-swatches-admin-helper.php';
+
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->helper      = new Addonify_Variation_Swatches_Admin_Helper( $plugin_name, $version );
 
 	}
 
@@ -145,8 +155,10 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	public function add_menu_callback() {
 
+		$helper = $this->helper;
+
 		// do not show menu if woocommerce is not active.
-		if ( $this->is_woocommerce_active() !== true ) {
+		if ( $helper->is_woocommerce_active() !== true ) {
 			return;
 		}
 
@@ -232,6 +244,8 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	public function settings_page_ui() {
 
+		$helper = $this->helper;
+
 		// ---------------------------------------------
 		// General Options
 		// ---------------------------------------------
@@ -314,7 +328,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 					'field_callback_args' => array(
 						array(
 							'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
-							'options'  => $this->list_thumbnail_sizes(),
+							'options'  => $helper->list_thumbnail_sizes(),
 						),
 					),
 				),
@@ -361,7 +375,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		);
 
 		// create settings fields.
-		$this->create_settings( $settings_args );
+		$helper->create_settings( $settings_args );
 
 		// ---------------------------------------------
 		// Archives Page Options.
@@ -457,13 +471,13 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'visible_attributes',
 					'field_label'         => __( 'Visible Attributes', 'addonify-variation-swatches' ),
 					'field_callback'      => array( $this, 'checkbox_group' ),
-					'field_callback_args' => $this->get_all_attributes(),
+					'field_callback_args' => $helper->get_all_attributes(),
 				),
 			),
 		);
 
 		// create settings fields.
-		$this->create_settings( $settings_args );
+		$helper->create_settings( $settings_args );
 
 
 		// ---------------------------------------------
@@ -492,7 +506,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		);
 
 		// create settings fields
-		$this->create_settings( $settings_args );
+		$helper->create_settings( $settings_args );
 
 
 		// ---------------------------------------------
@@ -610,7 +624,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 		);
 
 		// create settings fields.
-		$this->create_settings( $settings_args );
+		$helper->create_settings( $settings_args );
 
 	}
 
@@ -633,7 +647,9 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * @since    1.0.0
 	 */
 	public function show_woocommerce_not_active_notice_callback() {
-		if ( ! $this->is_woocommerce_active() ) {
+		$helper = $this->helper;
+
+		if ( ! $helper->is_woocommerce_active() ) {
 			add_action(
 				'admin_notices',
 				function() {
@@ -657,7 +673,10 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * @param string $selector filter callback options.
 	 */
 	public function product_attributes_types_callback( $selector ) {
-		foreach ( $this->available_attributes_types() as $key => $options ) {
+
+		$helper = $this->helper;
+
+		foreach ( $helper->available_attributes_types() as $key => $options ) {
 			$selector[ $key ] = $options['title'];
 		}
 
@@ -672,7 +691,10 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	private function register_action_for_custom_term_fields() {
 
-		foreach ( $this->get_all_attributes() as $attr ) {
+		$helper = $this->helper;
+
+		foreach ( $helper->get_all_attributes() as $attr ) {
+
 			$term_name = 'pa_' . $attr['name'];
 
 			// show form.
@@ -717,19 +739,21 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	private function term_show_custom_form_fields( $is_edit_form = false ) {
 
+		$helper = $this->helper;
+
 		$attribute_type = '';
-		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
+		foreach ( $helper->get_all_attribute_taxonomies() as $attr ) {
 			if ( isset( $_GET['taxonomy'] ) && 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) {
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
 			}
 		}
 
-		if ( ! $attribute_type ) {
+		if ( ! $attribute_type || $attribute_type === 'select' || $attribute_type === 'button' ) {
 			return;
 		}
 
-		$this->taxonomy_form_markup( $attribute_type, $is_edit_form );
+		$helper->taxonomy_form_markup( $attribute_type, $is_edit_form );
 
 	}
 
@@ -790,7 +814,9 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	private function register_filters_for_custom_columns() {
 
-		foreach ( $this->get_all_attributes() as $attr ) {
+		$helper = $this->helper;
+
+		foreach ( $helper->get_all_attributes() as $attr ) {
 			$term_name = 'pa_' . $attr['name'];
 			add_filter( 'manage_edit-' . $term_name . '_columns', array( $this, 'custom_column_heading_for_attributes' ) );
 			add_filter( 'manage_' . $term_name . '_custom_column', array( $this, 'my_custom_taxonomy_columns_content' ), 10, 3 );
@@ -807,12 +833,14 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 */
 	public function custom_column_heading_for_attributes( $columns ) {
 
+		$helper = $this->helper;
+
 		if ( ! isset( $_GET['taxonomy'] ) ) {
 			return;
 		}
 
 		$attribute_type = '';
-		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
+		foreach ( $helper->get_all_attribute_taxonomies() as $attr ) {
 			if ( strval( wp_unslash( $_GET['taxonomy'] ) ) === 'pa_' . $attr->attribute_name ) {
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
@@ -846,7 +874,8 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Admi
 	 * @param int    $term_id Term ID.
 	 */
 	public function my_custom_taxonomy_columns_content( $content, $column_name, $term_id ) {
-		return $this->get_attr_type_preview_for_term( $column_name, $term_id );
+		$helper = $this->helper;
+		return $helper->get_attr_type_preview_for_term( $column_name, $term_id );
 	}
-
+	
 }
