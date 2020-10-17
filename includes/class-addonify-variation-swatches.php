@@ -188,6 +188,12 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		// Change the contents of default variation select input field.
+		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_html', $plugin_public, 'filter_dropdown_variation_button_callback', 10, 2 );
+
+		// Customize variation dropdown html.
+		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_args', $plugin_public, 'filter_variation_dropdown_html_callback' );
+
 	}
 
 	/**

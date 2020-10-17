@@ -22,6 +22,24 @@
 class Addonify_Variation_Swatches_Admin_Helper {
 
 	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	protected $plugin_name;
+
+	 /**
+	  * The version of this plugin.
+	  *
+	  * @since    1.0.0
+	  * @access   private
+	  * @var      string    $version    The current version of this plugin.
+	  */
+	private $version;
+
+	/**
 	 * List all attributes data, used in plugin settings page
 	 *
 	 * @since    1.0.0
@@ -38,7 +56,21 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @access   private
 	 * @var      string  $all_attribute_taxonomies Store values of wc_get_attribute_taxonomies()
 	 */
-	private $all_attribute_taxonomies;
+	public $all_attribute_taxonomies;
+
+
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since 1.0.0
+	 * @param string $plugin_name The name of this plugin.
+	 * @param string $version     The version of this plugin.
+	 */
+	 public function __construct( $plugin_name, $version ) {
+		$this->plugin_name = $plugin_name;
+		$this->version     = $version;
+	}
+
 
 
 	/**
@@ -46,7 +78,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	protected function is_woocommerce_active() {
+	public function is_woocommerce_active() {
 		return ( class_exists( 'woocommerce' ) ) ? true : false;
 	}
 
@@ -57,7 +89,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @since    1.0.0
 	 * @param string $args Options for settings field.
 	 */
-	protected function create_settings( $args ) {
+	public function create_settings( $args ) {
 
 		add_settings_section( $args['section_id'], $args['section_label'], $args['section_callback'], $args['screen'] );
 
@@ -84,7 +116,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	protected function list_thumbnail_sizes() {
+	public function list_thumbnail_sizes() {
 
 		$return_sizes = get_transient( $this->plugin_name . '_list_thumbnail_sizes' );
 
@@ -108,7 +140,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	protected function get_all_attributes() {
+	public function get_all_attributes() {
 
 		if ( empty( $this->all_attributes ) ) {
 
@@ -119,6 +151,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 				$this->all_attributes[] = array(
 					'label' => $attr->attribute_label,
 					'name'  => $attr->attribute_name,
+					'type'  => $attr->attribute_type,
 				);
 			}
 		}
@@ -131,7 +164,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	protected function get_all_attribute_taxonomies() {
+	public function get_all_attribute_taxonomies() {
 		if ( empty( $this->all_attribute_taxonomies ) ) {
 			$this->all_attribute_taxonomies = wc_get_attribute_taxonomies();
 		}
@@ -148,11 +181,12 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @param boolean $is_edit is this edit form page or not.
 	 */
 	public function taxonomy_form_markup( $attribute_type, $is_edit ) {
+
 		$attributes  = $this->available_attributes_types( $attribute_type );
 		$id          = $this->plugin_name . '_attr_' . $attribute_type;
-		$label       = $attributes['title'];
+		$label       = isset( $attributes['title'] ) ? $attributes['title'] : '';
 		$name        = $id;
-		$description = $attributes['description'];
+		$description = isset( $attributes['description'] ) ? $attributes['description'] : '';
 		$term_id     = isset( $_GET['tag_ID'] ) ? intval( $_GET['tag_ID'] ) : '';
 
 		if ( $term_id ) {
@@ -180,8 +214,10 @@ class Addonify_Variation_Swatches_Admin_Helper {
 
 		// end ob buffer.
 
+		
 		// get templates for showing form elements.
 		require dirname( __FILE__ ) . '/templates/taxonomy-form-markups.php';
+
 	}
 
 
@@ -191,7 +227,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @since    1.0.0
 	 * @param string $type Attribute type to return.
 	 */
-	protected function available_attributes_types( $type = false ) {
+	public function available_attributes_types( $type = false ) {
 		$types = array();
 
 		$types['color'] = array(
@@ -224,7 +260,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @param string $column_name Name of the column to inject the markups.
 	 * @param int    $term_id Taxonomy term id.
 	 */
-	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
+	public function get_attr_type_preview_for_term( $column_name, $term_id ) {
 
 		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? strval( wp_unslash( $_GET['taxonomy'] ) ) : false;
 
