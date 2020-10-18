@@ -147,13 +147,13 @@ class Addonify_Variation_Swatches_Admin_Helper {
 			$this->all_attributes = array();
 
 			foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
-
 				$this->all_attributes[] = array(
 					'label' => $attr->attribute_label,
 					'name'  => $attr->attribute_name,
 					'type'  => $attr->attribute_type,
 				);
 			}
+			
 		}
 		return $this->all_attributes;
 	}

@@ -6,6 +6,28 @@ ul.addonify-vs-attributes-options{
     list-style: none;
     margin: 0;
     padding: 0;
+
+    li{
+        border: 1px solid #b7b7b7;
+
+        > *{
+            margin: 1px;
+        }
+    }
+
+    li.selected{
+        border-width: 2px;
+        border-color: blue;
+    }
+
+    li.disabled{
+        background: rgba(255, 0, 0, 0.7);
+        cursor: no-drop;
+        
+        *{
+            opacity: 0.4;
+        }
+    }
 }
 
 
@@ -18,29 +40,39 @@ ul.addonify-vs-attributes-options-button{
         cursor: pointer;
     }
 
-    li.selected{
-        border-color: blue;
-    }
 }
 
 
 ul.addonify-vs-attributes-options-color{
     li{
-        display: inline-block;
-        // padding: 3px 10px;
-        // border: 2px solid #b7b7b7;
-        // border-radius: 4px;
         cursor: pointer;
+        display: inline-block;
+        
+        span{
+            
+            display: block;
+        }
     }
 
-    // li.selected{
-    //     border-color: blue;
-    // }
 }
 
 ul.addonify-vs-attributes-options-circle{
     li{
         border-radius: 50%;
+    }
+
+}
+
+
+ul.addonify-vs-attributes-options-image{
+    li{
+        display: inline-block;
+        cursor: pointer;
+
+        img{
+            max-width: 100%;
+            height: 100%;
+        }
     }
 
 }

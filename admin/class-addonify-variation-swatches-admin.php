@@ -260,7 +260,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'enable_tooltip',
 					'field_label'         => __( 'Enable Tooltip', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'toggle_switch' ),
+					'field_callback'      => array( $helper, 'toggle_switch' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'enable_tooltip',
@@ -270,7 +270,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_image_width',
 					'field_label'         => __( 'Tooltip image width', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_image_width',
@@ -283,7 +283,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'auto_dropdown_to_btn',
 					'field_label'         => __( 'Auto Dropdowns to Button', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'toggle_switch' ),
+					'field_callback'      => array( $helper, 'toggle_switch' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'auto_dropdown_to_btn',
@@ -294,7 +294,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'shape',
 					'field_label'         => __( 'Attributes style', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'select' ),
+					'field_callback'      => array( $helper, 'select' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'shape',
@@ -308,7 +308,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_behavior',
 					'field_label'         => __( 'Attribute behavior', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'select' ),
+					'field_callback'      => array( $helper, 'select' ),
 					'field_callback_args' => array(
 						array(
 							'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_behavior',
@@ -324,7 +324,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
 					'field_label'         => __( 'Attribute image size', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'select' ),
+					'field_callback'      => array( $helper, 'select' ),
 					'field_callback_args' => array(
 						array(
 							'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
@@ -335,7 +335,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_width',
 					'field_label'         => __( 'Width', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_width',
@@ -348,7 +348,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_height',
 					'field_label'         => __( 'Height', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_height',
@@ -361,7 +361,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_font_size',
 					'field_label'         => __( 'Font Size', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_font_size',
@@ -391,7 +391,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'show_on_archives',
 					'field_label'         => __( 'Show on archives', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'toggle_switch' ),
+					'field_callback'      => array( $helper, 'toggle_switch' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'show_on_archives',
@@ -401,7 +401,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'display_position',
 					'field_label'         => __( 'Display position', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'select' ),
+					'field_callback'      => array( $helper, 'select' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'display_position',
@@ -416,7 +416,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'swatches_align',
 					'field_label'         => __( 'Align', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'select' ),
+					'field_callback'      => array( $helper, 'select' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'swatches_align',
@@ -431,7 +431,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_width',
 					'field_label'         => __( 'Width', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_width',
@@ -444,7 +444,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_height',
 					'field_label'         => __( 'Height', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_height',
@@ -457,7 +457,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_font_size',
 					'field_label'         => __( 'Font Size', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback'      => array( $helper, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attribute_font_size',
@@ -470,7 +470,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'visible_attributes',
 					'field_label'         => __( 'Visible Attributes', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'checkbox_group' ),
+					'field_callback'      => array( $helper, 'checkbox_group' ),
 					'field_callback_args' => $helper->get_all_attributes(),
 				),
 			),
@@ -494,7 +494,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'load_styles_from_plugin',
 					'field_label'			=> __('Load Styles From Plugin', 'addonify-variation-swatches'),
-					'field_callback'		=> array($this, "toggle_switch"),
+					'field_callback'		=> array($helper, "toggle_switch"),
 					'field_callback_args'	=> array( 
 						array(
 							'name' 				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'load_styles_from_plugin', 
@@ -523,7 +523,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'variation_swatches_btn_colors',
 					'field_label'			=> __('Tooltip', 'addonify-variation-swatches'),
-					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback'		=> array( $helper, "color_picker_group"),
 					'field_callback_args'	=> array( 
 						array(
 							'label'				=> __('Text Color', 'addonify-variation-swatches'),
@@ -540,7 +540,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_colors',
 					'field_label'			=> __( 'Attributes / Item', 'addonify-variation-swatches' ),
-					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback'		=> array( $helper, "color_picker_group"),
 					'field_callback_args'	=> array( 
 						array(
 							'label'				=> __('Text Color', 'addonify-variation-swatches'),
@@ -557,7 +557,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_colors_hover',
 					'field_label'			=> '',
-					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback'		=> array( $helper, 'color_picker_group' ),
 					'field_callback_args'	=> array( 
 						array(
 							'label'				=> __('Text Color On Hover', 'addonify-variation-swatches'),
@@ -574,7 +574,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_colors',
 					'field_label'			=> __( 'Selected Attribute / Item', 'addonify-variation-swatches' ),
-					'field_callback'		=> array($this, "color_picker_group"),
+					'field_callback'		=> array( $helper, "color_picker_group" ),
 					'field_callback_args'	=> array( 
 						array(
 							'label'				=> __('Text Color', 'addonify-variation-swatches'),
@@ -596,7 +596,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
 					'field_label'			=> '',
-					'field_callback'		=> array($this, "text_box"),
+					'field_callback'		=> array( $helper, "text_box"),
 					'field_callback_args'	=> array( 
 						array(
 							'label'	    => __('Border Width', 'addonify-variation-swatches'),
@@ -611,7 +611,7 @@ class Addonify_Variation_Swatches_Admin {
 				array(
 					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'custom_css',
 					'field_label'			=> __('Custom CSS', 'addonify-variation-swatches'),
-					'field_callback'		=> array($this, "text_area"),
+					'field_callback'		=> array( $helper, "text_area"),
 					'field_callback_args'	=> array( 
 						array(
 							'name'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'custom_css',
