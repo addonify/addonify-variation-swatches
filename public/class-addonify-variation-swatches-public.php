@@ -104,28 +104,48 @@ class Addonify_Variation_Swatches_Public {
 
 		$helper = $this->get_helper_class();
 
-		foreach( $helper->get_all_attributes() as $attr ) {
+		foreach ( $helper->get_all_attributes() as $attr ) {
 			if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr ) ) {
 				$attribute_type = $attr['type'];
 				break;
 			}
 		}
 
-		if($attribute_type === 'select' ){
+		if ( $attribute_type === 'select' ) {
 			$attribute_type = 'button';
 		}
 
-		$css_class =  array( 'addonify-vs-attributes-options' );
-		
-		if ( $attribute_type === 'button' ) {
-			$css_class[] = 'addonify-vs-attributes-options-button';
-		} elseif ( $attribute_type === 'color' ) {
-			$css_class[] = 'addonify-vs-attributes-options-color';
-		}
+		// css class to output in template
+		$css_class =  array( 'addonify-vs-attributes-options', "addonify-vs-attributes-options-{$attribute_type}" );
 
 		$data = array();
+
 		foreach ( $args['options'] as $option ) {
-			$data[] = $option;
+
+			$term = get_term_by( 'slug', $option, $args['attribute'] );
+
+			if ( 'image' === $attribute_type ) {
+				$attachment_id = intval( get_option( "{$this->plugin_name}_attr_image_{$term->term_id}" ) );
+
+				if ( ! $attachment_id ) {
+					return $html;
+				}
+				
+				// Data to outout.
+				$data[ $option ] = wp_get_attachment_image_src( $attachment_id )[0];
+				
+			} else {
+
+				if ( $term ) {
+					// Data to outout.
+					$data[ $option ] = $term->name;
+				} else {
+					// Data to outout.
+					$data[ $option ] = $option;
+				}
+				
+			}
+
 		}
 		
 		$html .= $this->get_templates( 
@@ -140,17 +160,17 @@ class Addonify_Variation_Swatches_Public {
 		return $html;
 	}
 
-
+	// Filter markups of main variation dropdown field.
 	public function filter_variation_dropdown_html_callback( $args ) {
 
 		if ( is_product() ) {
-			$args['class'] = 'hide hidden';
+			$args['class'] = 'hide hidden addonify-vs-attributes-options-select';
 		}
 
 		return $args;  
 	}
 
-
+	// Initiate helper class if not already initiated
 	private function get_helper_class() {
 		require_once dirname( __FILE__, 2 ) . '/admin/class-addonify-variation-swatches-admin-helper.php';
 		
@@ -184,6 +204,19 @@ class Addonify_Variation_Swatches_Public {
 		else{
 			require $template_path;
 		}
+	}
+
+
+	/**
+	* Disable out of stock variations
+	* https://github.com/woocommerce/woocommerce/blob/826af31e1e3b6e8e5fc3c1004cc517c5c5ec25b1/includes/class-wc-product-variation.php
+	* @return Boolean
+	*/
+	function disable_out_of_stock_variations_callback( $active, $variation ) {
+		if ( ! $variation->is_in_stock() ) {
+			return false;
+		}
+		return $active;
 	}
 
 }
