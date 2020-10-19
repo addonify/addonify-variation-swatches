@@ -3,6 +3,8 @@
 
 	$( document ).ready(function(){
 
+		init();
+
 		// on attribute option select
 		$('.addonify-vs-attributes-options li').click(function(){
 			
@@ -50,6 +52,18 @@
 			}, 100 );
 
 		})
+
+
+		function init(){
+
+			// Tooltip.
+			$('.addonify-vs-attributes-options li').each(function(){
+				tippy( this, {
+					content: $(this).data('title'),
+				});
+
+			})
+		}
 	})
 
 })( jQuery );

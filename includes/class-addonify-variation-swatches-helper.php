@@ -19,25 +19,7 @@
  * @subpackage Addonify_Variation_Swatches/admin
  * @author     Addonify <info@addonify.com>
  */
-class Addonify_Variation_Swatches_Admin_Helper {
-
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	protected $plugin_name;
-
-	 /**
-	  * The version of this plugin.
-	  *
-	  * @since    1.0.0
-	  * @access   private
-	  * @var      string    $version    The current version of this plugin.
-	  */
-	private $version;
+class Addonify_Variation_Swatches_Helper {
 
 	/**
 	 * List all attributes data, used in plugin settings page
@@ -56,7 +38,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @access   private
 	 * @var      string  $all_attribute_taxonomies Store values of wc_get_attribute_taxonomies()
 	 */
-	public $all_attribute_taxonomies;
+	protected $all_attribute_taxonomies;
 
 
 	/**
@@ -66,7 +48,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @param string $plugin_name The name of this plugin.
 	 * @param string $version     The version of this plugin.
 	 */
-	 public function __construct( $plugin_name, $version ) {
+	protected function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 	}
@@ -78,7 +60,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	public function is_woocommerce_active() {
+	protected function is_woocommerce_active() {
 		return ( class_exists( 'woocommerce' ) ) ? true : false;
 	}
 
@@ -89,7 +71,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @since    1.0.0
 	 * @param string $args Options for settings field.
 	 */
-	public function create_settings( $args ) {
+	protected function create_settings( $args ) {
 
 		add_settings_section( $args['section_id'], $args['section_label'], $args['section_callback'], $args['screen'] );
 
@@ -116,7 +98,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	public function list_thumbnail_sizes() {
+	protected function list_thumbnail_sizes() {
 
 		$return_sizes = get_transient( $this->plugin_name . '_list_thumbnail_sizes' );
 
@@ -140,7 +122,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	public function get_all_attributes() {
+	protected function get_all_attributes() {
 
 		if ( empty( $this->all_attributes ) ) {
 
@@ -164,7 +146,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 *
 	 * @since    1.0.0
 	 */
-	public function get_all_attribute_taxonomies() {
+	protected function get_all_attribute_taxonomies() {
 		if ( empty( $this->all_attribute_taxonomies ) ) {
 			$this->all_attribute_taxonomies = wc_get_attribute_taxonomies();
 		}
@@ -180,7 +162,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @param string  $attribute_type Type of attributes.
 	 * @param boolean $is_edit is this edit form page or not.
 	 */
-	public function taxonomy_form_markup( $attribute_type, $is_edit ) {
+	protected function taxonomy_form_markup( $attribute_type, $is_edit ) {
 
 		$attributes  = $this->available_attributes_types( $attribute_type );
 		$id          = $this->plugin_name . '_attr_' . $attribute_type;
@@ -202,7 +184,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 				array(
 					array(
 						'transparency' => false,
-						'name'         => $id,
+						'name'         => $name,
 					),
 				)
 			);
@@ -216,7 +198,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 
 		
 		// get templates for showing form elements.
-		require dirname( __FILE__ ) . '/templates/taxonomy-form-markups.php';
+		require dirname( __FILE__, 2 ) . '/admin/templates/taxonomy-form-markups.php';
 
 	}
 
@@ -227,7 +209,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @since    1.0.0
 	 * @param string $type Attribute type to return.
 	 */
-	public function available_attributes_types( $type = false ) {
+	protected function available_attributes_types( $type = false ) {
 		$types = array();
 
 		$types['color'] = array(
@@ -260,7 +242,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 * @param string $column_name Name of the column to inject the markups.
 	 * @param int    $term_id Taxonomy term id.
 	 */
-	public function get_attr_type_preview_for_term( $column_name, $term_id ) {
+	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
 
 		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? strval( wp_unslash( $_GET['taxonomy'] ) ) : false;
 
@@ -303,6 +285,72 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	}
 
 
+	/**
+	 * Generate style markups
+	 *
+	 * @since    1.0.0
+	 * @param    $style_args    Style args to be processed
+	 */
+	protected function generate_styles_markups( $style_args ){
+		$custom_styles_output = '';
+		foreach($style_args as $css_sel => $property_value){
+
+			$properties = '';
+
+			foreach( $property_value as $property => $db_field){
+
+				$css_unit = '';
+
+				if( is_array($db_field) ){
+					$default  = isset( $db_field[2] ) ? $db_field[2] : '';
+					$db_value = $this->get_db_values( $db_field[0], $default );
+					$css_unit = isset( $db_field[1] ) ? $db_field[1] : '';
+				}
+				else{
+					$db_value = $this->get_db_values( $db_field );
+				}
+					
+				if( $db_value ){
+					$properties .=  $property . ': ' . $db_value . $css_unit . '; ';
+				}
+
+			}
+			
+			if( $properties ){
+				$custom_styles_output .= $css_sel . '{' . $properties . '}';
+			}
+
+		}
+
+		return $custom_styles_output;
+	}
+
+
+	// require proper templates for use in front end
+	protected function get_public_templates( $template_name, $require_once = true, $data=array() ){
+
+		// first look for template in themes/addonify/plugin_name/template-name.php
+		$theme_path = get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/' . $template_name .'.php';
+		$plugin_path = dirname( __FILE__, 2 ) .'/public/templates/' . $template_name .'.php';
+
+		extract($data);
+
+		if( file_exists( $theme_path ) ){
+			$template_path = $theme_path;
+		}
+		else{
+			$template_path = $plugin_path;
+		}
+
+		if( $require_once ){
+			require_once $template_path;
+		}
+		else{
+			require $template_path;
+		}
+	}
+
+
 
 	// -------------------------------------------------
 	// form helpers for admin setting screen
@@ -339,7 +387,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 				$args['label'] = '';
 			}
 
-			require dirname( __FILE__ ) . '/templates/input_textbox.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input_textbox.php';
 		}
 	}
 
@@ -369,7 +417,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 			$transparency  = isset( $arg['transparency'] ) ? $arg['transparency'] : true;
 			$db_value      = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
 
-			require dirname( __FILE__ ) . '/templates/input_colorpicker.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input_colorpicker.php';
 		}
 	}
 
@@ -387,7 +435,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 		$attr          = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
 		$end_label     = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
 
-		require dirname( __FILE__ ) . '/templates/input_checkbox.php';
+		require dirname( __FILE__, 2 ) . '/admin/templates/input_checkbox.php';
 	}
 
 	/**
@@ -398,7 +446,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 	 */
 	public function checkbox_group( $args ) {
 		foreach ( $args as $arg ) {
-			require dirname( __FILE__ ) . '/templates/checkbox_group.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/checkbox_group.php';
 		}
 	}
 
@@ -415,7 +463,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 			$default  = ( array_key_exists( 'default', $args ) ) ? $args['default'] : '';
 			$db_value = get_option( $args['name'], $default );
 
-			require dirname( __FILE__ ) . '/templates/input_select.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input_select.php';
 		}
 	}
 
@@ -446,7 +494,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 			$args['end_label'] = esc_html( 'Please insert "[addonify_wishlist]" shortcode into the content area of the page' );
 		}
 
-		require dirname( __FILE__ ) . '/templates/input_select.php';
+		require dirname( __FILE__, 2 ) . '/admin/templates/input_select.php';
 	}
 
 
@@ -462,7 +510,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 			$db_value    = get_option( $args['name'], $placeholder );
 			$attr        = isset( $args['attr'] ) ? $args['attr'] : '';
 
-			require dirname( __FILE__ ) . '/templates/input_textarea.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input_textarea.php';
 		}
 	}
 
@@ -479,7 +527,7 @@ class Addonify_Variation_Swatches_Admin_Helper {
 		$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
 		$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 
-		require dirname( __FILE__ ) . '/templates/media-selector.php';
+		require dirname( __FILE__, 2 ) . '/admin/templates/media-selector.php';
 	}
 
 }
