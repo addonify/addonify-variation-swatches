@@ -25,5 +25,7 @@
     "gulp-uglify": "^3.0.2",
     "node-sass": "^4.14.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tippy.js": "^6.2.7"
+  }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -20,7 +19,7 @@
  * @subpackage Addonify_Variation_Swatches/public
  * @author     Addonify <info@addonify.com>
  */
-class Addonify_Variation_Swatches_Public {
+class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Helper {
 
 	/**
 	 * The ID of this plugin.
@@ -29,7 +28,7 @@ class Addonify_Variation_Swatches_Public {
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
-	private $plugin_name;
+	protected $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -41,13 +40,13 @@ class Addonify_Variation_Swatches_Public {
 	private $version;
 
 	/**
-	 * Instance of helper class
+	 * Is Tooltip enabled ?
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $helper    Instance of helper class
+	 * @var      string    $enable_tooltip    Is tooltip enabled ?
 	 */
-	private $helper;
+	private $enable_tooltip;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -61,6 +60,10 @@ class Addonify_Variation_Swatches_Public {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
+		if ( ! is_admin() ) {
+			$this->enable_tooltip = intval( $this->get_db_values( 'enable_tooltip', 1 ) );
+		}
+
 	}
 
 	/**
@@ -69,6 +72,11 @@ class Addonify_Variation_Swatches_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
+
+		if ( $this->enable_tooltip ) {
+			// Tippyjs.
+			wp_enqueue_style( 'tippyjs', plugin_dir_url( __FILE__ ) . 'assets/tippyjs/tippy.css', array(), $this->version );
+		}
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), time(), 'all' );
 
@@ -81,39 +89,50 @@ class Addonify_Variation_Swatches_Public {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Addonify_Variation_Swatches_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Addonify_Variation_Swatches_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		if ( $this->enable_tooltip ) {
+			// Popperjs.
+			wp_enqueue_script( 'popperjs',  plugin_dir_url( __FILE__ ) . 'assets/build/js/popper.min.js', array('jquery'), $this->version );
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), time(), false );
+			// Tippyjs.
+			wp_enqueue_script( 'tippyjs',  plugin_dir_url( __FILE__ ) . 'assets/tippyjs/tippy.umd.min.js', array('jquery'), $this->version );
+		}
+
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), time() );
+
+		$localize_args = array(
+			'ajax_url'       => admin_url( 'admin-ajax.php' ),
+			'enable_tooltip' => $this->enable_tooltip,
+		);
+
+		// localize script
+		wp_localize_script(
+			$this->plugin_name,
+			'addonify_vs_object',
+			$localize_args
+		);
 
 	}
 
 
 	public function filter_dropdown_variation_button_callback( $html, $args ) {
 
-		$attribute_type = 'button';
+		$attribute_type = '';
 
-		$helper = $this->get_helper_class();
-
-		foreach ( $helper->get_all_attributes() as $attr ) {
+		foreach ( $this->get_all_attributes() as $attr ) {
 			if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr ) ) {
 				$attribute_type = $attr['type'];
 				break;
 			}
 		}
 
-		if ( $attribute_type === 'select' ) {
-			$attribute_type = 'button';
+		// If auto dropdown to Button is enabled.
+		$auto_dropdown_to_btn = intval( $this->get_db_values( 'auto_dropdown_to_btn', 1 ) );
+		if ( $auto_dropdown_to_btn ) {
+			if ( $attribute_type === 'select' || empty( $attribute_type ) ) {
+				$attribute_type = 'button';
+			}
 		}
+
 
 		// css class to output in template
 		$css_class =  array( 'addonify-vs-attributes-options', "addonify-vs-attributes-options-{$attribute_type}" );
@@ -132,7 +151,7 @@ class Addonify_Variation_Swatches_Public {
 				}
 				
 				// Data to outout.
-				$data[ $option ] = wp_get_attachment_image_src( $attachment_id )[0];
+				$data[ $option ] = array( wp_get_attachment_image_src( $attachment_id )[0], $term->name );
 				
 			} else {
 
@@ -148,7 +167,7 @@ class Addonify_Variation_Swatches_Public {
 
 		}
 		
-		$html .= $this->get_templates( 
+		$html .= $this->get_public_templates( 
 			"attributes-options-{$attribute_type}",
 			false, 
 			array( 
@@ -170,53 +189,175 @@ class Addonify_Variation_Swatches_Public {
 		return $args;  
 	}
 
-	// Initiate helper class if not already initiated
-	private function get_helper_class() {
-		require_once dirname( __FILE__, 2 ) . '/admin/class-addonify-variation-swatches-admin-helper.php';
+
+	/**
+	 * Generate custom style tag and print it in header of the website
+	 *
+	 * @since    1.0.0
+	 */
+	public function generate_custom_styles_callback(){
+
+		// add attribute options as css class into body tag
+		add_filter( 'body_class', function( $classes ) {
+			$css_classes = array(
+				'addonify-vs-attributes-style-' . $this->get_db_values( 'shape', 'rounded' ),
+				'addonify-vs-disabled-' . $this->get_db_values( 'attribute_behavior', 'blur_with_cross' ),
+			);
+
+			return array_merge( $classes, $css_classes );
+		} );
+
+
+		// CSS for attributes width, height and font size.
+		$style_args = array(
+			'ul.addonify-vs-attributes-options li > *' => array(
+				'width' 	=> array( 'attribute_width', 'px', 30 ),
+				'height' 	=> array( 'attribute_height', 'px', 30 ),
+			),
+
+			'ul.addonify-vs-attributes-options li' => array(
+				'font-size' => array( 'attribute_font_size', 'px', 16 ),
+			),
+			
+		);
+
+		echo "<style id=\"{$this->plugin_name}-attributes-options-styles\"  media=\"screen\"> \n" . $this->generate_styles_markups( $style_args ) . "\n </style>\n";
+
+
+		// do not continue if "Enable Product Comparision" is not checked
+		// do not continue if plugin styles are disabled by user
+		if( ! $this->get_db_values( 'load_styles_from_plugin' ) ) return;
+
+		return;
 		
-		if ( empty( $this->helper ) ) {
-			$this->helper = new Addonify_Variation_Swatches_Admin_Helper( $this->plugin_name, $this->version );
+
+
+		$custom_css = $this->get_db_values('custom_css');
+
+		$style_args = array(
+			'button.addonify-cp-button' => array(
+				'background' 	=> 'compare_btn_bck_color',
+				'color' 		=> 'compare_btn_text_color',
+				'left' 			=> 'compare_products_btn_left_offset',
+				'right' 		=> 'compare_products_btn_right_offset',
+				'top' 			=> 'compare_products_btn_top_offset',
+				'bottom'		=> 'compare_products_btn_bottom_offset'
+			),
+			'#addonify-compare-modal, #addonify-compare-search-modal' => array(
+				'background' 	=> 'modal_overlay_bck_color'
+			),
+			'.addonify-compare-model-inner, .addonify-compare-search-model-inner' => array(
+				'background' 	=> 'modal_bck_color',
+			),
+			'#addonofy-compare-products-table th a' => array(
+				'color'		 	=> 'table_title_color',
+			),
+			'.addonify-compare-all-close-btn svg' => array(
+				'color' 		=> 'close_btn_text_color',
+			),
+			'.addonify-compare-all-close-btn' => array(
+				'background'	=> 'close_btn_bck_color',
+			),
+			'.addonify-compare-all-close-btn:hover svg' => array(
+				'color'		 	=> 'close_btn_text_color_hover',
+			),
+			'.addonify-compare-all-close-btn:hover' => array(
+				'background' 	=> 'close_btn_bck_color_hover',
+			),
+			
+		);
+
+		$custom_styles_output = $this->generate_styles_markups( $style_args );
+
+		// avoid empty style tags
+		if( $custom_styles_output || $custom_css ){
+			echo "<style id=\"addonify-compare-products-styles\"  media=\"screen\"> \n" . $custom_styles_output .  $custom_css . "\n </style>\n";
 		}
 
-		return $this->helper;
-	}
-
-
-	// require proper templates for use in front end
-	private function get_templates( $template_name, $require_once = true, $data=array() ){
-
-		// first look for template in themes/addonify/plugin_name/template-name.php
-		$theme_path = get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/' . $template_name .'.php';
-		$plugin_path = dirname( __FILE__ ) .'/templates/' . $template_name .'.php';
-
-		extract($data);
-
-		if( file_exists( $theme_path ) ){
-			$template_path = $theme_path;
-		}
-		else{
-			$template_path = $plugin_path;
-		}
-
-		if( $require_once ){
-			require_once $template_path;
-		}
-		else{
-			require $template_path;
-		}
 	}
 
 
 	/**
-	* Disable out of stock variations
-	* https://github.com/woocommerce/woocommerce/blob/826af31e1e3b6e8e5fc3c1004cc517c5c5ec25b1/includes/class-wc-product-variation.php
-	* @return Boolean
-	*/
+	 * Get Database values for selected fields
+	 *
+	 * @since    1.0.0
+	 * @param    $field_name    Database Option Name
+	 * @param    $default		Default Value
+	 */
+	protected function get_db_values($field_name, $default = NULL ){
+		return get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name, $default );
+	}
+
+
+	/**
+	 * Disable out of stock variations
+	 *
+	 * @since    1.0.0
+	 * @param    $active    	Active
+	 * @param    $variation		Variation
+	 */
 	function disable_out_of_stock_variations_callback( $active, $variation ) {
 		if ( ! $variation->is_in_stock() ) {
 			return false;
 		}
 		return $active;
+	}
+
+
+	public function show_variation_after_add_to_cart_in_loop_callback(){
+		if ( 'before_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
+			global $product;
+
+			if ( ! $product->is_type( 'variable' ) ) {
+				return;
+			}
+
+			woocommerce_variable_add_to_cart();
+			// $product_id = $product->get_id();
+
+			// $link = array(
+			// 	'url'   => '',
+			// 	'label' => '',
+			// 	'class' => ''
+			// );
+
+			// switch ( $product->get_type() ) {
+			// 	case "variable" :
+			// 		$link['url']    = apply_filters( 'woocommerce_variable_add_to_cart', get_permalink( $product->get_id() ) );
+			// 		$link['label']  = apply_filters( 'variable_add_to_cart_text', __( 'Select options', 'woocommerce' ) );
+			// 		break;
+			// 	case "grouped" :
+			// 		$link['url']    = apply_filters( 'grouped_add_to_cart_url', get_permalink( $product->get_id() ) );
+			// 		$link['label']  = apply_filters( 'grouped_add_to_cart_text', __( 'View options', 'woocommerce' ) );
+			// 			break;
+			// 	case "external" :
+			// 		$link['url']    = apply_filters( 'external_add_to_cart_url', get_permalink( $product->get_id() ) );
+			// 		$link['label']  = apply_filters( 'external_add_to_cart_text', __( 'Read More', 'woocommerce' ) );
+			// 	break;
+			// 	default :
+			// 		if ( $product->is_purchasable() ) {
+			// 			$link['url']    = apply_filters( 'add_to_cart_url', esc_url( $product->add_to_cart_url() ) );
+			// 			$link['label']  = apply_filters( 'add_to_cart_text', __( 'Add to cart', 'woocommerce' ) );
+			// 			$link['class']  = apply_filters( 'add_to_cart_class', 'add_to_cart_button' );
+			// 		} else {
+			// 			$link['url']    = apply_filters( 'not_purchasable_url', get_permalink( $product->get_id() ) );
+			// 			$link['label']  = apply_filters( 'not_purchasable_text', __( 'Read More', 'woocommerce' ) );
+			// 		}
+			// 		break;
+			// }
+			
+			// echo apply_filters( 'woocommerce_loop_add_to_cart_link', sprintf('<a href="%s" rel="nofollow" data-product_id="%s" data-product_sku="%s" class="%s button product_type_%s">%s</a>', esc_url( $link['url'] ), esc_attr( $product->get_id() ), esc_attr( $product->get_sku() ), esc_attr( $link['class'] ), esc_attr( $product->get_type() ), esc_html( $link['label'] ) ), $product, $link );
+
+			// $attributes = $product->get_attributes();
+
+			// foreach ( $attributes as $attr ) {
+
+			// }
+
+			// echo '<pre>';
+			// var_dump( $product->get_attributes() );
+			// echo '</pre>';
+		}
 	}
 
 }

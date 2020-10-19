@@ -100,6 +100,11 @@ class Addonify_Variation_Swatches {
 	private function load_dependencies() {
 
 		/**
+		 * Helper Class
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-addonify-variation-swatches-helper.php';
+
+		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
@@ -121,6 +126,8 @@ class Addonify_Variation_Swatches {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-addonify-variation-swatches-public.php';
+
+		
 
 		$this->loader = new Addonify_Variation_Swatches_Loader();
 
@@ -196,6 +203,26 @@ class Addonify_Variation_Swatches {
 
 		// Disable out of stock variation
 		add_filter( 'woocommerce_variation_is_active', array( $plugin_public, 'disable_out_of_stock_variations_callback' ), 10, 2 );
+
+		// Add custom styles into header.
+		$this->loader->add_action( 'wp_head', $plugin_public, 'generate_custom_styles_callback' );
+
+
+		// Show variation optins after add to cart button in loop.
+		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_after_add_to_cart_in_loop_callback', 20 );
+
+		// Hide "add to cart" button in loop if product type is variation.
+		add_action( 'woocommerce_after_shop_loop_item', 'remove_add_to_cart_buttons', 1 );
+
+		function remove_add_to_cart_buttons() {
+			if( is_product_category() || is_shop()) { 
+				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+			}
+		}
+
+
+		// Show variation optins before add to cart button in loop.
+		// $this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
 
 	}
 
