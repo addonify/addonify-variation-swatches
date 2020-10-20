@@ -212,17 +212,24 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_after_add_to_cart_in_loop_callback', 20 );
 
 		// Hide "add to cart" button in loop if product type is variation.
-		add_action( 'woocommerce_after_shop_loop_item', 'remove_add_to_cart_buttons', 1 );
+		// add_action( 'woocommerce_after_shop_loop_item', 'remove_add_to_cart_buttons', 1 );
 
-		function remove_add_to_cart_buttons() {
-			if( is_product_category() || is_shop()) { 
-				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
-			}
-		}
+		// function remove_add_to_cart_buttons() {
+		// 	if( is_product_category() || is_shop()) { 
+		// 		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+		// 	}
+		// }
 
 
 		// Show variation optins before add to cart button in loop.
 		// $this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
+
+
+		// add_filter( 'woocommerce_loop_add_to_cart_args', function($wp_parse_args , $product){
+		// 	echo '<pre>';
+		// 	var_dump( $wp_parse_args);
+		// 	die;
+		// }, 20, 2 );
 
 	}
 

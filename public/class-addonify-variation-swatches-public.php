@@ -305,6 +305,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 
 	public function show_variation_after_add_to_cart_in_loop_callback(){
+
 		if ( 'before_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
 			global $product;
 
@@ -312,7 +313,13 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				return;
 			}
 
-			woocommerce_variable_add_to_cart();
+
+			$this->get_public_templates( 'archive-variation-template', false, array( 'product' => $product ) );
+
+
+			
+
+			// woocommerce_variable_add_to_cart();
 			// $product_id = $product->get_id();
 
 			// $link = array(
