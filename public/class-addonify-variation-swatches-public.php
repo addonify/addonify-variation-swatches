@@ -304,7 +304,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	}
 
 
-	public function show_variation_after_add_to_cart_in_loop_callback(){
+	public function show_variation_after_add_to_cart_in_loop_callback( $args ){
 
 		if ( 'before_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
 			global $product;
@@ -314,10 +314,31 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			}
 
 
-			$this->get_public_templates( 'archive-variation-template', false, array( 'product' => $product ) );
-
+			if ( $product ) {
+				$defaults = array(
+					'quantity'   => 1,
+					'class'      => 'hide',
+					'attributes' => array(
+						'data-product_id'  => $product->get_id(),
+						'data-product_sku' => $product->get_sku(),
+						'aria-label'       => wp_strip_all_tags( $product->add_to_cart_description() ),
+						'rel'              => 'nofollow',
+					),
+				);
+			}
+			
+			
+			$options = apply_filters( 'addonify_vs_woocommerce_loop_add_to_cart_args', wp_parse_args( $args, $defaults ), $product );
 
 			
+			// $options = $this->wvs_pro_loop_add_to_cart_options( $args );
+			
+			// echo '<pre>';
+			// var_dump( $options );
+			// die;
+
+			$this->get_public_templates( 'archive-variation-template', false, array( 'options' => $options, 'product' => $product ) );
+
 
 			// woocommerce_variable_add_to_cart();
 			// $product_id = $product->get_id();
@@ -366,5 +387,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			// echo '</pre>';
 		}
 	}
+
 
 }

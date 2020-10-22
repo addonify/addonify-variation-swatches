@@ -1,10 +1,27 @@
 <?php
 	defined( 'ABSPATH' ) or die( 'Keep Silent' );
+
+	$all_attributes = $product->get_attributes(); //variations[ 'attributes' ];
+
+	$attributes = array();
 	
-	$attributes = $product->get_attributes(); //$args[ 'options' ][ 'variations' ][ 'attributes' ];
-	
-// 	$attribute_keys       = array_keys( $attributes );
-// 	$available_variations = $args[ 'options' ][ 'variations' ][ 'available_variations' ];
+	foreach ( $all_attributes as $attr_key => $attr ) {
+		
+		foreach ($attr->get_data()['options']  as $term_key => $term_id ) {
+
+			if ( is_numeric( $term_id ) ) {
+				$term = get_term_by( 'id', $term_id, $attr_key );
+				$attributes[ $attr_key ][ $term_key ] = $term->slug;
+			} else {
+				$attributes[ $attr_key ][ $term_key ] = $term_id;
+			}
+
+		}
+	}
+
+
+	// 	$attribute_keys       = array_keys( $attributes );
+	$available_variations = $product->get_available_variations();
 // 	$product              = $args[ 'product' ];
 	
 // 	if ( empty( $available_variations ) && false !== $available_variations ) {
@@ -12,7 +29,7 @@
 // 	}
 	
 // 	$show_clear   = (bool) woo_variation_swatches()->get_option( 'show_clear_on_archive' );
-	$catalog_mode = true; // (bool) woo_variation_swatches()->get_option( 'enable_catalog_mode' );
+	$catalog_mode = false; // (bool) woo_variation_swatches()->get_option( 'enable_catalog_mode' );
 	// $catalog_attribute     = 'attribute_pa_size'; //woo_variation_swatches()->get_option( 'catalog_mode_attribute' );
 	
 //     // Global Catalog Attribute
@@ -43,20 +60,25 @@
 		<?php
 			
 			foreach ( $attributes as $attribute_name => $options ) :
+
+				echo '<pre>';
+				var_dump( $options );
+				die;
 				
 				$selected = '';//isset( $_REQUEST[ 'attribute_' . sanitize_title( $attribute_name ) ] ) ? wc_clean( stripslashes( urldecode( $_REQUEST[ 'attribute_' . sanitize_title( $attribute_name ) ] ) ) ) : $product->get_variation_default_attribute( $attribute_name );
 				
 				if ( $catalog_mode ) {
 
 					// if ( $catalog_attribute == wc_variation_attribute_name($attribute_name) ) {
+					if ( 'pa_size' == $attribute_name ) {
 						echo '<li>';
 						wc_dropdown_variation_attribute_options( array( 'options' => $options, 'attribute' => $attribute_name, 'product' => $product, 'is_archive' => true ) );
 						echo '</li>';
-					// }
+					}
 				} else {
-					// echo '<li>';
-					// wc_dropdown_variation_attribute_options( array( 'options' => $options, 'attribute' => $attribute_name, 'product' => $product, 'selected' => $selected, 'is_archive' => true ) );
-					// echo '</li>';
+					echo '<li>';
+					wc_dropdown_variation_attribute_options( array( 'options' => $options, 'attribute' => $attribute_name, 'product' => $product, 'selected' => $selected, 'is_archive' => true ) );
+					echo '</li>';
 				}
 			endforeach;
 			

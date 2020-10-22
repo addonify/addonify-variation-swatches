@@ -200,6 +200,14 @@ class Addonify_Variation_Swatches {
 
 		// Customize variation dropdown html.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_args', $plugin_public, 'filter_variation_dropdown_html_callback' );
+		
+		// add_filter( 'addonify_vs_woocommerce_loop_add_to_cart_args', function( $wp_parse_args, $product) {
+
+		// 	echo '<pre>';
+		// 	var_dump( $wp_parse_args);
+		// 	die;
+
+		// }, 10, 2 );
 
 		// Disable out of stock variation
 		add_filter( 'woocommerce_variation_is_active', array( $plugin_public, 'disable_out_of_stock_variations_callback' ), 10, 2 );
