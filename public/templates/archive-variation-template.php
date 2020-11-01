@@ -21,7 +21,11 @@
 
 
 	// 	$attribute_keys       = array_keys( $attributes );
-	$available_variations = $product->get_available_variations();
+	// $available_variations = $product->get_available_variations();
+
+	$available_variations = array_values( $product->get_available_variations() );
+
+
 // 	$product              = $args[ 'product' ];
 	
 // 	if ( empty( $available_variations ) && false !== $available_variations ) {
@@ -58,13 +62,17 @@
 <div class="variations_form wvs-archive-variation-wrapper" data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
     <ul class="variations">
 		<?php
+			// echo '<pre>';
+			// var_dump( $attributes );
+			// die;
 			
 			foreach ( $attributes as $attribute_name => $options ) :
 
-				echo '<pre>';
-				var_dump( $options );
-				die;
-				
+				// echo '<pre>';
+				// var_dump( $options );
+				// die;
+
+				// // 
 				$selected = '';//isset( $_REQUEST[ 'attribute_' . sanitize_title( $attribute_name ) ] ) ? wc_clean( stripslashes( urldecode( $_REQUEST[ 'attribute_' . sanitize_title( $attribute_name ) ] ) ) ) : $product->get_variation_default_attribute( $attribute_name );
 				
 				if ( $catalog_mode ) {

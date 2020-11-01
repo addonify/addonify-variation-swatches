@@ -99,6 +99,12 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), time() );
 
+
+		if ( function_exists( 'is_shop' ) && is_product() ) {
+			wp_enqueue_script( 'woocommerce-ajax-add-to-cart', plugin_dir_url(__FILE__) . 'assets/ajax-add-to-cart.js', array('jquery'), '', true );
+		}
+
+
 		$localize_args = array(
 			'ajax_url'       => admin_url( 'admin-ajax.php' ),
 			'enable_tooltip' => $this->enable_tooltip,
