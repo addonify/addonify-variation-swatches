@@ -2,6 +2,19 @@
     display: none !important;
 }
 
+body.archive{
+    table.variations {
+        td.label{
+            display: none;
+        }
+
+        td{
+            background: transparent !important;
+            // padding: 0;
+        }
+    }
+}
+
 body.addonify-vs-attributes-style-rounded{
     ul.addonify-vs-attributes-options{
         li, li > *{
@@ -63,7 +76,6 @@ ul.addonify-vs-attributes-options{
 
         > *{
             margin: 2px !important;
-            // display: inline-block;
         }
     }
 

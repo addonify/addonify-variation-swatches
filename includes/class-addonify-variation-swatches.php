@@ -177,8 +177,7 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'form_submission_notification_callback' );
 
 		// show "type" in "attributes" page in admin
-		$this->loader->add_action( 'product_attributes_type_selector', $plugin_admin, 'product_attributes_types_callback');
-
+		$this->loader->add_filter( 'product_attributes_type_selector', $plugin_admin, 'product_attributes_types_callback');
 	}
 
 	/**
@@ -201,13 +200,6 @@ class Addonify_Variation_Swatches {
 		// Customize variation dropdown html.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_args', $plugin_public, 'filter_variation_dropdown_html_callback' );
 		
-		// add_filter( 'addonify_vs_woocommerce_loop_add_to_cart_args', function( $wp_parse_args, $product) {
-
-		// 	echo '<pre>';
-		// 	var_dump( $wp_parse_args);
-		// 	die;
-
-		// }, 10, 2 );
 
 		// Disable out of stock variation
 		add_filter( 'woocommerce_variation_is_active', array( $plugin_public, 'disable_out_of_stock_variations_callback' ), 10, 2 );
@@ -219,13 +211,50 @@ class Addonify_Variation_Swatches {
 		// Show variation optins after add to cart button in loop.
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_after_add_to_cart_in_loop_callback', 20 );
 
-		// Hide "add to cart" button in loop if product type is variation.
-		// add_action( 'woocommerce_after_shop_loop_item', 'remove_add_to_cart_buttons', 1 );
 
-		// function remove_add_to_cart_buttons() {
-		// 	if( is_product_category() || is_shop()) { 
-		// 		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
-		// 	}
+		// make woocommerce to first look for template file from plugin
+		add_filter( 'woocommerce_locate_template', 'woo_adon_plugin_template', 1, 3 );
+		function woo_adon_plugin_template( $template, $template_name, $template_path ) {
+
+			if( !is_shop() && !is_archive() ) return $template;
+
+			// Removing add to cart button and quantities only.
+			remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
+			
+			global $woocommerce;
+
+			$_template = $template;
+
+			if ( ! $template_path ) 
+				$template_path = $woocommerce->template_url;
+		
+			$plugin_path  = untrailingslashit( plugin_dir_path( __DIR__ ) )  . '/public/templates/woocommerce/';
+		
+			// Look within passed path within the theme - this is priority
+			$template = locate_template(
+				array(
+					$template_path . $template_name,
+					$template_name
+				)
+			);
+
+			if( ! $template && file_exists( $plugin_path . $template_name ) ) {
+				$template = $plugin_path . $template_name;
+			}
+			
+			if ( ! $template ) {
+				$template = $_template;
+			}
+
+			return $template;
+		}
+
+
+		// add_action( 'woocommerce_single_product_summary', 'hide_add_to_cart_button_variable_product', 1, 0 );
+		// function hide_add_to_cart_button_variable_product() {
+
+		// 	// Removing add to cart button and quantities only
+		// 	remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
 		// }
 
 
@@ -233,12 +262,6 @@ class Addonify_Variation_Swatches {
 		// $this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
 
 
-		// add_filter( 'woocommerce_loop_add_to_cart_args', function($wp_parse_args , $product){
-		// 	echo '<pre>';
-		// 	var_dump( $wp_parse_args);
-		// 	die;
-		// }, 20, 2 );
-		
 
 		// show image preview for each variation
 
@@ -285,38 +308,6 @@ class Addonify_Variation_Swatches {
 
 		}, 10, 2 );
 
-		// ajax
-		// add_action('wp_ajax_woocommerce_ajax_add_to_cart', 'woocommerce_ajax_add_to_cart');
-		// add_action('wp_ajax_nopriv_woocommerce_ajax_add_to_cart', 'woocommerce_ajax_add_to_cart');
-
-		// function woocommerce_ajax_add_to_cart() {
-
-        //     $product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id']));
-        //     $quantity = empty($_POST['quantity']) ? 1 : wc_stock_amount($_POST['quantity']);
-        //     $variation_id = absint($_POST['variation_id']);
-        //     $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
-        //     $product_status = get_post_status($product_id);
-
-        //     if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity, $variation_id) && 'publish' === $product_status) {
-
-        //         do_action('woocommerce_ajax_added_to_cart', $product_id);
-
-        //         if ('yes' === get_option('woocommerce_cart_redirect_after_add')) {
-        //             wc_add_to_cart_message(array($product_id => $quantity), true);
-        //         }
-
-        //         WC_AJAX :: get_refreshed_fragments();
-        //     } else {
-
-        //         $data = array(
-        //             'error' => true,
-        //             'product_url' => apply_filters('woocommerce_cart_redirect_after_error', get_permalink($product_id), $product_id));
-
-        //         echo wp_send_json($data);
-        //     }
-
-        //     wp_die();
-        // }
 
 	}
 
