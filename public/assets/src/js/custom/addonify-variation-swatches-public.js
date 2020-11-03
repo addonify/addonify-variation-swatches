@@ -39,7 +39,7 @@
 					var $variation_options = $(this).siblings( '.addonify-vs-attributes-options').first();
 
 					// mark all variation as disabled by default.
-					$variation_options.find('li').addClass('disabled');
+					$variation_options.find('li:not(.addonify-vs-item-more)' ).addClass('disabled');
 
 					$( 'option', this ).each( function(){
 
@@ -54,20 +54,44 @@
 
 			}, 100 );
 
-		})
+			toggle_add_to_cart_buttons_in_archives( this );
 
+		})
 
 
 		function init(){
 
 			// Tooltip.
-			$('.addonify-vs-attributes-options li').each(function(){
+			$('.addonify-vs-attributes-options li[data-title]').each(function(){
 				tippy( this, {
 					content: $(this).data('title'),
 				});
 
 			})
+
 		}
+
+
+		function toggle_add_to_cart_buttons_in_archives( sel ){
+
+			if( ! $('body').hasClass('archive') ) return;
+
+			var $parent = $(sel).parents('table.variations');
+
+			// if all options are checked 
+			// on archive page
+
+			if ( $parent.find('ul.addonify-vs-attributes-options').length == $parent.find('ul.addonify-vs-attributes-options li.selected').length ){
+				$('.product_type_variable.add_to_cart_button').hide();
+				$('.addonify_vs-add_to_cart-button').show();
+			}
+			else{
+				$('.product_type_variable.add_to_cart_button').show();
+				$('.addonify_vs-add_to_cart-button').hide();
+			}
+
+		}
+
 	})
 
 })( jQuery );

@@ -1,10 +1,11 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-global $product;
+global $product, $limit_variations_markup;
 
 // override by our plugin
-$catalog_mode = false;
+$catalog_mode = true;
+$limit_variations_count = 4;
 
 $attribute_keys  = array_keys( $attributes );
 $variations_json = wp_json_encode( $available_variations );
@@ -24,11 +25,31 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
                     <?php if ( $catalog_mode ): // added by our plugin. ?>
 
-                        <?php if ('pa_size' == $attribute_name ): // added by our plugin. ?>
+                        <?php if ('pa_color' == $attribute_name ): // added by our plugin. ?>
+                        
                             <tr>
-                                <td class="label"><label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>"><?php echo wc_attribute_label( $attribute_name ); // WPCS: XSS ok. ?></label></td>
                                 <td class="value">
                                     <?php
+
+                                        if( $limit_variations_count > 0 ){
+                                            $total_variations = count( $options );
+                                            $options = array_slice( $options, 0, $limit_variations_count );
+
+                                            if ( ( $total_variations - $limit_variations_count ) > 0 ){
+
+                                                $limit_variations_markup = '<li class="addonify-vs-item-more"><a href="#">+'. ( $total_variations - $limit_variations_count ) . ' More</a></li>';
+
+                                                // If "limit_variations_count" is enabled.
+                                                // Show "+1 more" link aside attributes.
+                                                add_action( 'addonify_vs_end_of_variation_attributes_list', function(){
+                                                    global $limit_variations_markup;
+                                                    echo $limit_variations_markup;
+                                                } );
+                                            }
+
+
+                                        }
+                                    
                                         wc_dropdown_variation_attribute_options(
                                             array(
                                                 'options'   => $options,
@@ -38,7 +59,6 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
                                             )
                                         );
 
-                                        echo end( $attribute_keys ) === $attribute_name ? wp_kses_post( apply_filters( 'woocommerce_reset_variations_link', '<a class="reset_variations" href="#">' . esc_html__( 'Clear', 'woocommerce' ) . '</a>' ) ) : '';
                                     ?>
                                 </td>
                             </tr>
@@ -60,11 +80,14 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
                                         )
                                     );
 
-                                    echo end( $attribute_keys ) === $attribute_name ? wp_kses_post( apply_filters( 'woocommerce_reset_variations_link', '<a class="reset_variations" href="#">' . esc_html__( 'Clear', 'woocommerce' ) . '</a>' ) ) : '';
-                                ?>
+                                    ?>
                             </td>
                         </tr>
                     <?php endif;?>
+                    
+                    <?php 
+                        echo end( $attribute_keys ) === $attribute_name ? '<tr><td>' . wp_kses_post( apply_filters( 'woocommerce_reset_variations_link', '<a class="reset_variations" href="#">' . esc_html__( 'Clear', 'woocommerce' ) . '</a>' ) ) . '</td></tr>' : ''; 
+                    ?>
 				<?php endforeach; ?>
 			</tbody>
 		</table>

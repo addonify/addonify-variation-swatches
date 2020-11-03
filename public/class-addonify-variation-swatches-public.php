@@ -115,7 +115,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 	}
 
-
+	// markups for our custom variation output
 	public function filter_dropdown_variation_button_callback( $html, $args ) {
 
 		$attribute_type = '';
@@ -141,7 +141,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 		$data = array();
 
-		foreach ( $args['options'] as $option ) {
+		foreach ( $args['options'] as $option_key => $option ) {
 
 			$term = get_term_by( 'slug', $option, $args['attribute'] );
 
@@ -168,6 +168,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			}
 
 		}
+		
 		
 		$html .= $this->get_public_templates( 
 			"attributes-options-{$attribute_type}",
@@ -306,7 +307,8 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	}
 
 
-	public function show_variation_after_add_to_cart_in_loop_callback( $args ) {
+	// this will show custom variation markup after add to cart button
+	public function show_variation_before_add_to_cart_in_loop_callback( $args ) {
 
 		if ( 'before_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
 			global $product;
@@ -315,7 +317,22 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				return;
 			}
 
-			// $this->get_public_templates( 'archive-variation-template', false, array( 'product' => $product ) );
+			// show variation table in shop loop.
+			woocommerce_variable_add_to_cart();
+
+		}
+	}
+
+
+	// this will show custom variation markup after add to cart button
+	public function show_variation_after_add_to_cart_in_loop_callback( $args ) {
+
+		if ( 'after_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
+			global $product;
+
+			if ( ! $product->is_type( 'variable' ) ) {
+				return;
+			}
 
 			// show variation table in shop loop.
 			woocommerce_variable_add_to_cart();

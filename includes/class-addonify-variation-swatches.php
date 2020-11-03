@@ -197,6 +197,7 @@ class Addonify_Variation_Swatches {
 		// Change the contents of default variation select input field.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_html', $plugin_public, 'filter_dropdown_variation_button_callback', 10, 2 );
 
+
 		// Customize variation dropdown html.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_args', $plugin_public, 'filter_variation_dropdown_html_callback' );
 		
@@ -204,15 +205,21 @@ class Addonify_Variation_Swatches {
 		// Disable out of stock variation
 		add_filter( 'woocommerce_variation_is_active', array( $plugin_public, 'disable_out_of_stock_variations_callback' ), 10, 2 );
 
+
 		// Add custom styles into header.
 		$this->loader->add_action( 'wp_head', $plugin_public, 'generate_custom_styles_callback' );
 
+		
+		// Show variation optins before add to cart button in loop.
+		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
 
-		// Show variation optins after add to cart button in loop.
+
+		// Show variation options after add to cart button in loop.
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_after_add_to_cart_in_loop_callback', 20 );
 
 
-		// make woocommerce to first look for template file from plugin
+
+		// make woocommerce to load template file from our plugin.
 		add_filter( 'woocommerce_locate_template', 'woo_adon_plugin_template', 1, 3 );
 		function woo_adon_plugin_template( $template, $template_name, $template_path ) {
 
@@ -249,6 +256,7 @@ class Addonify_Variation_Swatches {
 			return $template;
 		}
 
+		
 
 		// add_action( 'woocommerce_single_product_summary', 'hide_add_to_cart_button_variable_product', 1, 0 );
 		// function hide_add_to_cart_button_variable_product() {
@@ -258,8 +266,6 @@ class Addonify_Variation_Swatches {
 		// }
 
 
-		// Show variation optins before add to cart button in loop.
-		// $this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
 
 
 
@@ -292,7 +298,7 @@ class Addonify_Variation_Swatches {
 		// show add to cart button in shop page.
 		add_filter( 'woocommerce_loop_add_to_cart_link', function( $button, $product ) {
 
-			if ( is_shop() && $product->is_type( 'variable' ) ) {
+			if ( is_archive() && $product->is_type( 'variable' ) ) {
 				$product_id = 71; //$product->get_id();
 				$product_sku = $product->get_sku();
 				$product_url = 'http://localhost/woocommerce/shop/'; //$product->add_to_cart_url();
@@ -301,7 +307,7 @@ class Addonify_Variation_Swatches {
 				$quantity = isset( $args['quantity'] ) ? $args['quantity'] : 1;
 				$text = 'Add to cart';
 
-				$button = '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-variation_id="71" data-product_sku="' . $product_sku . '" class="button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart">' . $text . '</a>';
+				$button .= '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-variation_id="71" data-product_sku="' . $product_sku . '" class="addonify_vs-add_to_cart-button button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart" style="display: none;">' . $text . '</a>';
 			}
 			
 			return $button;
