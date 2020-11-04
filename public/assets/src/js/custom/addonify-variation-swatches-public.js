@@ -3,6 +3,9 @@
 
 	$( document ).ready(function(){
 
+		var variation_data = {};
+		var default_product_images = {};
+
 		init();
 
 		// on attribute option select
@@ -54,8 +57,30 @@
 
 			}, 100 );
 
+			// show hide add to card buttons, if variation selection changes
 			toggle_add_to_cart_buttons_in_archives( this );
 
+			// change thumnbnail of product on variation selection
+			change_variation_thumbnail_in_shop( this );
+
+		})
+
+
+		// reset variation click
+		// revert thumbnail into original state
+		$('.reset_variations').click(function(){
+
+			// continue only if archive page
+			if( ! $('body').hasClass('archive') ) return;
+
+			var $parent = $( this ).parents( 'li.product' );
+			var product_id = $parent.find('form.variations_form').data('product_id');
+			var $product_image_sel = $parent.find('img.attachment-woocommerce_thumbnail');
+
+			// if key  exists in object
+			if ( product_id in default_product_images ) {
+				$product_image_sel.attr('srcset', default_product_images[ product_id ] );
+			}
 		})
 
 
@@ -74,6 +99,7 @@
 
 		function toggle_add_to_cart_buttons_in_archives( sel ){
 
+			// continue only if archive page
 			if( ! $('body').hasClass('archive') ) return;
 
 			var $parent = $(sel).parents('table.variations');
@@ -91,6 +117,79 @@
 			}
 
 		}
+
+
+		function change_variation_thumbnail_in_shop( this_sel ){
+
+			// continue only if archive page
+			if( ! $('body').hasClass('archive') ) return;
+
+			var $parent = $( this_sel ).parents( 'li.product' );
+
+			// get default_product_image
+			var $product_image_sel = $parent.find('img.attachment-woocommerce_thumbnail');
+			var $variation_form = $parent.find('form.variations_form');
+
+			var product_id = $variation_form.data('product_id');
+			
+			// if key does not exists in object
+			if ( ! ( product_id in default_product_images ) ) {
+				default_product_images[ product_id ] = $product_image_sel.attr('srcset');
+			}
+
+
+			var attr_key = [];
+			$parent.find('select.addonify-vs-attributes-options-select').each( function( index, value ){
+
+				if( $(value).val() != undefined && $(value).val().length ){
+					attr_key.push( $(value).val() );
+				}
+			})
+
+			var variation_thumb = get_variation_thumbnail( attr_key.join('_') );
+
+			if( variation_thumb ){
+				$product_image_sel.attr('srcset', variation_thumb);
+			}
+			
+
+		}
+
+		function get_variation_thumbnail( selected_attributes ){
+
+			// continue only if archive page
+			if( ! $('body').hasClass('archive') ) return;
+			
+			if( ! variation_data.length ) {
+				variation_data = $('body.archive form.variations_form').data('product_variations');
+			}
+
+			var return_data = false;
+
+			$.each( variation_data, function(key,value) {
+
+				if( value.attributes !== undefined ){
+
+					var ar_key = [];
+
+					$.each( value.attributes, function( key1, value1 ){
+						ar_key.push( value1 );
+					})
+
+					if( selected_attributes == ar_key.join('_') ){
+						return_data = value.image.srcset;
+						return false;
+					}
+
+				}
+ 
+			});
+			
+			return return_data;
+
+		}
+
+		
 
 	})
 

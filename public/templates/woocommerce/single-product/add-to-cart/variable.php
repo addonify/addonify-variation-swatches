@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 global $product, $limit_variations_markup;
 
 // override by our plugin
-$catalog_mode = true;
+$catalog_mode = false;
 $limit_variations_count = 4;
 
 $attribute_keys  = array_keys( $attributes );
@@ -25,7 +25,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
                     <?php if ( $catalog_mode ): // added by our plugin. ?>
 
-                        <?php if ('pa_color' == $attribute_name ): // added by our plugin. ?>
+                        <?php if ( 'pa_color' == $attribute_name ): // added by our plugin. ?>
                         
                             <tr>
                                 <td class="value">
@@ -46,7 +46,6 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
                                                     echo $limit_variations_markup;
                                                 } );
                                             }
-
 
                                         }
                                     

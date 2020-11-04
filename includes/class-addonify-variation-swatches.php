@@ -210,7 +210,7 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'wp_head', $plugin_public, 'generate_custom_styles_callback' );
 
 		
-		// Show variation optins before add to cart button in loop.
+		// Show variation options before add to cart button in loop.
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
 
 
@@ -220,7 +220,7 @@ class Addonify_Variation_Swatches {
 
 
 		// make woocommerce to load template file from our plugin.
-		add_filter( 'woocommerce_locate_template', 'woo_adon_plugin_template', 1, 3 );
+		add_filter( 'woocommerce_locate_template', 'woo_adon_plugin_template', 10, 3 );
 		function woo_adon_plugin_template( $template, $template_name, $template_path ) {
 
 			if( !is_shop() && !is_archive() ) return $template;
@@ -232,23 +232,29 @@ class Addonify_Variation_Swatches {
 
 			$_template = $template;
 
-			if ( ! $template_path ) 
+			if ( ! $template_path ) {
 				$template_path = $woocommerce->template_url;
+			}
 		
 			$plugin_path  = untrailingslashit( plugin_dir_path( __DIR__ ) )  . '/public/templates/woocommerce/';
 		
-			// Look within passed path within the theme - this is priority
-			$template = locate_template(
-				array(
-					$template_path . $template_name,
-					$template_name
-				)
-			);
+			// first look within our plugin.
+			// then look in theme.
 
-			if( ! $template && file_exists( $plugin_path . $template_name ) ) {
+			if( file_exists( $plugin_path . $template_name ) ) {
 				$template = $plugin_path . $template_name;
 			}
-			
+			else{
+
+				$template = locate_template(
+					array(
+						$template_path . $template_name,
+						$template_name
+					)
+				);
+
+			}
+
 			if ( ! $template ) {
 				$template = $_template;
 			}
@@ -257,44 +263,6 @@ class Addonify_Variation_Swatches {
 		}
 
 		
-
-		// add_action( 'woocommerce_single_product_summary', 'hide_add_to_cart_button_variable_product', 1, 0 );
-		// function hide_add_to_cart_button_variable_product() {
-
-		// 	// Removing add to cart button and quantities only
-		// 	remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
-		// }
-
-
-
-
-
-		// show image preview for each variation
-
-		// add_action( 'woocommerce_after_shop_loop_item', 'loop_display_variation_attribute_and_thumbnail' );
-		// function loop_display_variation_attribute_and_thumbnail() {
-		// 	global $product;
-		// 	if( $product->is_type('variable') ){
-		// 		foreach ( $product->get_visible_children() as $variation_id ){
-		// 			// Get an instance of the WC_Product_Variation object
-		// 			$variation = wc_get_product( $variation_id );
-
-		// 			// Get "color" product attribute term name value
-		// 			$color = $variation->get_attribute('color');
-
-		// 			if( ! empty($color) ){
-		// 				// Display "color" product attribute term name value
-		// 				echo $color;
-
-		// 				// Display the product thumbnail with a defined size. Default is thumbnail
-		// 				echo $variation->get_image();
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-
-		// Remove "Select options" button from (variable) products on the main WooCommerce shop page.
 		// show add to cart button in shop page.
 		add_filter( 'woocommerce_loop_add_to_cart_link', function( $button, $product ) {
 
