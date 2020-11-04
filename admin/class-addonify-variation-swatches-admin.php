@@ -665,12 +665,14 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function product_attributes_types_callback( $selector ) {
 
-		
+		if ( isset( $_GET['page'] ) && 'product_attributes' == $_GET['page'] ) {
+			
+			foreach ( $this->available_attributes_types() as $key => $options ) {
+				$selector[ $key ] = $options['title'];
+			}
 
-		foreach ( $this->available_attributes_types() as $key => $options ) {
-			$selector[ $key ] = $options['title'];
 		}
-
+		
 		return $selector;
 	}
 

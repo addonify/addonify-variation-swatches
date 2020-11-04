@@ -2,6 +2,19 @@
     display: none !important;
 }
 
+body.archive{
+    table.variations {
+        td.label{
+            display: none;
+        }
+
+        td{
+            background: transparent !important;
+            // padding: 0;
+        }
+    }
+}
+
 body.addonify-vs-attributes-style-rounded{
     ul.addonify-vs-attributes-options{
         li, li > *{
@@ -63,7 +76,6 @@ ul.addonify-vs-attributes-options{
 
         > *{
             margin: 2px !important;
-            // display: inline-block;
         }
     }
 
@@ -114,4 +126,12 @@ ul.addonify-vs-attributes-options-image{
         cursor: pointer;
     }
 
+}
+
+// view more attribute list item
+li.addonify-vs-item-more{
+    border-radius: 0 !important;
+    border: 0 !important;
+    height: 30px !important;
+    font-size: 1em !important;
 }
