@@ -96,11 +96,14 @@
 
 		}
 
-
+		// toggle between "add to cart" button and "select options" button if attributes is selected
 		function toggle_add_to_cart_buttons_in_archives( sel ){
 
 			// continue only if archive page
 			if( ! $('body').hasClass('archive') ) return;
+
+			// conitinue if, "show_single_attribute" is not enabled
+			if( addonify_vs_object.show_single_attribute ) return;
 
 			var $parent = $(sel).parents('table.variations');
 

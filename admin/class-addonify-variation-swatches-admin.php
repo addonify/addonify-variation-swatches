@@ -258,19 +258,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						),
 					),
 				),
-				// array(
-				// 	'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_image_width',
-				// 	'field_label'         => __( 'Tooltip image width', 'addonify-variation-swatches' ),
-				// 	'field_callback'      => array( $this, 'text_box' ),
-				// 	'field_callback_args' => array(
-				// 		array(
-				// 			'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'tooltip_image_width',
-				// 			'default'   => 100,
-				// 			'end_label' => __( 'px', 'addonify-variation-swatches' ),
-				// 			'css_class' => 'number',
-				// 		),
-				// 	),
-				// ),
+				
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'auto_dropdown_to_btn',
 					'field_label'         => __( 'Auto Dropdowns to Button', 'addonify-variation-swatches' ),
@@ -312,17 +300,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						),
 					),
 				),
-				// array(
-				// 	'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
-				// 	'field_label'         => __( 'Attribute image size', 'addonify-variation-swatches' ),
-				// 	'field_callback'      => array( $this, 'select' ),
-				// 	'field_callback_args' => array(
-				// 		array(
-				// 			'name'     => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_image_size',
-				// 			'options'  => $this->list_thumbnail_sizes(),
-				// 		),
-				// 	),
-				// ),
+			
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'attribute_width',
 					'field_label'         => __( 'Attribute width', 'addonify-variation-swatches' ),
@@ -386,6 +364,29 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'show_on_archives',
+						),
+					),
+				),
+				array(
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_show_single_attribute',
+					'field_label'         => __( 'Show Single Attribute', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'toggle_switch' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_show_single_attribute',
+						),
+					),
+				),
+				
+				array(
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_visible_attributes',
+					'field_label'         => __( 'Visible Attributes', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'select' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_visible_attributes',
+							'options'   => $this->get_all_attributes_dropdown(),
+							'end_label' => __( 'Only this attribute will be visible.', 'addonify-variation-swatches' ),
 						),
 					),
 				),
@@ -458,11 +459,20 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						),
 					),
 				),
+				
+				
 				array(
-					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'visible_attributes',
-					'field_label'         => __( 'Visible Attributes', 'addonify-variation-swatches' ),
-					'field_callback'      => array( $this, 'checkbox_group' ),
-					'field_callback_args' => $this->get_all_attributes(),
+					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attributes_limit',
+					'field_label'         => __( 'Attribute display limit', 'addonify-variation-swatches' ),
+					'field_callback'      => array( $this, 'text_box' ),
+					'field_callback_args' => array(
+						array(
+							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attributes_limit',
+							'default'   => 0,
+							'end_label' => __( 'Single attribute display limit. Default is 0. Means no limit.', 'addonify-variation-swatches' ),
+							'css_class' => 'number',
+						),
+					),
 				),
 			),
 		);
@@ -505,14 +515,14 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		// ---------------------------------------------
 
 		$settings_args = array(
-			'settings_group_name' => 'variation_swatches_settings',
+			'settings_group_name' => 'variation_swatches_styles',
 			'section_id'          => 'content_color_options',
 			'section_label'       => __( 'Content Colors', 'addonify-variation-swatches' ),
 			'section_callback'    => '',
 			'screen'              => $this->settings_page_slug . '-content-colors',
 			'fields'				=> array(
 				array(
-					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'variation_swatches_btn_colors',
+					'field_id'				=> ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'variation_swatches_colors',
 					'field_label'			=> __('Tooltip', 'addonify-variation-swatches'),
 					'field_callback'		=> array( $this, "color_picker_group"),
 					'field_callback_args'	=> array( 
@@ -684,8 +694,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	private function register_action_for_custom_term_fields() {
 
-		
-
 		foreach ( $this->get_all_attributes() as $attr ) {
 
 			$term_name = 'pa_' . $attr['name'];
@@ -731,8 +739,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 * @param boolean $is_edit_form Is this edit form or not.
 	 */
 	private function term_show_custom_form_fields( $is_edit_form = false ) {
-
-		
 
 		$attribute_type = '';
 		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
@@ -826,8 +832,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function custom_column_heading_for_attributes( $columns ) {
 
-		
-
 		if ( ! isset( $_GET['taxonomy'] ) ) {
 			return;
 		}
@@ -869,6 +873,18 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	public function my_custom_taxonomy_columns_content( $content, $column_name, $term_id ) {
 		
 		return $this->get_attr_type_preview_for_term( $column_name, $term_id );
+	}
+
+
+
+	// get all attributes to show in select dropdown
+	private function get_all_attributes_dropdown(){
+		$return_data = array();
+		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
+			$return_data[ $attr->attribute_name ] = $attr->attribute_label;
+		}
+
+		return $return_data;
 	}
 	
 }

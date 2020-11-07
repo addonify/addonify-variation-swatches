@@ -28,7 +28,7 @@
             <form method="POST" action="options.php">
             
                 <!-- generate nonce -->
-                <?php settings_fields("wishlist_settings"); ?>
+                <?php settings_fields("variation_swatches_settings"); ?>
 
                 <div class="addonify-content">
                     <!-- display form fields -->
@@ -53,7 +53,7 @@
             <form method="POST" action="options.php">
             
                 <!-- generate nonce -->
-                <?php settings_fields("wishlist_styles"); ?>
+                <?php settings_fields("variation_swatches_styles"); ?>
 
                 <div id="addonify-styles-container" class="addonify-content">
 
