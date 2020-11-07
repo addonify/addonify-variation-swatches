@@ -3,9 +3,11 @@ defined( 'ABSPATH' ) || exit;
 
 global $product, $limit_variations_markup;
 
-// override by our plugin
-$catalog_mode = false;
-$limit_variations_count = 4;
+// override by addonify-variation-swatches
+$catalog_mode           = intval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_show_single_attribute', 1 ) );
+$limit_variations_count = intval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attributes_limit', 0 ) );
+$selected_attribute     = 'pa_' . strval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_visible_attributes' ) );
+// override end
 
 $attribute_keys  = array_keys( $attributes );
 $variations_json = wp_json_encode( $available_variations );
@@ -23,9 +25,9 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 			<tbody>
 				<?php foreach ( $attributes as $attribute_name => $options ) : ?>
 
-                    <?php if ( $catalog_mode ): // added by our plugin. ?>
+                    <?php if ( $catalog_mode ): // added by addonify-variation-swatches. ?>
 
-                        <?php if ( 'pa_color' == $attribute_name ): // added by our plugin. ?>
+                        <?php if ( $selected_attribute == $attribute_name ): // added by addonify-variation-swatches. ?>
                         
                             <tr>
                                 <td class="value">
@@ -37,7 +39,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
                                             if ( ( $total_variations - $limit_variations_count ) > 0 ){
 
-                                                $limit_variations_markup = '<li class="addonify-vs-item-more"><a href="#">+'. ( $total_variations - $limit_variations_count ) . ' More</a></li>';
+                                                $limit_variations_markup = '<li class="addonify-vs-item-more"><a href="' . get_permalink( $product->get_id() ) . '">+'. ( $total_variations - $limit_variations_count ) . ' More</a></li>';
 
                                                 // If "limit_variations_count" is enabled.
                                                 // Show "+1 more" link aside attributes.
@@ -48,7 +50,8 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
                                             }
 
                                         }
-                                    
+                                        
+                                        // output markup
                                         wc_dropdown_variation_attribute_options(
                                             array(
                                                 'options'   => $options,
@@ -79,7 +82,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
                                         )
                                     );
 
-                                    ?>
+                                ?>
                             </td>
                         </tr>
                     <?php endif;?>

@@ -523,7 +523,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * @param int    $term_id Taxonomy term id.
 	 */
 	public function wp_media_select( $name, $term_id ) {
-		$default_img   = plugin_dir_url( __FILE__ ) . '/images/placeholder.png';
+		$default_img   = ADDONIFY_VARIATION_SWATCHES_ROOT_PATH . '/admin/images/placeholder.png';
 		$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
 		$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 

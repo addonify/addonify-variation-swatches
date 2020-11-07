@@ -34,6 +34,7 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'ADDONIFY_VARIATION_SWATCHES_VERSION', '1.0.0' );
 define( 'ADDONIFY_VARIATION_SWATCHES_DB_INITIALS', 'addonify_variation_swatches_' );
+define( 'ADDONIFY_VARIATION_SWATCHES_ROOT_PATH', plugin_dir_url( __FILE__ ) );
 
 /**
  * The code that runs during plugin activation.

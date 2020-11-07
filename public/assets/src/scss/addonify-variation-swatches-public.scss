@@ -53,16 +53,32 @@ body.addonify-vs-disabled-blur_with_cross{
 
 body.addonify-vs-disabled-blur_without_cross{
     ul.addonify-vs-attributes-options li.disabled{
-        background: rgba(255, 255, 255, 0.5);
+        // background: rgba(255, 255, 255, 0.5);
+        opacity: 0.5;
         
     }
 }
 
 body.addonify-vs-disabled-hide{
     ul.addonify-vs-attributes-options li.disabled{
-        display: none;
+        display: none !important;
     }
 }
+
+
+body.addonify-vs-archive-align-right {
+    ul.addonify-vs-attributes-options {
+        text-align: right !important;
+    }
+}
+
+
+body.addonify-vs-archive-align-center {
+    ul.addonify-vs-attributes-options {
+        text-align: center !important;
+    }
+}
+
 
 ul.addonify-vs-attributes-options{
     list-style: none;
@@ -70,7 +86,7 @@ ul.addonify-vs-attributes-options{
     padding: 0;
 
     li{
-        display: inline-block;
+        display: inline-block !important;
         border: 1px solid #b7b7b7;
         overflow: hidden;
 
@@ -122,7 +138,7 @@ ul.addonify-vs-attributes-options-circle{
 
 ul.addonify-vs-attributes-options-image{
     li{
-        display: inline-block;
+        display: inline-block !important;
         cursor: pointer;
     }
 
@@ -134,4 +150,5 @@ li.addonify-vs-item-more{
     border: 0 !important;
     height: 30px !important;
     font-size: 1em !important;
+    background: none !important;
 }

@@ -9,7 +9,13 @@
 		}
 
 
-		// wp media uploader
+		// initiate wp color picker
+		if( $('.color-picker').length ){
+			$('.color-picker').wpColorPicker();
+		}
+
+
+		// wp media uploader ----------
 		var wp_media_obj;
  
 		$('.addonify-vs_select_image_button').click(function(e) {
@@ -56,77 +62,76 @@
 			$('.image-preview img').attr('src', placeholder_img);
 		})
 
-		// end wp media uploader
+		// end wp media uploader -----------
 
 
-		// var $require_login_btn = $('#addonify_wishlist_require_login');
-		// var $redirect_to_login_btn = $('#addonify_wishlist_redirect_to_login');
 
-		// auto diable "redirect to login" if "require login" is disabled
-		// $('body').delegate( '#addonify_wishlist_require_login', 'lcs-off', function() {
-		// 	$redirect_to_login_btn.lcs_off();
-		// });
+		// Toggle single selection optinos
+		var $show_single_atribute_option = $('#addonify_variation_swatches_archive_show_single_attribute');
+		var $single_option_selection_option = $('#addonify_variation_swatches_archive_visible_attributes').parents( 'tr' );
 
-		// $('body').delegate( '#addonify_wishlist_redirect_to_login', 'lcs-on', function() {
+		$('body').delegate('#addonify_variation_swatches_archive_show_single_attribute', 'lcs-statuschange', function() {
+			toggle_single_option_selection_option();
+		});
 
-		// 	if( ! $require_login_btn.is(':checked') ){
-		// 		setTimeout( function(){
-		// 			$redirect_to_login_btn.lcs_off();
-		// 		}, 400 );
-		// 	}
+		toggle_single_option_selection_option();
 
+		function toggle_single_option_selection_option() {
 
-		// });
+			let state = $show_single_atribute_option.is(":checked") 
 
+			if( state ){
+				$single_option_selection_option.fadeIn();
+			}
+			else{
+				$single_option_selection_option.fadeOut();
+			}
 
-		// initiate wp color picker
-
-		if( $('.color-picker').length ){
-			$('.color-picker').wpColorPicker();
 		}
+		
 
 
 		// code editor
-		// if( $('#addonify_wishlist_custom_css').length ) {
-		// 	var editorSettings = wp.codeEditor.defaultSettings ? _.clone( wp.codeEditor.defaultSettings ) : {};
-		// 	editorSettings.codemirror = _.extend(
-		// 		{},
-		// 		editorSettings.codemirror,
-		// 		{
-		// 			indentUnit: 2,
-		// 			tabSize: 2
-		// 		}
-		// 	);
-		// 	var editor = wp.codeEditor.initialize( $('#addonify_wishlist_custom_css'), editorSettings );
-		// }
+		if( $('#addonify_variation_swatches_custom_css').length ) {
+			var editorSettings = wp.codeEditor.defaultSettings ? _.clone( wp.codeEditor.defaultSettings ) : {};
+			editorSettings.codemirror = _.extend(
+				{},
+				editorSettings.codemirror,
+				{
+					indentUnit: 2,
+					tabSize: 2
+				}
+			);
+			var editor = wp.codeEditor.initialize( $('#addonify_variation_swatches_custom_css'), editorSettings );
+		}
 
 
 
 		// show hide content colors ------------------------------
 
-		// let $style_options_sel = $('#addonify_wishlist_load_styles_from_plugin');
-		// let $content_colors_sel = $('#addonify-content-colors-container');
+		let $style_options_sel = $('#addonify_variation_swatches_load_styles_from_plugin');
+		let $content_colors_sel = $('#addonify-content-colors-container');
 
-		// // self activate
-		// show_hide_content_colors();
+		// self activate
+		show_hide_content_colors();
 
-		// // detect state change
-		// $('body').delegate('#addonify_wishlist_load_styles_from_plugin', 'lcs-statuschange', function() {
-		// 	show_hide_content_colors();
-		// });
+		// detect state change
+		$('body').delegate('#addonify_variation_swatches_load_styles_from_plugin', 'lcs-statuschange', function() {
+			show_hide_content_colors();
+		});
 
 		
-		// function show_hide_content_colors(){
+		function show_hide_content_colors(){
 
-		// 	let state = $style_options_sel.is(":checked") 
+			let state = $style_options_sel.is(":checked") 
 
-		// 	if( state ){
-		// 		$content_colors_sel.slideDown();
-		// 	}
-		// 	else{
-		// 		$content_colors_sel.slideUp();
-		// 	}
-		// }
+			if( state ){
+				$content_colors_sel.slideDown();
+			}
+			else{
+				$content_colors_sel.slideUp();
+			}
+		}
 	
 	})
 

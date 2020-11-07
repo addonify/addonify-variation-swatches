@@ -49,6 +49,33 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	private $enable_tooltip;
 
 	/**
+	 * Show in archive ?
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $show_in_archive    Show in archive or shop page ?
+	 */
+	private $show_in_archive;
+
+	/**
+	 * Show single attribute ?
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $show_single_attribute    Show single attribute ?
+	 */
+	private $show_single_attribute;
+
+	/**
+	 * Display position of variation in shop or archives
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $display_position_in_shop    Variation display position
+	 */
+	 private $display_position_in_shop;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -61,7 +88,10 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$this->version = $version;
 
 		if ( ! is_admin() ) {
-			$this->enable_tooltip = intval( $this->get_db_values( 'enable_tooltip', 1 ) );
+			$this->enable_tooltip           = intval( $this->get_db_values( 'enable_tooltip', 1 ) );
+			$this->show_in_archive          = intval( $this->get_db_values( 'show_on_archives', 1 ) );
+			$this->show_single_attribute    = intval( $this->get_db_values( 'archive_show_single_attribute', 1 ) );
+			$this->display_position_in_shop = strval( $this->get_db_values( 'display_position', 'before_add_to_cart' ) );
 		}
 
 	}
@@ -102,8 +132,9 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 
 		$localize_args = array(
-			'ajax_url'       => admin_url( 'admin-ajax.php' ),
-			'enable_tooltip' => $this->enable_tooltip,
+			'ajax_url'       		=> admin_url( 'admin-ajax.php' ),
+			'enable_tooltip' 		=> $this->enable_tooltip,
+			'show_single_attribute' => $this->show_single_attribute,
 		);
 
 		// localize script
@@ -116,7 +147,15 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	}
 
 	// markups for our custom variation output
-	public function filter_dropdown_variation_button_callback( $html, $args ) {
+	public function filter_dropdown_variation_attributes_contents( $html, $args ) {
+
+		if( is_archive() || is_shop() ){
+
+			// if "Show on archives" options is activated
+			if ( 1 !== intval( $this->get_db_values( 'show_on_archives', 1 ) ) ) {
+				return $html;
+			}
+		}
 
 		$attribute_type = '';
 
@@ -182,12 +221,11 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		return $html;
 	}
 
+
 	// Filter markups of main variation dropdown field.
 	public function filter_variation_dropdown_html_callback( $args ) {
 
-		// if ( is_product() ) {
-			$args['class'] = 'hide hidden addonify-vs-attributes-options-select';
-		// }
+		$args['class'] = 'hide hidden addonify-vs-attributes-options-select';
 
 		return $args;  
 	}
@@ -213,6 +251,19 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 		// CSS for attributes width, height and font size.
 		$style_args = array(
+
+			// tooltip.
+			'.tippy-box' => array(
+				'background-color' 	=> 'tooltip_bck_color',
+				'color' 			=> 'tooltip_text_color',
+			),
+			'.tippy-box > .tippy-arrow::before' => array(
+				'border-top-color' 	=> array( 'tooltip_bck_color', ' !important'),
+			),
+			'.tippy-box > .tippy-svg-arrow' => array(
+				'fill' 	=> 'tooltip_bck_color',
+			),
+
 			'ul.addonify-vs-attributes-options li > *' => array(
 				'width' 	=> array( 'attribute_width', 'px', 30 ),
 				'height' 	=> array( 'attribute_height', 'px', 30 ),
@@ -226,46 +277,58 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 		echo "<style id=\"{$this->plugin_name}-attributes-options-styles\"  media=\"screen\"> \n" . $this->generate_styles_markups( $style_args ) . "\n </style>\n";
 
+		
+		// CSS for archive or shop page
+		if ( $this->show_in_archive && ( is_shop() || is_archive() ) ) {
 
-		// do not continue if "Enable Product Comparision" is not checked
+			// add attribute options as css class into body tag
+			add_filter( 'body_class', function( $classes ) {
+
+				$css_classes = array(
+					'addonify-vs-archive-align-' . $this->get_db_values( 'swatches_align', 'left' ),
+				);
+
+				return array_merge( $classes, $css_classes );
+
+			} );
+
+			// css styles
+			$style_args = array(
+				'body.archive ul.addonify-vs-attributes-options li > *' => array(
+					'width' 	=> array( 'archive_attribute_width', 'px', 30 ),
+					'height' 	=> array( 'archive_attribute_height', 'px', 30 ),
+				),
+
+				'body.archive ul.addonify-vs-attributes-options li' => array(
+					'font-size' => array( 'archive_attribute_font_size', 'px', 16 ),
+				),
+				
+			);
+
+			echo "<style id=\"{$this->plugin_name}-attributes-options-styles\"  media=\"screen\"> \n" . $this->generate_styles_markups( $style_args ) . "\n </style>\n";
+		}
+
+
 		// do not continue if plugin styles are disabled by user
 		if( ! $this->get_db_values( 'load_styles_from_plugin' ) ) return;
 
-		return;
-		
 
-
-		$custom_css = $this->get_db_values('custom_css');
+		$custom_css = $this->get_db_values( 'custom_css' );
 
 		$style_args = array(
-			'button.addonify-cp-button' => array(
-				'background' 	=> 'compare_btn_bck_color',
-				'color' 		=> 'compare_btn_text_color',
-				'left' 			=> 'compare_products_btn_left_offset',
-				'right' 		=> 'compare_products_btn_right_offset',
-				'top' 			=> 'compare_products_btn_top_offset',
-				'bottom'		=> 'compare_products_btn_bottom_offset'
+			'ul.addonify-vs-attributes-options li' => array(
+				'color' 			=> 'item_text_color',
+				'background-color'	=> 'item_bck_color',
 			),
-			'#addonify-compare-modal, #addonify-compare-search-modal' => array(
-				'background' 	=> 'modal_overlay_bck_color'
+			'ul.addonify-vs-attributes-options li:hover' => array(
+				'color' 			=> 'item_text_color_hover',
+				'background-color'	=> 'item_bck_color_hover',
 			),
-			'.addonify-compare-model-inner, .addonify-compare-search-model-inner' => array(
-				'background' 	=> 'modal_bck_color',
-			),
-			'#addonofy-compare-products-table th a' => array(
-				'color'		 	=> 'table_title_color',
-			),
-			'.addonify-compare-all-close-btn svg' => array(
-				'color' 		=> 'close_btn_text_color',
-			),
-			'.addonify-compare-all-close-btn' => array(
-				'background'	=> 'close_btn_bck_color',
-			),
-			'.addonify-compare-all-close-btn:hover svg' => array(
-				'color'		 	=> 'close_btn_text_color_hover',
-			),
-			'.addonify-compare-all-close-btn:hover' => array(
-				'background' 	=> 'close_btn_bck_color_hover',
+			'ul.addonify-vs-attributes-options li.selected' => array(
+				'color' 			=> 'selected_item_text_color',
+				'background-color'	=> 'selected_item_bck_color',
+				'border-color'		=> 'selected_item_border_color',
+				'border-width'		=> array( 'selected_item_border_width', 'px' ),
 			),
 			
 		);
@@ -277,18 +340,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			echo "<style id=\"addonify-compare-products-styles\"  media=\"screen\"> \n" . $custom_styles_output .  $custom_css . "\n </style>\n";
 		}
 
-	}
-
-
-	/**
-	 * Get Database values for selected fields
-	 *
-	 * @since    1.0.0
-	 * @param    $field_name    Database Option Name
-	 * @param    $default		Default Value
-	 */
-	protected function get_db_values($field_name, $default = NULL ){
-		return get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name, $default );
 	}
 
 
@@ -310,35 +361,137 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	// this will show custom variation markup after add to cart button
 	public function show_variation_before_add_to_cart_in_loop_callback( $args ) {
 
-		if ( 'before_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
+		if ( 'before_add_to_cart' === $this->display_position_in_shop ) {
 			global $product;
 
 			if ( ! $product->is_type( 'variable' ) ) {
 				return;
 			}
 
-			// show variation table in shop loop.
-			woocommerce_variable_add_to_cart();
+
+			if( is_archive() || is_shop() ){
+
+				// if "Show on archives" options is activated
+				if ( 1 === $this->show_in_archive ) {
+					// show variation table in shop loop.
+					woocommerce_variable_add_to_cart();
+				}
+			}
 
 		}
 	}
 
 
-	// this will show custom variation markup after add to cart button
+	// this will show custom variation markup after add to cart button in shop page
 	public function show_variation_after_add_to_cart_in_loop_callback( $args ) {
 
-		if ( 'after_add_to_cart' === $this->get_db_values( 'display_position', 'before_add_to_cart' ) ) {
+		if ( 'after_add_to_cart' === $this->display_position_in_shop ) {
 			global $product;
 
 			if ( ! $product->is_type( 'variable' ) ) {
 				return;
 			}
 
-			// show variation table in shop loop.
-			woocommerce_variable_add_to_cart();
+
+			if( is_archive() || is_shop() ){
+
+				// if "Show on archives" options is activated
+				if ( 1 === $this->show_in_archive ) {
+					// show variation table in shop loop.
+					woocommerce_variable_add_to_cart();
+				}
+			}
+
 
 		}
 	}
+
+	// override woocommerce template
+	public function override_woo_template( $template, $template_name, $template_path ) {
+
+		// if "Show on archives" options is activated
+		if ( 1 !== $this->show_in_archive ) {
+			return $template;
+		}
+
+
+		if( !is_shop() && !is_archive() ) return $template;
+
+		// Removing add to cart button and quantities only.
+		remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
+		
+		global $woocommerce;
+
+		$_template = $template;
+
+		if ( ! $template_path ) {
+			$template_path = $woocommerce->template_url;
+		}
+	
+		$plugin_path  = untrailingslashit( plugin_dir_path( __DIR__ ) )  . '/public/templates/woocommerce/';
+	
+		// first look within our plugin.
+		// then look in theme.
+
+		if( file_exists( $plugin_path . $template_name ) ) {
+			$template = $plugin_path . $template_name;
+		}
+		else{
+
+			$template = locate_template(
+				array(
+					$template_path . $template_name,
+					$template_name
+				)
+			);
+
+		}
+
+		if ( ! $template ) {
+			$template = $_template;
+		}
+
+		return $template;
+	}
+
+
+	public function show_add_to_cart_btn_in_shop_page( $button, $product ) {
+
+		if ( 1 !== $this->show_in_archive ) {
+			return $button;
+		}
+
+		if ( is_archive() && $product->is_type( 'variable' ) ) {
+
+			$product_id = $product->get_id();
+			$product_sku = $product->get_sku();
+			$product_url = wc_get_page_permalink( 'shop' );
+			$product_url = add_query_arg( 'add-to-cart', $product_id, $product_url );
+
+			$quantity = isset( $args['quantity'] ) ? $args['quantity'] : 1;
+			$text = __( 'Add to cart', 'addonify-variation-swatches' );
+			
+			$button .= '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-variation_id="71" data-product_sku="' . $product_sku . '" class="addonify_vs-add_to_cart-button button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart" style="display: none;">' . $text . '</a>';
+			
+		}
+		
+		return $button;
+
+	}
+
+
+
+	/**
+	 * Get Database values for selected fields
+	 *
+	 * @since    1.0.0
+	 * @param    $field_name    Database Option Name
+	 * @param    $default		Default Value
+	 */
+	protected function get_db_values($field_name, $default = NULL ){
+		return get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name, $default );
+	}
+
 
 
 }
