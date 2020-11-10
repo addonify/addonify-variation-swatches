@@ -135,7 +135,6 @@ class Addonify_Variation_Swatches_Helper {
 					'type'  => $attr->attribute_type,
 				);
 			}
-			
 		}
 		return $this->all_attributes;
 	}
@@ -193,10 +192,7 @@ class Addonify_Variation_Swatches_Helper {
 		}
 
 		$input_field_markups = ob_get_clean();
-
 		// end ob buffer.
-
-		
 		// get templates for showing form elements.
 		require dirname( __FILE__, 2 ) . '/admin/templates/taxonomy-form-markups.php';
 
@@ -244,7 +240,7 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
 
-		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? strval( wp_unslash( $_GET['taxonomy'] ) ) : false;
+		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) : false;
 
 		if ( ! $cur_taxonomy ) {
 			return;
@@ -267,16 +263,16 @@ class Addonify_Variation_Swatches_Helper {
 			if ( 'color' === $attribute_type ) {
 				return sprintf(
 					'<div class="addonify-vs-color-preview" style="background-color:%1$s; border: solid 1px #ccc; width: 35px; height: 35px;" ></div>',
-					get_option( "{$this->plugin_name}_attr_color_{$term_id}" )
+					get_option( " {$this->plugin_name}_attr_color_ {$term_id}" )
 				);
 			} elseif ( 'image' === $attribute_type ) {
 
-				$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
+				$attachment_id = get_option( " {$this->plugin_name}_attr_image_ {$term_id}" );
 				$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 
 				return sprintf(
 					'<div class="addonify-vs-image-preview" ><img src="%2$s" width="35" height="35" ></div>',
-					get_option( "{$this->plugin_name}_attr_color_{$term_id}" ),
+					get_option( " {$this->plugin_name}_attr_color_ {$term_id}" ),
 					$img_url
 				);
 			}
@@ -288,64 +284,69 @@ class Addonify_Variation_Swatches_Helper {
 	/**
 	 * Generate style markups
 	 *
-	 * @since    1.0.0
-	 * @param    $style_args    Style args to be processed
+	 * @since 1.0.0
+	 * @param string $style_args    Style args to be processed.
 	 */
-	protected function generate_styles_markups( $style_args ){
+	protected function generate_styles_markups( $style_args ) {
 		$custom_styles_output = '';
-		foreach($style_args as $css_sel => $property_value){
+		foreach ( $style_args as $css_sel => $property_value ) {
 
 			$properties = '';
 
-			foreach( $property_value as $property => $db_field){
+			foreach ( $property_value as $property => $db_field ) {
 
 				$css_unit = '';
 
-				if( is_array($db_field) ){
+				if ( is_array( $db_field ) ) {
 					$default  = isset( $db_field[2] ) ? $db_field[2] : '';
 					$db_value = $this->get_db_values( $db_field[0], $default );
 					$css_unit = isset( $db_field[1] ) ? $db_field[1] : '';
-				}
-				else{
+				} else {
 					$db_value = $this->get_db_values( $db_field );
 				}
-					
-				if( $db_value ){
-					$properties .=  $property . ': ' . $db_value . $css_unit . '; ';
+
+				if ( $db_value ) {
+					$properties .= $property . ': ' . $db_value . $css_unit . '; ';
 				}
-
-			}
-			
-			if( $properties ){
-				$custom_styles_output .= $css_sel . '{' . $properties . '}';
 			}
 
+			if ( $properties ) {
+				$custom_styles_output .= $css_sel . ' {' . $properties . '}';
+			}
 		}
 
 		return $custom_styles_output;
 	}
 
 
-	// require proper templates for use in front end
-	protected function get_public_templates( $template_name, $require_once = true, $data=array() ){
+	/**
+	 * Require proper templates for use in front end.
+	 *
+	 * @since 1.0.0
+	 * @param string $template_name Name of the template.
+	 * @param string $require_once Require once or not?.
+	 * @param string $data Additional data to pass into template.
+	 */
+	protected function get_public_templates( $template_name, $require_once = true, $data = array() ) {
 
-		// first look for template in themes/addonify/plugin_name/template-name.php
-		$theme_path = get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/' . $template_name .'.php';
-		$plugin_path = dirname( __FILE__, 2 ) .'/public/templates/' . $template_name .'.php';
+		// First look for template in themes/addonify/plugin_name/template-name.php.
+		$theme_path = get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/' . $template_name . '.php';
+		$plugin_path = dirname( __FILE__, 2 ) . '/public/templates/' . $template_name . '.php';
 
-		extract($data);
-
-		if( file_exists( $theme_path ) ){
-			$template_path = $theme_path;
+		// Extract keys from array to separate local variables.
+		foreach ( $data as $data_key => $data_val ) {
+			$$data_key = $data_val;
 		}
-		else{
+
+		if ( file_exists( $theme_path ) ) {
+			$template_path = $theme_path;
+		} else {
 			$template_path = $plugin_path;
 		}
 
-		if( $require_once ){
+		if ( $require_once ) {
 			require_once $template_path;
-		}
-		else{
+		} else {
 			require $template_path;
 		}
 	}
@@ -524,7 +525,7 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	public function wp_media_select( $name, $term_id ) {
 		$default_img   = ADDONIFY_VARIATION_SWATCHES_ROOT_PATH . '/admin/images/placeholder.png';
-		$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
+		$attachment_id = get_option( " {$this->plugin_name}_attr_image_ {$term_id}" );
 		$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 
 		require dirname( __FILE__, 2 ) . '/admin/templates/media-selector.php';

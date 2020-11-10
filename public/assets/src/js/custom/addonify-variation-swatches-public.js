@@ -99,11 +99,12 @@
 		// toggle between "add to cart" button and "select options" button if attributes is selected
 		function toggle_add_to_cart_buttons_in_archives( sel ){
 
-			// continue only if archive page
-			if( ! $('body').hasClass('archive') ) return;
 
-			// conitinue if, "show_single_attribute" is not enabled
-			if( addonify_vs_object.show_single_attribute ) return;
+			// continue only if is shop page or archive page
+			if( ! parseInt( addonify_vs_object.is_shop_page ) ) return;
+
+			// continue if, "show_single_attribute" is not enabled
+			if( parseInt( addonify_vs_object.show_single_attribute ) ) return;
 
 			var $parent = $(sel).parents('table.variations');
 
@@ -140,16 +141,12 @@
 				default_product_images[ product_id ] = $product_image_sel.attr('srcset');
 			}
 
-
 			var attr_key = [];
 			$parent.find('select.addonify-vs-attributes-options-select').each( function( index, value ){
-
-				if( $(value).val() != undefined && $(value).val().length ){
-					attr_key.push( $(value).val() );
-				}
+				attr_key.push( $(value).val() );
 			})
 
-			var variation_thumb = get_variation_thumbnail( attr_key.join('_') );
+			var variation_thumb = get_variation_thumbnail( attr_key );
 
 			if( variation_thumb ){
 				$product_image_sel.attr('srcset', variation_thumb);
@@ -158,6 +155,7 @@
 
 		}
 
+		
 		function get_variation_thumbnail( selected_attributes ){
 
 			// continue only if archive page
@@ -173,13 +171,20 @@
 
 				if( value.attributes !== undefined ){
 
-					var ar_key = [];
+					var i = 0;
+					var array_matched = true;
 
+					// check if all selected attributes matches with variations.
 					$.each( value.attributes, function( key1, value1 ){
-						ar_key.push( value1 );
+
+						if( value1 != '' && value1 != selected_attributes[i] ) {
+							array_matched = false;
+						}
+						
+						i++;
 					})
 
-					if( selected_attributes == ar_key.join('_') ){
+					if( array_matched ){
 						return_data = value.image.srcset;
 						return false;
 					}
@@ -187,12 +192,9 @@
 				}
  
 			});
-			
+
 			return return_data;
-
 		}
-
-		
 
 	})
 

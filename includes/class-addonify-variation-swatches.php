@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
@@ -208,7 +207,7 @@ class Addonify_Variation_Swatches {
 
 
 		// Add custom styles into header.
-		$this->loader->add_action( 'wp_head', $plugin_public, 'generate_custom_styles_callback' );
+		// $this->loader->add_action( 'wp_head', $plugin_public, 'generate_custom_styles_callback' );
 
 		
 		// Show variation options before add to cart button in loop.
