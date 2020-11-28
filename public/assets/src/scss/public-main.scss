@@ -1,0 +1,39 @@
+/*
+===========================================================
+
+# Pugin: Addonify Variation Swatches
+
+# Author: https://addonify.com
+
+# Since: 28 Nov, 2020
+
+# Last updated: 
+
+# Current version: 1.0.0
+
+=====================================
+*/
+
+// import abstracts 
+
+@import 'abstracts/mixins';							// mixins
+
+// import components 
+
+@import 'partials/components/buttons';				// buttons
+@import 'partials/components/helper-class';			// helper class
+@import 'partials/components/tooltip';				// tooltip
+
+// import layouts
+
+@import 'partials/layout/catalog';					// catalog
+@import 'partials/layout/single';					// product single
+
+// media/responsive
+
+@import 'partials/layout/responsive';				// responsive
+
+
+// import keyframe 
+
+@import 'partials/components/keyframe';				// keyframe

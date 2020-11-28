@@ -103,9 +103,14 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 */
 	public function enqueue_styles() {
 
-		if ( $this->enable_tooltip ) {
-			// Tippyjs.
-			wp_enqueue_style( 'tippyjs', plugin_dir_url( __FILE__ ) . 'assets/tippyjs/tippy.css', array(), $this->version );
+
+		if ( is_rtl() ) {
+
+  			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public-rtl.css', array(), time(), 'all' );
+
+		} else {
+
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), time(), 'all' );
 		}
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), time(), 'all' );
@@ -122,11 +127,14 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	public function enqueue_scripts() {
 
 		if ( $this->enable_tooltip ) {
-			// Popperjs.
-			wp_enqueue_script( 'popperjs', plugin_dir_url( __FILE__ ) . 'assets/build/js/popper.min.js', array( 'jquery' ), $this->version );
 
-			// Tippyjs.
-			wp_enqueue_script( 'tippyjs', plugin_dir_url( __FILE__ ) . 'assets/tippyjs/tippy.umd.min.js', array( 'jquery' ), $this->version );
+			// popper js
+
+			wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), time(), false );
+
+			// tippy js
+
+			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), time(), false );
 		}
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), time() );
@@ -272,7 +280,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				'fill' => 'tooltip_bck_color',
 			),
 
-			'ul.addonify-vs-attributes-options li > *' => array(
+			'ul.addonify-vs-attributes-options li .adfy-vs' => array(
 				'width'  => array( 'attribute_width', 'px', 30 ),
 				'height' => array( 'attribute_height', 'px', 30 ),
 			),
@@ -301,12 +309,12 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 			// css styles.
 			$style_args = array(
-				'body.archive ul.addonify-vs-attributes-options li > *' => array(
+				'ul.addonify-vs-attributes-options li .adfy-vs' => array(
 					'width'  => array( 'archive_attribute_width', 'px', 30 ),
 					'height' => array( 'archive_attribute_height', 'px', 30 ),
 				),
 
-				'body.archive ul.addonify-vs-attributes-options li' => array(
+				'ul.addonify-vs-attributes-options li' => array(
 					'font-size' => array( 'archive_attribute_font_size', 'px', 16 ),
 				),
 			);
