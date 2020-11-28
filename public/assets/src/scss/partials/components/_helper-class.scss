@@ -1,0 +1,86 @@
+
+// hidden class 
+
+.addonify-vs-attributes-options-select.hide,
+.addonify-vs-attributes-options-select.hidden  {
+
+	display: none !important;
+}
+
+// form 
+
+.variations_form {
+
+	margin:0;
+}
+
+// table 
+
+table.variations {
+
+	margin: 10px 0 10px 0;
+	border-spacing: 0;
+    width: 100%;
+    border:none;
+}
+
+table.variations td {
+
+	padding:0;
+	border:none;
+	vertical-align: unset;
+	background-color:transparent !important;
+}
+
+table.variations td.label {
+
+	display: none !important; // hide label
+}
+
+table.variations ul.addonify-vs-attributes-options {
+
+	line-height:1;
+	margin:0;
+	@include flex();
+	align-items: center;
+	align-content: center;
+}
+
+table.variations ul.addonify-vs-attributes-options,
+table.variations ul.addonify-vs-attributes-options li  {
+
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
+table.variations ul.addonify-vs-attributes-options li {
+
+	display: inline-block;
+	line-height: 1;
+	font-weight: normal;
+	margin:0;
+	padding:0;
+	list-style:none;
+	cursor:pointer;
+	overflow:hidden;
+}
+
+table.variations ul.addonify-vs-attributes-options li.disabled {
+
+    cursor: no-drop;
+    opacity:0.4;
+}
+
+// spacing 
+
+table.variations ul.addonify-vs-attributes-options li {
+
+	margin-right: 5px;
+}
+
+table.variations ul.addonify-vs-attributes-options li:last-child {
+
+	margin-right: 0;
+}
+

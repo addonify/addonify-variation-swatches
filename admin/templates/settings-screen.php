@@ -5,19 +5,19 @@
 
 <div class="wrap">
 
-    <h1><?php _e( 'Addonify Wishlist Options', 'addonify-wishlist' );?></h1>
+    <h1><?php _e( 'Addonify Variation Swatches', 'addonify-wishlist' );?></h1>
 
     <div id="addonify-settings-wrapper">
             
         <ul id="addonify-settings-tabs">
             <li>
                 <a href="<?php echo $tab_url;?>settings" class="<?php if( $current_tab == 'settings') echo 'active';?> " > 
-                    <?php _e( 'Settings', 'addonify-compare-products' );?> 
+                    <?php _e( 'Settings', 'addonify-variation-swatches' );?> 
                 </a>
             </li>
             <li>
                 <a href="<?php echo $tab_url;?>styles" class="<?php if( $current_tab == 'styles') echo 'active';?> " > 
-                    <?php _e( 'Styles', 'addonify-compare-products' );?> 
+                    <?php _e( 'Styles', 'addonify-variation-swatches' );?> 
                 </a>
             </li>
         </ul>

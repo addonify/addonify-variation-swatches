@@ -13,7 +13,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Addonify Variation Swatches
- * Plugin URI:        https://wordpress.org/plugins/addonify-variation-swatches
+ * Plugin URI:        https://addonify.com/
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.0
  * Author:            Addonify

@@ -1,0 +1,103 @@
+
+// swatches default 
+
+ul.addonify-vs-attributes-options li .adfy-vs {
+
+	display: block;
+	border:1px solid white;
+}
+
+ul.addonify-vs-attributes-options li.selected .adfy-vs {
+
+	border-color:red;
+}
+
+// alignment
+
+.addonify-vs-archive-align-left ul.addonify-vs-attributes-options {
+
+	justify-content: flex-start;
+}
+
+.addonify-vs-archive-align-center ul.addonify-vs-attributes-options {
+
+	justify-content: center;
+}
+
+.addonify-vs-archive-align-right ul.addonify-vs-attributes-options {
+
+	justify-content: flex-end;
+}
+
+// square 
+
+.addonify-vs-attributes-style-square ul.addonify-vs-attributes-options li,
+.addonify-vs-attributes-style-square ul.addonify-vs-attributes-options li .adfy-vs {
+
+	@include border_radius(2px);
+}
+
+// round swatches
+
+.addonify-vs-attributes-style-rounded ul.addonify-vs-attributes-options li,
+.addonify-vs-attributes-style-rounded ul.addonify-vs-attributes-options li .adfy-vs {
+
+	@include border_radius(100%);
+}
+
+// button swatches
+
+ul.addonify-vs-attributes-options-button li {
+
+
+} 
+
+ul.addonify-vs-attributes-options-button li .adfy-vs {
+
+	text-align: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    border-color:black;
+}
+
+ul.addonify-vs-attributes-options.addonify-vs-attributes-options-button li.selected .adfy-vs {
+
+	border-color:red;
+}
+
+// image swatch 
+
+ul.addonify-vs-attributes-options-image li .adfy-image-vs {
+
+    margin:0 !important;
+}
+
+
+// disabled swatch
+
+.addonify-vs-disabled-blur_with_cross ul.addonify-vs-attributes-options li.disabled {
+
+    background: url(../../images/disabled-bg.svg) no-repeat 50%;
+    background-size: 100%
+}
+
+.addonify-vs-disabled-blur_with_cross ul.addonify-vs-attributes-options li.disabled .adfy-vs {
+
+    opacity: 0.4;
+}
+
+.addonify-vs-disabled-blur_without_cross ul.addonify-vs-attributes-options li.disabled {
+
+    opacity: 0.5;
+}
+
+
+

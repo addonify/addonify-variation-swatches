@@ -163,11 +163,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		if ( ! $parent_menu_slug ) {
 			add_menu_page( 'Addonify Settings', 'Addonify', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), plugin_dir_url( __FILE__ ) . '/templates/addonify-logo.svg', 76 );
 
-			add_submenu_page( $this->settings_page_slug, 'Addonify Wishlist Settings', 'Wishlist', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
+			add_submenu_page( $this->settings_page_slug, 'Addonify Varation Swatches Settings', 'Variation Swatches', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
 		} else {
 			// sub menu.
 			// redirects to main plugin link.
-			add_submenu_page( $parent_menu_slug, 'Addonify Wishlist Settings', 'Wishlist', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
+			add_submenu_page( $parent_menu_slug, 'Addonify Varation Swatches Settings', 'Variation Swatches', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
 		}
 	}
 
