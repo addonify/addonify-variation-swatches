@@ -193,37 +193,26 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-
 		// Change the contents of default variation select input field.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_html', $plugin_public, 'filter_dropdown_variation_attributes_contents', 10, 2 );
 
-
 		// Customize variation dropdown html.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_args', $plugin_public, 'filter_variation_dropdown_html_callback' );
-		
 
 		// Disable out of stock variation
 		$this->loader->add_filter( 'woocommerce_variation_is_active', $plugin_public, 'disable_out_of_stock_variations_callback', 10, 2 );
 
-
-		// Add custom styles into header.
-		// $this->loader->add_action( 'wp_head', $plugin_public, 'generate_custom_styles_callback' );
-
-		
 		// Show variation options before add to cart button in loop.
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_before_add_to_cart_in_loop_callback' );
-
 
 		// Show variation options after add to cart button in loop.
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_after_add_to_cart_in_loop_callback', 20 );
 
-
 		// make woocommerce to load template file from our plugin.
 		$this->loader->add_filter( 'woocommerce_locate_template', $plugin_public, 'override_woo_template', 10, 3 );
 
-		// show "custom" add to cart button in shop / archive
+		// show "custom" add to cart button in shop / archive.
 		$this->loader->add_filter( 'woocommerce_loop_add_to_cart_link', $plugin_public, 'show_add_to_cart_btn_in_shop_page', 10, 2 );
-		
 
 	}
 

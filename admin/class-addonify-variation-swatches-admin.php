@@ -49,15 +49,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	private $version;
 
 	/**
-	 * Store default values for input fields in admin screen
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $default_input_values
-	 */
-	protected $default_input_values;
-
-	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since 1.0.0
@@ -203,6 +194,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function custom_plugin_link_callback( $links, $file ) {
 		if ( plugin_basename( dirname( __FILE__, 2 ) . '/addonify-variation-swatches.php' ) === $file ) {
+
 			// add "Settings" link.
 			$links[] = '<a href="admin.php?page=' . $this->settings_page_slug . '">' . __( 'Settings', 'addonify-variation-swatches' ) . '</a>';
 		}
@@ -221,7 +213,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		$tab_url     = "admin.php?page=$this->settings_page_slug&tabs=";
 
 		require_once dirname( __FILE__ ) . '/templates/settings-screen.php';
-
 	}
 
 
@@ -249,6 +240,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'enable_tooltip',
+							'default'   => 1,
 						),
 					),
 				),
@@ -260,6 +252,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'auto_dropdown_to_btn',
 							'end_label' => __( 'Convert default dropdowns to button type', 'addonify-variation-swatches' ),
+							'default'   => 1,
 						),
 					),
 				),
@@ -274,6 +267,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 								'rounded' => __( 'Rounded Shape', 'addonify-variation-swatches' ),
 								'square'  => __( 'Square Shape', 'addonify-variation-swatches' ),
 							),
+							'default'   => 'rounded',
 						),
 					),
 				),
@@ -290,6 +284,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 								'hide'               => __( 'Hide', 'addonify-variation-swatches' ),
 							),
 							'end_label' => __( 'If variation is out of stock or disabled.', 'addonify-variation-swatches' ),
+							'default'   => 'blur_with_cross',
 						),
 					),
 				),
@@ -356,6 +351,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'show_on_archives',
+							'default'   => 0,
 						),
 					),
 				),
@@ -366,6 +362,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 					'field_callback_args' => array(
 						array(
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_show_single_attribute',
+							'default'   => 0,
 						),
 					),
 				),
@@ -408,6 +405,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 								'right'  => __( 'Right', 'addonify-variation-swatches' ),
 								'center' => __( 'Center', 'addonify-variation-swatches' ),
 							),
+							'default'   => 'left',
 						),
 					),
 				),
@@ -487,7 +485,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 					'field_callback_args' => array(
 						array(
 							'name'    => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'load_styles_from_plugin',
-							'checked' => 0,
+							'default' => 0,
 						),
 					),
 				),
@@ -511,10 +509,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'variation_swatches_colors',
 					'field_label'         => __( 'Tooltip', 'addonify-variation-swatches' ),
-					'field_callback'      => array(
-						$this,
-						'color_picker_group',
-					),
+					'field_callback'      => array( $this, 'color_picker_group' ),
 					'field_callback_args' => array(
 						array(
 							'label'   => __( 'Text Color', 'addonify-variation-swatches' ),
@@ -531,10 +526,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_colors',
 					'field_label'         => __( 'Attributes / Item', 'addonify-variation-swatches' ),
-					'field_callback'      => array(
-						$this,
-						'color_picker_group',
-					),
+					'field_callback'      => array( $this, 'color_picker_group' ),
 					'field_callback_args' => array(
 						array(
 							'label'   => __( 'Text Color', 'addonify-variation-swatches' ),
@@ -590,15 +582,12 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
 					'field_label'         => '',
-					'field_callback'      => array(
-						$this,
-						'text_box',
-					),
+					'field_callback'      => array( $this, 'text_box' ),
 					'field_callback_args' => array(
 						array(
 							'label'     => __( 'Border Width', 'addonify-variation-swatches' ),
 							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
-							'default'   => '1',
+							'default'   => 1,
 							'end_label' => __( 'px', 'addonify_variation-swatches' ),
 							'css_class' => 'number',
 						),
@@ -607,10 +596,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 				array(
 					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'custom_css',
 					'field_label'         => __( 'Custom CSS', 'addonify-variation-swatches' ),
-					'field_callback'      => array(
-						$this,
-						'text_area',
-					),
+					'field_callback'      => array( $this, 'text_area' ),
 					'field_callback_args' => array(
 						array(
 							'name' => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'custom_css',
@@ -623,6 +609,9 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		// create settings fields.
 		$this->create_settings( $settings_args );
+
+		// save default values in db.
+		update_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'default_values', $this->default_input_values );
 
 	}
 

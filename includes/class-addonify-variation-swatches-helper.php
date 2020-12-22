@@ -22,6 +22,16 @@
 class Addonify_Variation_Swatches_Helper {
 
 	/**
+	 * Default values for input fields in admin screen
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $default_input_values
+	 */
+	protected $default_input_values;
+
+
+	/**
 	 * List all attributes data, used in plugin settings page
 	 *
 	 * @since    1.0.0
@@ -80,7 +90,9 @@ class Addonify_Variation_Swatches_Helper {
 			add_settings_field( $field['field_id'], $field['field_label'], $field['field_callback'], $args['screen'], $args['section_id'], $field['field_callback_args'] );
 
 			foreach ( $field['field_callback_args'] as $sub_field ) {
+				
 				$this->default_input_values[ $sub_field['name'] ] = ( isset( $sub_field['default'] ) ) ? $sub_field['default'] : '';
+
 				register_setting(
 					$args['settings_group_name'],
 					$sub_field['name'],
@@ -430,25 +442,13 @@ class Addonify_Variation_Swatches_Helper {
 	 * @param string $args Options for generating contents.
 	 */
 	public function checkbox( $args ) {
-		$default_state = ( array_key_exists( 'checked', $args ) ) ? $args['checked'] : 1;
-		$db_value      = get_option( $args['name'], $default_state );
-		$is_checked    = ( $db_value ) ? 'checked' : '';
-		$attr          = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
-		$end_label     = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
+		$default    = array_key_exists( 'default', $args ) ? $args['default'] : '';
+		$db_value   = get_option( $args['name'], $default );
+		$is_checked = ( $db_value ) ? 'checked' : '';
+		$attr       = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
+		$end_label  = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
 
 		require dirname( __FILE__, 2 ) . '/admin/templates/input_checkbox.php';
-	}
-
-	/**
-	 * Output markups for checkbox group
-	 *
-	 * @since    1.0.0
-	 * @param string $args Options for generating contents.
-	 */
-	public function checkbox_group( $args ) {
-		foreach ( $args as $arg ) {
-			require dirname( __FILE__, 2 ) . '/admin/templates/checkbox_group.php';
-		}
 	}
 
 
@@ -466,36 +466,6 @@ class Addonify_Variation_Swatches_Helper {
 
 			require dirname( __FILE__, 2 ) . '/admin/templates/input_select.php';
 		}
-	}
-
-
-	/**
-	 * Output markups for select pages select field
-	 *
-	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
-	 */
-	public function select_page( $arguments ) {
-
-		$options = array();
-
-		foreach ( get_pages() as $page ) {
-			$options[ $page->ID ] = $page->post_title;
-		}
-
-		$args                     = $arguments[0];
-		$db_value                 = get_option( $args['name'] );
-		$default_wishlist_page_id = get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'page_id' );
-
-		if ( ! $db_value ) {
-			$db_value = $default_wishlist_page_id;
-		}
-
-		if ( $db_value != $default_wishlist_page_id ) {
-			$args['end_label'] = esc_html( 'Please insert "[addonify_wishlist]" shortcode into the content area of the page' );
-		}
-
-		require dirname( __FILE__, 2 ) . '/admin/templates/input_select.php';
 	}
 
 

@@ -73,7 +73,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @access   private
 	 * @var      string    $display_position_in_shop    Variation display position
 	 */
-	 private $display_position_in_shop;
+	private $display_position_in_shop;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -88,10 +88,10 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$this->version = $version;
 
 		if ( ! is_admin() ) {
-			$this->enable_tooltip           = intval( $this->get_db_values( 'enable_tooltip', 1 ) );
-			$this->show_in_archive          = intval( $this->get_db_values( 'show_on_archives', 1 ) );
-			$this->show_single_attribute    = intval( $this->get_db_values( 'archive_show_single_attribute', 1 ) );
-			$this->display_position_in_shop = strval( $this->get_db_values( 'display_position', 'before_add_to_cart' ) );
+			$this->enable_tooltip           = intval( $this->get_db_values( 'enable_tooltip' ) );
+			$this->show_in_archive          = intval( $this->get_db_values( 'show_on_archives' ) );
+			$this->show_single_attribute    = intval( $this->get_db_values( 'archive_show_single_attribute' ) );
+			$this->display_position_in_shop = strval( $this->get_db_values( 'display_position' ) );
 		}
 
 	}
@@ -103,13 +103,9 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 */
 	public function enqueue_styles() {
 
-
 		if ( is_rtl() ) {
-
   			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public-rtl.css', array(), time(), 'all' );
-
 		} else {
-
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), time(), 'all' );
 		}
 
@@ -129,11 +125,9 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		if ( $this->enable_tooltip ) {
 
 			// popper js
-
 			wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), time(), false );
 
 			// tippy js
-
 			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), time(), false );
 		}
 
@@ -167,7 +161,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		if ( is_archive() || is_shop() ) {
 
 			// if "Show on archives" options is activated.
-			if ( 1 !== intval( $this->get_db_values( 'show_on_archives', 1 ) ) ) {
+			if ( 1 !== $this->show_in_archive ) {
 				return $html;
 			}
 		}
@@ -182,10 +176,15 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		}
 
 		// If auto dropdown to Button is enabled.
-		$auto_dropdown_to_btn = intval( $this->get_db_values( 'auto_dropdown_to_btn', 1 ) );
+		$auto_dropdown_to_btn = intval( $this->get_db_values( 'auto_dropdown_to_btn' ) );
 		if ( $auto_dropdown_to_btn ) {
 			if ( 'select' === $attribute_type || empty( $attribute_type ) ) {
 				$attribute_type = 'button';
+			}
+		}
+		else{
+			if ( empty( $attribute_type ) ) {
+				return $html;
 			}
 		}
 
@@ -219,7 +218,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				}
 			}
 		}
-
+		
 		$html .= $this->get_public_templates(
 			"attributes-options-{$attribute_type}",
 			false,
@@ -240,6 +239,25 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @param array $args Arguments.
 	 */
 	public function filter_variation_dropdown_html_callback( $args ) {
+
+		// if "auto dropdown to button" is disabled.
+		if( 1 !== intval( $this->get_db_values( 'auto_dropdown_to_btn' ) ) ) {
+
+			$attribute_type = '';
+
+			foreach ( $this->get_all_attributes() as $attr ) {
+				if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr ) ) {
+					$attribute_type = $attr['type'];
+					break;
+				}
+			}
+
+			if ( empty( $attribute_type ) ) {
+				return $args;
+			}
+
+		}
+
 		$args['class'] = 'hide hidden addonify-vs-attributes-options-select';
 		return $args;
 	}
@@ -257,8 +275,8 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			'body_class',
 			function( $classes ) {
 				$css_classes = array(
-					'addonify-vs-attributes-style-' . $this->get_db_values( 'shape', 'rounded' ),
-					'addonify-vs-disabled-' . $this->get_db_values( 'attribute_behavior', 'blur_with_cross' ),
+					'addonify-vs-attributes-style-' . $this->get_db_values( 'shape' ),
+					'addonify-vs-disabled-' . $this->get_db_values( 'attribute_behavior' ),
 				);
 
 				return array_merge( $classes, $css_classes );
@@ -301,7 +319,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				'body_class',
 				function( $classes ) {
 					$css_classes = array(
-						'addonify-vs-archive-align-' . $this->get_db_values( 'swatches_align', 'left' ),
+						'addonify-vs-archive-align-' . $this->get_db_values( 'swatches_align' ),
 					);
 					return array_merge( $classes, $css_classes );
 				}
@@ -415,7 +433,9 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			if ( is_archive() || is_shop() ) {
 
 				// if "Show on archives" options is activated.
+				
 				if ( 1 === $this->show_in_archive ) {
+
 					// show variation table in shop loop.
 					woocommerce_variable_add_to_cart();
 				}
@@ -517,11 +537,34 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * Get Database values for selected fields
 	 *
 	 * @since    1.0.0
-	 * @param string $field_name Database Option Name.
-	 * @param array  $default    Default Value.
+	 * @param string $field_name                Database Option Name.
+	 * @param array  $default                   Default Value.
+	 * @param bool   $get_default_automatically Get default value if "$default" is empty.
 	 */
-	protected function get_db_values( $field_name, $default = null ) {
+	protected function get_db_values( $field_name, $default = null, $get_default_automatically = true ) {
+
+		if ( empty( $default ) && true === $get_default_automatically ) {
+
+			$default = $this->get_default_values( $field_name );
+		}
+
 		return get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name, $default );
+	}
+
+
+	/**
+	 * Get Default values for selected options in admin page
+	 *
+	 * @since    1.0.0
+	 * @param    string $field_name Database Option Name.
+	 */
+	private function get_default_values( $field_name ) {
+
+		if ( empty( $this->default_input_values ) ) {
+			$this->default_input_values = get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'default_values' );
+		}
+
+		return $this->default_input_values[ ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name ];
 	}
 
 
