@@ -86,13 +86,16 @@
 
 		function init(){
 
-			// Tooltip.
-			$('.addonify-vs-attributes-options li[data-title]').each(function(){
-				tippy( this, {
-					content: $(this).data('title'),
-				});
+			if( addonify_vs_object.enable_tooltip == 1 ) {
 
-			})
+				// Tooltip.
+				$('.addonify-vs-attributes-options li[data-title]').each(function(){
+					tippy( this, {
+						content: $(this).data('title'),
+					});
+
+				})
+			}
 
 		}
 

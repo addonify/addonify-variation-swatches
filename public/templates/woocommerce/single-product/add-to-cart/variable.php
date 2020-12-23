@@ -4,8 +4,8 @@ defined( 'ABSPATH' ) || exit;
 global $product, $limit_variations_markup;
 
 // override by addonify-variation-swatches
-$catalog_mode           = intval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_show_single_attribute', 1 ) );
-$limit_variations_count = intval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attributes_limit', 0 ) );
+$catalog_mode           = intval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_show_single_attribute' ) );
+$limit_variations_count = intval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_attributes_limit' ) );
 $selected_attribute     = 'pa_' . strval( get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'archive_visible_attributes' ) );
 // override end
 
