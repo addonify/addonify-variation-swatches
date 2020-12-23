@@ -90,7 +90,6 @@ class Addonify_Variation_Swatches_Helper {
 			add_settings_field( $field['field_id'], $field['field_label'], $field['field_callback'], $args['screen'], $args['section_id'], $field['field_callback_args'] );
 
 			foreach ( $field['field_callback_args'] as $sub_field ) {
-				
 				$this->default_input_values[ $sub_field['name'] ] = ( isset( $sub_field['default'] ) ) ? $sub_field['default'] : '';
 
 				register_setting(
@@ -102,30 +101,6 @@ class Addonify_Variation_Swatches_Helper {
 				);
 			}
 		}
-	}
-
-
-	/**
-	 * This will return array of all available thumbnail sizes
-	 *
-	 * @since    1.0.0
-	 */
-	protected function list_thumbnail_sizes() {
-
-		$return_sizes = get_transient( $this->plugin_name . '_list_thumbnail_sizes' );
-
-		if ( false === $return_sizes ) {
-			$return_sizes = array();
-			foreach ( get_intermediate_image_sizes() as $s ) {
-				$return_sizes[ $s ] = $s;
-			}
-
-			// store data for 10 minutes.
-			set_transient( $this->plugin_name . '_list_thumbnail_sizes', $return_sizes, MINUTE_IN_SECONDS * 10 );
-
-		}
-
-		return $return_sizes;
 	}
 
 
@@ -252,8 +227,7 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
 
-		$cur_taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) : false;
-
+		$cur_taxonomy = isset( $_REQUEST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['taxonomy'] ) ) : false;
 		if ( ! $cur_taxonomy ) {
 			return;
 		}
@@ -267,15 +241,18 @@ class Addonify_Variation_Swatches_Helper {
 			}
 		}
 
-		if ( ! $attribute_type ) {
+		if ( empty( $attribute_type ) ) {
 			return;
 		}
 
 		if ( 'addonify_custom_attr' === $column_name ) {
 			if ( 'color' === $attribute_type ) {
-				return sprintf(
-					'<div class="addonify-vs-color-preview" style="background-color:%1$s; border: solid 1px #ccc; width: 35px; height: 35px;" ></div>',
-					get_option( " {$this->plugin_name}_attr_color_ {$term_id}" )
+
+				echo wp_kses_post(
+					sprintf(
+						'<div class="addonify-vs-color-preview" style="background-color:%1$s; border: solid 1px #ccc; width: 35px; height: 35px;" ></div>',
+						get_option( "{$this->plugin_name}_attr_color_{$term_id}" )
+					)
 				);
 			} elseif ( 'image' === $attribute_type ) {
 
@@ -284,7 +261,7 @@ class Addonify_Variation_Swatches_Helper {
 
 				return sprintf(
 					'<div class="addonify-vs-image-preview" ><img src="%2$s" width="35" height="35" ></div>',
-					get_option( " {$this->plugin_name}_attr_color_ {$term_id}" ),
+					get_option( "{$this->plugin_name}_attr_color_{$term_id}" ),
 					$img_url
 				);
 			}
@@ -400,7 +377,7 @@ class Addonify_Variation_Swatches_Helper {
 				$args['label'] = '';
 			}
 
-			require dirname( __FILE__, 2 ) . '/admin/templates/input_textbox.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input-textbox.php';
 		}
 	}
 
@@ -430,7 +407,7 @@ class Addonify_Variation_Swatches_Helper {
 			$transparency  = isset( $arg['transparency'] ) ? $arg['transparency'] : true;
 			$db_value      = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
 
-			require dirname( __FILE__, 2 ) . '/admin/templates/input_colorpicker.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input-colorpicker.php';
 		}
 	}
 
@@ -443,12 +420,16 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	public function checkbox( $args ) {
 		$default    = array_key_exists( 'default', $args ) ? $args['default'] : '';
-		$db_value   = get_option( $args['name'], $default );
-		$is_checked = ( $db_value ) ? 'checked' : '';
+		$db_value   = intval( get_option( $args['name'], $default ) );
 		$attr       = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
+
+		if ( 1 === $db_value ) {
+			$attr .= 'checked="checked"';
+		}
+
 		$end_label  = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
 
-		require dirname( __FILE__, 2 ) . '/admin/templates/input_checkbox.php';
+		require dirname( __FILE__, 2 ) . '/admin/templates/input-checkbox.php';
 	}
 
 
@@ -464,7 +445,7 @@ class Addonify_Variation_Swatches_Helper {
 			$default  = ( array_key_exists( 'default', $args ) ) ? $args['default'] : '';
 			$db_value = get_option( $args['name'], $default );
 
-			require dirname( __FILE__, 2 ) . '/admin/templates/input_select.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input-select.php';
 		}
 	}
 
@@ -481,7 +462,7 @@ class Addonify_Variation_Swatches_Helper {
 			$db_value    = get_option( $args['name'], $placeholder );
 			$attr        = isset( $args['attr'] ) ? $args['attr'] : '';
 
-			require dirname( __FILE__, 2 ) . '/admin/templates/input_textarea.php';
+			require dirname( __FILE__, 2 ) . '/admin/templates/input-textarea.php';
 		}
 	}
 

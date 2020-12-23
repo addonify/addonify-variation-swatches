@@ -104,12 +104,10 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	public function enqueue_styles() {
 
 		if ( is_rtl() ) {
-  			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public-rtl.css', array(), time(), 'all' );
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public-rtl.css', array(), $this->version );
 		} else {
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), time(), 'all' );
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), $this->version );
 		}
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), time(), 'all' );
 
 		$this->generate_custom_styles_callback();
 
@@ -124,10 +122,10 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 		if ( $this->enable_tooltip ) {
 
-			// popper js
+			// popper js.
 			wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), time(), false );
 
-			// tippy js
+			// tippy js.
 			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), time(), false );
 		}
 
@@ -181,8 +179,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			if ( 'select' === $attribute_type || empty( $attribute_type ) ) {
 				$attribute_type = 'button';
 			}
-		}
-		else{
+		} else {
 			if ( empty( $attribute_type ) ) {
 				return $html;
 			}
@@ -218,7 +215,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				}
 			}
 		}
-		
+
 		$html .= $this->get_public_templates(
 			"attributes-options-{$attribute_type}",
 			false,
@@ -241,7 +238,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	public function filter_variation_dropdown_html_callback( $args ) {
 
 		// if "auto dropdown to button" is disabled.
-		if( 1 !== intval( $this->get_db_values( 'auto_dropdown_to_btn' ) ) ) {
+		if ( 1 !== intval( $this->get_db_values( 'auto_dropdown_to_btn' ) ) ) {
 
 			$attribute_type = '';
 
@@ -255,7 +252,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			if ( empty( $attribute_type ) ) {
 				return $args;
 			}
-
 		}
 
 		$args['class'] = 'hide hidden addonify-vs-attributes-options-select';
@@ -297,12 +293,10 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			'.tippy-box > .tippy-svg-arrow' => array(
 				'fill' => 'tooltip_bck_color',
 			),
-
 			'ul.addonify-vs-attributes-options li .adfy-vs' => array(
 				'width'  => array( 'attribute_width', 'px', 30 ),
 				'height' => array( 'attribute_height', 'px', 30 ),
 			),
-
 			'ul.addonify-vs-attributes-options li' => array(
 				'font-size' => array( 'attribute_font_size', 'px', 16 ),
 			),
@@ -361,7 +355,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				'color'            => 'selected_item_text_color',
 				'background-color' => 'selected_item_bck_color',
 				'border-color'     => 'selected_item_border_color',
-				'border-width'     => array( 'selected_item_border_width', 'px' ),
 			),
 		);
 
@@ -433,7 +426,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			if ( is_archive() || is_shop() ) {
 
 				// if "Show on archives" options is activated.
-				
 				if ( 1 === $this->show_in_archive ) {
 
 					// show variation table in shop loop.

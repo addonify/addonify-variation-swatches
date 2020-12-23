@@ -152,7 +152,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		}
 
 		if ( ! $parent_menu_slug ) {
-			add_menu_page( 'Addonify Settings', 'Addonify', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), plugin_dir_url( __FILE__ ) . '/templates/addonify-logo.svg', 76 );
+			add_menu_page( 'Addonify Settings', 'Addonify', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), plugin_dir_url( __FILE__ ) . '/images/addonify-logo.svg', 76 );
 
 			add_submenu_page( $this->settings_page_slug, 'Addonify Varation Swatches Settings', 'Variation Swatches', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
 		} else {
@@ -174,13 +174,13 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		// show settings page ui.
 		$this->settings_page_ui();
 
-		// show woocommerce not active notice.
+		// // show woocommerce not active notice.
 		$this->show_woocommerce_not_active_notice_callback();
 
-		// show custom form element for all attributes.
+		// // show custom form element for all attributes.
 		$this->register_action_for_custom_term_fields();
 
-		// register action to show custom column in term table.
+		// // register action to show custom column in term table.
 		$this->register_filters_for_custom_columns();
 	}
 
@@ -536,7 +536,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						array(
 							'label'   => __( 'Background Color', 'addonify-variation-swatches' ),
 							'name'    => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_bck_color',
-							'default' => '#000000',
+							'default' => '#fff',
 						),
 					),
 				),
@@ -548,12 +548,12 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						array(
 							'label'   => __( 'Text Color On Hover', 'addonify-variation-swatches' ),
 							'name'    => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_text_color_hover',
-							'default' => '#000000',
+							'default' => '#000',
 						),
 						array(
 							'label'   => __( 'Background Color On Hover', 'addonify-variation-swatches' ),
 							'name'    => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'item_bck_color_hover',
-							'default' => '#000000',
+							'default' => '#fff',
 						),
 					),
 				),
@@ -570,26 +570,12 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 						array(
 							'label'   => __( 'Background Color', 'addonify-variation-swatches' ),
 							'name'    => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_bck_color',
-							'default' => '#000000',
+							'default' => '#fff',
 						),
 						array(
 							'label'   => __( 'Border Color', 'addonify-variation-swatches' ),
 							'name'    => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_color',
 							'default' => '#000000',
-						),
-					),
-				),
-				array(
-					'field_id'            => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
-					'field_label'         => '',
-					'field_callback'      => array( $this, 'text_box' ),
-					'field_callback_args' => array(
-						array(
-							'label'     => __( 'Border Width', 'addonify-variation-swatches' ),
-							'name'      => ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'selected_item_border_width',
-							'default'   => 1,
-							'end_label' => __( 'px', 'addonify_variation-swatches' ),
-							'css_class' => 'number',
 						),
 					),
 				),
@@ -753,6 +739,10 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		$option_key = '';
 
+		if ( ! isset( $_POST ) ) {
+			return;
+		}
+
 		foreach ( $_POST as $post_key => $post_val ) {
 			if ( 0 === strpos( $post_key, $this->plugin_name ) ) {
 
@@ -812,20 +802,22 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function custom_column_heading_for_attributes( $columns ) {
 
-		if ( ! isset( $_GET['taxonomy'] ) ) {
-			return;
+		$taxonomy = isset( $_REQUEST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['taxonomy'] ) ) : null;
+
+		if ( empty( $taxonomy ) ) {
+			return $columns;
 		}
 
 		$attribute_type = '';
 		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
-			if ( sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) === 'pa_' . $attr->attribute_name ) {
+			if ( sanitize_text_field( wp_unslash( $taxonomy ) ) === 'pa_' . $attr->attribute_name ) {
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
 			}
 		}
 
 		if ( ! $attribute_type ) {
-			return;
+			return $columns;
 		}
 
 		$new = array();
@@ -853,7 +845,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	public function my_custom_taxonomy_columns_content( $content, $column_name, $term_id ) {
 		return $this->get_attr_type_preview_for_term( $column_name, $term_id );
 	}
-
 
 
 	/**

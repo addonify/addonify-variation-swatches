@@ -126,8 +126,6 @@ class Addonify_Variation_Swatches {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-addonify-variation-swatches-public.php';
 
-		
-
 		$this->loader = new Addonify_Variation_Swatches_Loader();
 
 	}
@@ -169,14 +167,14 @@ class Addonify_Variation_Swatches {
 		// custom link in plugins.php page in wp-admin.
 		$this->loader->add_action( 'plugin_action_links', $plugin_admin, 'custom_plugin_link_callback', 10, 2 );
 
-		// on admin init
+		// on admin init.
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init_callback' );
 
 		// show admin notices after form submission.
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'form_submission_notification_callback' );
 
-		// show "type" in "attributes" page in admin
-		$this->loader->add_filter( 'product_attributes_type_selector', $plugin_admin, 'product_attributes_types_callback');
+		// show "type" in "attributes" page in admin.
+		$this->loader->add_filter( 'product_attributes_type_selector', $plugin_admin, 'product_attributes_types_callback' );
 	}
 
 	/**
@@ -199,7 +197,7 @@ class Addonify_Variation_Swatches {
 		// Customize variation dropdown html.
 		$this->loader->add_action( 'woocommerce_dropdown_variation_attribute_options_args', $plugin_public, 'filter_variation_dropdown_html_callback' );
 
-		// Disable out of stock variation
+		// Disable out of stock variation.
 		$this->loader->add_filter( 'woocommerce_variation_is_active', $plugin_public, 'disable_out_of_stock_variations_callback', 10, 2 );
 
 		// Show variation options before add to cart button in loop.
