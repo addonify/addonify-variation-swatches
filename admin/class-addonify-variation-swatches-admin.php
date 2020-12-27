@@ -733,6 +733,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function term_save_custom_form_fields( $term_id ) {
 
+		// echo '<pre>';
+		// var_dump($_POST); 
+		// echo '</pre>';
+		// die;
+
 		if ( ! is_admin() ) {
 			return;
 		}
