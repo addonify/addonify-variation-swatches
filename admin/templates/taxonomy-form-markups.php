@@ -27,7 +27,7 @@ if ( $is_edit ) : ?>
 			<label for="<?php echo esc_attr( $name ); ?>">Addonify <?php echo esc_html( $label ); ?></label>
 		</th>
 		<td>
-			<?php echo wp_kses_post( $input_field_markups ); ?>
+			<?php echo $input_field_markups; ?>
 			<p class="description"><?php echo esc_html( $description ); ?></p>
 		</td>
 	</tr>
@@ -36,7 +36,7 @@ if ( $is_edit ) : ?>
 	
 	<div class="form-field">
 		<label for="<?php echo esc_attr( $name ); ?>">Addonify <?php echo esc_html( $label ); ?></label>
-		<?php echo wp_kses_post( $input_field_markups ); ?>
+		<?php echo $input_field_markups; ?>
 		<p class="description"><?php echo esc_html( $description ); ?></p>
 	</div>
 

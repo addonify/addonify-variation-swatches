@@ -256,7 +256,8 @@ class Addonify_Variation_Swatches_Helper {
 				);
 			} elseif ( 'image' === $attribute_type ) {
 
-				$attachment_id = get_option( " {$this->plugin_name}_attr_image_ {$term_id}" );
+				
+				$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
 				$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 
 				return sprintf(
@@ -476,7 +477,7 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	public function wp_media_select( $name, $term_id ) {
 		$default_img   = ADDONIFY_VARIATION_SWATCHES_ROOT_PATH . '/admin/images/placeholder.png';
-		$attachment_id = get_option( " {$this->plugin_name}_attr_image_ {$term_id}" );
+		$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
 		$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 
 		require dirname( __FILE__, 2 ) . '/admin/templates/media-selector.php';
