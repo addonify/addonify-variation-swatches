@@ -123,19 +123,20 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		if ( $this->enable_tooltip ) {
 
 			// popper js.
-			wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), time(), false );
+			wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), $this->version, false );
 
 			// tippy js.
-			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), time(), false );
+			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), $this->version, false );
 		}
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), time() );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), $this->version );
 
 		$localize_args = array(
 			'ajax_url'              => admin_url( 'admin-ajax.php' ),
 			'enable_tooltip'        => $this->enable_tooltip,
 			'show_single_attribute' => $this->show_single_attribute,
 			'is_shop_page'          => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
+			'shop_page_url'         => wc_get_page_permalink( 'shop' ),
 		);
 
 		// localize script.
@@ -516,7 +517,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			$quantity    = isset( $args['quantity'] ) ? $args['quantity'] : 1;
 			$text        = __( 'Add to cart', 'addonify-variation-swatches' );
 
-			$button      .= '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-variation_id="71" data-product_sku="' . $product_sku . '" class="addonify_vs-add_to_cart-button button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart" style="display: none;">' . $text . '</a>';
+			$button      .= '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-product_sku="' . $product_sku . '" class="addonify_vs-add_to_cart-button button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart" style="display: none;">' . $text . '</a>';
 
 		}
 
