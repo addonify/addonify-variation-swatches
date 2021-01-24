@@ -82,6 +82,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 											'options'   => $options,
 											'attribute' => $attribute_name,
 											'product'   => $product,
+											'id'		=> sanitize_title( $attribute_name ) . '-' . get_the_ID(),
 											'class'     => 'addonify-vs-attributes-options-select',
 										)
 									);
@@ -99,10 +100,12 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 							<td class="value">
 								<?php
 									wc_dropdown_variation_attribute_options(
+
 										array(
 											'options'   => $options,
 											'attribute' => $attribute_name,
 											'product'   => $product,
+											'id'		=> sanitize_title( $attribute_name ) . '-' . get_the_ID(),
 											'class'     => 'addonify-vs-attributes-options-select',
 										)
 									);
