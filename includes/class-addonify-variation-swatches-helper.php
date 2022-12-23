@@ -71,7 +71,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * @since    1.0.0
 	 */
 	protected function is_woocommerce_active() {
-		return ( class_exists( 'woocommerce' ) ) ? true : false;
+		return class_exists( 'WooCommerce' );
 	}
 
 
@@ -79,7 +79,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * This will create settings section, fields and register that settings in a database from the provided array data
 	 *
 	 * @since    1.0.0
-	 * @param string $args Options for settings field.
+	 * @param array $args Options for settings field.
 	 */
 	protected function create_settings( $args ) {
 
@@ -133,6 +133,9 @@ class Addonify_Variation_Swatches_Helper {
 	 * @since    1.0.0
 	 */
 	protected function get_all_attribute_taxonomies() {
+		if ( ! $this->is_woocommerce_active() ) {
+			return array();
+		}
 		if ( empty( $this->all_attribute_taxonomies ) ) {
 			$this->all_attribute_taxonomies = wc_get_attribute_taxonomies();
 		}
@@ -155,7 +158,7 @@ class Addonify_Variation_Swatches_Helper {
 		$label       = isset( $attributes['title'] ) ? $attributes['title'] : '';
 		$name        = $id;
 		$description = isset( $attributes['description'] ) ? $attributes['description'] : '';
-		$term_id     = isset( $_GET['tag_ID'] ) ? intval( $_GET['tag_ID'] ) : '';
+		$term_id     = isset( $_GET['tag_ID'] ) ? intval( $_GET['tag_ID'] ) : ''; //phpcs:ignore
 
 		if ( $term_id ) {
 			$name .= '_' . $term_id;
@@ -227,7 +230,7 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	protected function get_attr_type_preview_for_term( $column_name, $term_id ) {
 
-		$cur_taxonomy = isset( $_REQUEST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['taxonomy'] ) ) : false;
+		$cur_taxonomy = isset( $_REQUEST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['taxonomy'] ) ) : false; //phpcs:ignore
 		if ( ! $cur_taxonomy ) {
 			return;
 		}
@@ -256,7 +259,6 @@ class Addonify_Variation_Swatches_Helper {
 				);
 			} elseif ( 'image' === $attribute_type ) {
 
-				
 				$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
 				$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
 
@@ -275,7 +277,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * Generate style markups
 	 *
 	 * @since 1.0.0
-	 * @param string $style_args    Style args to be processed.
+	 * @param array $style_args    Style args to be processed.
 	 */
 	protected function generate_styles_markups( $style_args ) {
 		$custom_styles_output = '';
@@ -320,7 +322,7 @@ class Addonify_Variation_Swatches_Helper {
 	protected function get_public_templates( $template_name, $require_once = true, $data = array() ) {
 
 		// First look for template in themes/addonify/plugin_name/template-name.php.
-		$theme_path = get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/' . $template_name . '.php';
+		$theme_path  = get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/' . $template_name . '.php';
 		$plugin_path = dirname( __FILE__, 2 ) . '/public/templates/' . $template_name . '.php';
 
 		// Extract keys from array to separate local variables.
@@ -351,7 +353,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * Output markups for text field
 	 *
 	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
+	 * @param array $arguments Options for generating contents.
 	 */
 	public function text_box( $arguments ) {
 		foreach ( $arguments as $args ) {
@@ -386,7 +388,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * Output markups for toggle switch
 	 *
 	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
+	 * @param array $arguments Options for generating contents.
 	 */
 	public function toggle_switch( $arguments ) {
 		foreach ( $arguments as $args ) {
@@ -400,13 +402,13 @@ class Addonify_Variation_Swatches_Helper {
 	 * Output markups for color picker input field
 	 *
 	 * @since    1.0.0
-	 * @param string $args Options for generating contents.
+	 * @param array $args Options for generating contents.
 	 */
 	public function color_picker_group( $args ) {
 		foreach ( $args as $arg ) {
-			$default       = isset( $arg['default'] ) ? $arg['default'] : '';
-			$transparency  = isset( $arg['transparency'] ) ? $arg['transparency'] : true;
-			$db_value      = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
+			$default      = isset( $arg['default'] ) ? $arg['default'] : '';
+			$transparency = isset( $arg['transparency'] ) ? $arg['transparency'] : true;
+			$db_value     = ( get_option( $arg['name'] ) ) ? get_option( $arg['name'] ) : $default;
 
 			require dirname( __FILE__, 2 ) . '/admin/templates/input-colorpicker.php';
 		}
@@ -417,18 +419,18 @@ class Addonify_Variation_Swatches_Helper {
 	 * Output markups for checkbox input field
 	 *
 	 * @since    1.0.0
-	 * @param string $args Options for generating contents.
+	 * @param array $args Options for generating contents.
 	 */
 	public function checkbox( $args ) {
-		$default    = array_key_exists( 'default', $args ) ? $args['default'] : '';
-		$db_value   = intval( get_option( $args['name'], $default ) );
-		$attr       = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
+		$default  = array_key_exists( 'default', $args ) ? $args['default'] : '';
+		$db_value = intval( get_option( $args['name'], $default ) );
+		$attr     = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
 
 		if ( 1 === $db_value ) {
 			$attr .= 'checked="checked"';
 		}
 
-		$end_label  = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
+		$end_label = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
 
 		require dirname( __FILE__, 2 ) . '/admin/templates/input-checkbox.php';
 	}
@@ -438,7 +440,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * Output markups for select input field
 	 *
 	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
+	 * @param array $arguments Options for generating contents.
 	 */
 	public function select( $arguments ) {
 		foreach ( $arguments as $args ) {
@@ -455,7 +457,7 @@ class Addonify_Variation_Swatches_Helper {
 	 * Output markups for text area
 	 *
 	 * @since    1.0.0
-	 * @param string $arguments Options for generating contents.
+	 * @param array $arguments Options for generating contents.
 	 */
 	public function text_area( $arguments ) {
 		foreach ( $arguments as $args ) {
@@ -478,8 +480,9 @@ class Addonify_Variation_Swatches_Helper {
 	public function wp_media_select( $name, $term_id ) {
 		$default_img   = ADDONIFY_VARIATION_SWATCHES_ROOT_PATH . '/admin/images/placeholder.png';
 		$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
-		$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
-
+		if ( wp_get_attachment_image_src( $attachment_id ) ) {
+			$img_url = wp_get_attachment_image_src( $attachment_id )[0];
+		}
 		require dirname( __FILE__, 2 ) . '/admin/templates/media-selector.php';
 	}
 

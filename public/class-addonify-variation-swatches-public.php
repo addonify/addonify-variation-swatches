@@ -85,7 +85,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 
 		if ( ! is_admin() ) {
 			$this->enable_tooltip           = intval( $this->get_db_values( 'enable_tooltip' ) );
@@ -129,7 +129,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), $this->version, false );
 		}
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), $this->version );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), $this->version, false );
 
 		$localize_args = array(
 			'ajax_url'              => admin_url( 'admin-ajax.php' ),
@@ -168,7 +168,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$attribute_type = '';
 
 		foreach ( $this->get_all_attributes() as $attr ) {
-			if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr ) ) {
+			if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr, true ) ) {
 				$attribute_type = $attr['type'];
 				break;
 			}
@@ -244,7 +244,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			$attribute_type = '';
 
 			foreach ( $this->get_all_attributes() as $attr ) {
-				if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr ) ) {
+				if ( in_array( str_replace( 'pa_', '', $args['attribute'] ), $attr, true ) ) {
 					$attribute_type = $attr['type'];
 					break;
 				}
@@ -284,14 +284,14 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$style_args = array(
 
 			// tooltip.
-			'.tippy-box' => array(
+			'.tippy-box'                           => array(
 				'background-color' => 'tooltip_bck_color',
 				'color'            => 'tooltip_text_color',
 			),
-			'.tippy-box > .tippy-arrow::before' => array(
+			'.tippy-box > .tippy-arrow::before'    => array(
 				'border-top-color' => array( 'tooltip_bck_color', ' !important' ),
 			),
-			'.tippy-box > .tippy-svg-arrow' => array(
+			'.tippy-box > .tippy-svg-arrow'        => array(
 				'fill' => 'tooltip_bck_color',
 			),
 			'ul.addonify-vs-attributes-options li .adfy-vs' => array(
@@ -344,7 +344,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$custom_css = $this->get_db_values( 'custom_css' );
 
 		$style_args = array(
-			'ul.addonify-vs-attributes-options li' => array(
+			'ul.addonify-vs-attributes-options li'       => array(
 				'color'            => 'item_text_color',
 				'background-color' => 'item_bck_color',
 			),
@@ -374,7 +374,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 *
 	 * @since    1.0.0
 	 * @param string $active    Active.
-	 * @param string $variation Variation.
+	 * @param object $variation Variation.
 	 */
 	public function disable_out_of_stock_variations_callback( $active, $variation ) {
 		if ( ! $variation->is_in_stock() ) {
@@ -514,10 +514,10 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			$product_url = wc_get_page_permalink( 'shop' );
 			$product_url = add_query_arg( 'add-to-cart', $product_id, $product_url );
 
-			$quantity    = isset( $args['quantity'] ) ? $args['quantity'] : 1;
-			$text        = __( 'Add to cart', 'addonify-variation-swatches' );
+			$quantity = isset( $args['quantity'] ) ? $args['quantity'] : 1;
+			$text     = __( 'Add to cart', 'addonify-variation-swatches' );
 
-			$button      .= '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-product_sku="' . $product_sku . '" class="addonify_vs-add_to_cart-button button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart" style="display: none;">' . $text . '</a>';
+			$button .= '<a rel="nofollow" href="' . $product_url . '" data-quantity="' . $quantity . '" data-product_id="' . $product_id . '" data-product_sku="' . $product_sku . '" class="addonify_vs-add_to_cart-button button product_type_simple add_to_cart_button ajax_add_to_cart add-to-cart" aria-label="Add to cart" style="display: none;">' . $text . '</a>';
 
 		}
 

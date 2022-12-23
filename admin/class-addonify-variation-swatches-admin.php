@@ -138,6 +138,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		// do not show menu if woocommerce is not active.
 		if ( $this->is_woocommerce_active() !== true ) {
+			add_action( 'admin_notices', array( $this, 'set_admin_woocommerce_not_activated_alert' ) );
 			return;
 		}
 
@@ -172,7 +173,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	public function admin_init_callback() {
 
 		// show settings page ui.
-		$this->settings_page_ui();
+		// $this->settings_page_ui();
 
 		// // show woocommerce not active notice.
 		$this->show_woocommerce_not_active_notice_callback();
@@ -866,4 +867,14 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		return $return_data;
 	}
 
+	/**
+	 * Woocommerce not activated alert.
+	 */
+	public function set_admin_woocommerce_not_activated_alert() {
+		?>
+		<div class="notice notice-error is-dismissible">
+			<p><?php echo esc_html__( 'Addonify Variation Swatches requires WooCommerce in order to work.', 'addonify-variation-swatches' ); ?></p>
+		</div>
+		<?php
+	}
 }

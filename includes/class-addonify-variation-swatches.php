@@ -126,6 +126,11 @@ class Addonify_Variation_Swatches {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-addonify-variation-swatches-public.php';
 
+		/**
+		 * User data processing.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/udp/init.php';
+
 		$this->loader = new Addonify_Variation_Swatches_Loader();
 
 	}
@@ -168,7 +173,7 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'plugin_action_links', $plugin_admin, 'custom_plugin_link_callback', 10, 2 );
 
 		// on admin init.
-		$this->loader->add_action( 'admin_init', $plugin_admin, 'admin_init_callback' );
+		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'admin_init_callback' );
 
 		// show admin notices after form submission.
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'form_submission_notification_callback' );
@@ -185,6 +190,9 @@ class Addonify_Variation_Swatches {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return;
+		}
 
 		$plugin_public = new Addonify_Variation_Swatches_Public( $this->get_plugin_name(), $this->get_version() );
 
@@ -253,5 +261,4 @@ class Addonify_Variation_Swatches {
 	public function get_version() {
 		return $this->version;
 	}
-
 }
