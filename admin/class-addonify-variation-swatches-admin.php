@@ -73,30 +73,50 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	public function enqueue_styles() {
 
 		// load styles in this plugin page only.
-		if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) {
 
-			// toggle switch.
-			wp_enqueue_style( 'lc_switch', plugin_dir_url( __FILE__ ) . 'css/lc_switch.css', array(), $this->version );
+			wp_enqueue_style(
+				"{$this->plugin_name}-icon",
+				plugin_dir_url( __FILE__ ) . 'assets/fonts/icon.css',
+				array(),
+				$this->version,
+				'all'
+			);
 
-			/*
-				Built in wp color picker
-				Requires atleast WordPress 3.5
-			*/
-			wp_enqueue_style( 'wp-color-picker' );
-
-			// admin css.
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
-
-		} elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
-
-			wp_enqueue_style( 'wp-color-picker' );
-
-			// admin css.
-			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
+			wp_enqueue_style(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'assets/css/admin.css',
+				array(),
+				$this->version,
+				'all'
+			);
 		}
 
-		// admin menu icon fix.
-		wp_enqueue_style( 'addonify-icon-fix', plugin_dir_url( __FILE__ ) . 'css/addonify-icon-fix.css', array(), $this->version, 'all' );
+		// load styles in this plugin page only.
+		// if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
+
+		// 	// toggle switch.
+		// 	wp_enqueue_style( 'lc_switch', plugin_dir_url( __FILE__ ) . 'css/lc_switch.css', array(), $this->version );
+
+		// 	/*
+		// 		Built in wp color picker
+		// 		Requires atleast WordPress 3.5
+		// 	*/
+		// 	wp_enqueue_style( 'wp-color-picker' );
+
+		// 	// admin css.
+		// 	wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
+
+		// } elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
+
+		// 	wp_enqueue_style( 'wp-color-picker' );
+
+		// 	// admin css.
+		// 	wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
+		// }
+
+		// // admin menu icon fix.
+		// wp_enqueue_style( 'addonify-icon-fix', plugin_dir_url( __FILE__ ) . 'css/addonify-icon-fix.css', array(), $this->version, 'all' );
 
 	}
 
@@ -107,24 +127,85 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function enqueue_scripts() {
 
+		wp_register_script(
+			"{$this->plugin_name}-manifest",
+			plugin_dir_url( __FILE__ ) . 'assets/js/manifest.js',
+			null,
+			$this->version,
+			true
+		);
+
+		wp_register_script(
+			"{$this->plugin_name}-vendor",
+			plugin_dir_url( __FILE__ ) . 'assets/js/vendor.js',
+			array(  "{$this->plugin_name}-manifest" ),
+			$this->version,
+			true
+		);
+
+		wp_register_script(
+			"{$this->plugin_name}-main",
+			plugin_dir_url( __FILE__ ) . 'assets/js/main.js',
+			array("{$this->plugin_name}-vendor", 'lodash', 'wp-i18n', 'wp-api-fetch' ),
+			$this->version,
+			true
+		);
+
 		// load scripts in plugin page only.
-		if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) {
 
-			if ( isset( $_GET['tabs'] ) && 'styles' === $_GET['tabs'] ) {
-				// requires atleast WordPress 4.9.0.
-				wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
-				wp_enqueue_script( 'wp-color-picker' );
-			}
+			wp_enqueue_script( "{$this->plugin_name}-manifest" );
 
-			// toggle switch.
-			wp_enqueue_script( 'lc_switch', plugin_dir_url( __FILE__ ) . 'js/lc_switch.min.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( "{$this->plugin_name}-vendor" );
 
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
+			wp_enqueue_script( "{$this->plugin_name}-main" );
 
-		} elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) && 'product' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) {
+			wp_localize_script(
+				"{$this->plugin_name}-main",
+				'ADDONIFY_WISHLIST_LOCOLIZER',
+				array(
+					'admin_url'      => admin_url( '/' ),
+					'ajax_url'       => admin_url( 'admin-ajax.php' ),
+					'site_url'       => site_url( '/' ),
+					'rest_namespace' => 'addonify_variation_swatches_options_api',
+					'version_number' => $this->version,
+				)
+			);
+		}
+
+		wp_set_script_translations( "{$this->plugin_name}-main", $this->plugin_name );
+
+		// load scripts in plugin page only.
+		// if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
+
+		// 	if ( isset( $_GET['tabs'] ) && 'styles' === $_GET['tabs'] ) {
+		// 		// requires atleast WordPress 4.9.0.
+		// 		wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+		// 		wp_enqueue_script( 'wp-color-picker' );
+		// 	}
+
+		// 	// toggle switch.
+		// 	wp_enqueue_script( 'lc_switch', plugin_dir_url( __FILE__ ) . 'js/lc_switch.min.js', array( 'jquery' ), $this->version, false );
+
+		// 	wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
+
+		// } else {}
+		
+		if ( 
+			isset( $_GET['taxonomy'] ) &&
+			isset( $_GET['post_type'] ) &&
+			'product' === sanitize_text_field( wp_unslash( $_GET['post_type'] )
+			)
+		) {
 			wp_enqueue_script( 'wp-color-picker' );
 			wp_enqueue_media();
-			wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
+			wp_enqueue_script(
+				$this->plugin_name,
+				plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js',
+				array( 'jquery' ),
+				time(),
+				false
+			);
 		}
 
 	}
@@ -138,29 +219,61 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		// do not show menu if woocommerce is not active.
 		if ( $this->is_woocommerce_active() !== true ) {
+
 			add_action( 'admin_notices', array( $this, 'set_admin_woocommerce_not_activated_alert' ) );
 			return;
 		}
 
-		global $menu;
-		$parent_menu_slug = null;
+		global $admin_page_hooks;
 
-		foreach ( $menu as $item ) {
-			if ( 'addonify' === strtolower( $item[0] ) ) {
-				$parent_menu_slug = $item[2];
-				break;
-			}
-		}
+		$parent_menu_slug = array_search( 'addonify', $admin_page_hooks, true );
 
 		if ( ! $parent_menu_slug ) {
-			add_menu_page( 'Addonify Settings', 'Addonify', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), plugin_dir_url( __FILE__ ) . '/images/addonify-logo.svg', 76 );
 
-			add_submenu_page( $this->settings_page_slug, 'Addonify Varation Swatches Settings', 'Variation Swatches', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
+			add_menu_page(
+				'Addonify Settings',
+				'Addonify',
+				'manage_options',
+				$this->settings_page_slug,
+				array( $this, 'get_settings_screen_contents' ),
+				'dashicons-superhero',
+				70
+			);
+
+			add_submenu_page(
+				$this->settings_page_slug,
+				'Swatches Settings',
+				'Swatches',
+				'manage_options',
+				$this->settings_page_slug,
+				array( $this, 'get_settings_screen_contents' ),
+				1
+			);
+
 		} else {
-			// sub menu.
-			// redirects to main plugin link.
-			add_submenu_page( $parent_menu_slug, 'Addonify Varation Swatches Settings', 'Variation Swatches', 'manage_options', $this->settings_page_slug, array( $this, 'get_settings_screen_contents' ), 1 );
+
+			add_submenu_page(
+				$parent_menu_slug,
+				'Swatches Settings',
+				'Swatches',
+				'manage_options',
+				$this->settings_page_slug,
+				array( $this, 'get_settings_screen_contents' ),
+				1
+			);
 		}
+	}
+
+	/**
+	 * Get contents from settings page templates and print it
+	 * Called from "add_menu_callback".
+	 *
+	 * @since    1.0.0
+	 */
+	public function get_settings_screen_contents() {
+		?>
+		<div id="___adfy-variation-swatches-app___"></div>
+		<?php
 	}
 
 
@@ -201,19 +314,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		}
 
 		return $links;
-	}
-
-
-	/**
-	 * Get contents from settings page templates and print it
-	 *
-	 * @since    1.0.0
-	 */
-	public function get_settings_screen_contents() {
-		$current_tab = ( isset( $_GET['tabs'] ) ) ? sanitize_text_field( wp_unslash( $_GET['tabs'] ) ) : 'settings';
-		$tab_url     = "admin.php?page=$this->settings_page_slug&tabs=";
-
-		require_once dirname( __FILE__ ) . '/templates/settings-screen.php';
 	}
 
 
