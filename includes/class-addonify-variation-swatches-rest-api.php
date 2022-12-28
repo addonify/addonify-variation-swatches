@@ -27,7 +27,7 @@ if ( ! class_exists( 'Addonify_Variation_Swatches_Rest_API' ) ) {
 		 * @access   protected
 		 * @var      string    $rest_namespace.
 		 */
-		protected $rest_namespace = 'addonify_variation_options_api';
+		protected $rest_namespace = 'addonify_variation_swatches_options_api';
 
 
 		/**
