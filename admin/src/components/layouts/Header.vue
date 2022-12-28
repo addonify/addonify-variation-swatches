@@ -44,7 +44,7 @@
 						class="adfy-button fake-button has-underline"
 						target="_blank"
 					>
-						{{ __("Documentation", "addonify-wishlist") }}
+						{{ __("Documentation", "addonify-variation-swatches") }}
 					</a>
 					<button
 						type="submit"
@@ -64,7 +64,7 @@
 								></path>
 							</svg>
 						</span>
-						{{ __("Save Options", "addonify-wishlist") }}
+						{{ __("Save Options", "addonify-variation-swatches") }}
 					</button>
 				</div>
 			</div>

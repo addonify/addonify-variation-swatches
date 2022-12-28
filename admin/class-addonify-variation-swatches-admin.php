@@ -166,7 +166,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 				array(
 					'admin_url'      => admin_url( '/' ),
 					'ajax_url'       => admin_url( 'admin-ajax.php' ),
-					'site_url'       => site_url( '/' ),
 					'rest_namespace' => 'addonify_variation_swatches_options_api',
 					'version_number' => $this->version,
 				)

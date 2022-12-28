@@ -26,7 +26,7 @@
 			ElMessage.error({
 				message: __(
 					"Only JSON file is permitted.",
-					"addonify-wishlist"
+					"addonify-variation-swatches"
 				),
 				offset: 50,
 				duration: 5000,

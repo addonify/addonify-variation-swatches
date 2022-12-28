@@ -10,7 +10,7 @@
 				<p class="text">
 					© 2020 - {{ thisYear }} Addonify WooCommerce Wishlist
 					<span class="version"
-						>{{ __("Version", "addonify-wishlist") }}:
+						>{{ __("Version", "addonify-variation-swatches") }}:
 						{{ versionNumber }}</span
 					>
 				</p>
@@ -18,11 +18,11 @@
 			<div class="adfy-col right">
 				<p class="text">
 					<a
-						href="https://wordpress.org/plugins/addonify-wishlist/#reviews"
+						href="https://wordpress.org/plugins/addonify-variation-swatches/#reviews"
 						class="adfy-link"
 						target="_blank"
 					>
-						{{ __("Rate", "addonify-wishlist") }}
+						{{ __("Rate", "addonify-variation-swatches") }}
 						<span class="icon">
 							<i class="dashicons dashicons-star-filled"></i>
 							<i class="dashicons dashicons-star-filled"></i>

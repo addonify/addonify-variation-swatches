@@ -193,7 +193,7 @@ export const useOptionsStore = defineStore({
                     let date = new Date().getTime();
                     let link = document.createElement('a');
                     link.href = res.url;
-                    link.setAttribute('download', `addonify-wishlist-all-settings-${date}.json`);
+                    link.setAttribute('download', `addonify-variation-swatches-all-settings-${date}.json`);
                     document.body.appendChild(link);
                     link.click(); // Simulate the click event.
 
