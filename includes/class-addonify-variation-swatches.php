@@ -77,6 +77,7 @@ class Addonify_Variation_Swatches {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->rest_api();
 
 	}
 
@@ -89,6 +90,7 @@ class Addonify_Variation_Swatches {
 	 * - Addonify_Variation_Swatches_i18n. Defines internationalization functionality.
 	 * - Addonify_Variation_Swatches_Admin. Defines all hooks for the admin area.
 	 * - Addonify_Variation_Swatches_Public. Defines all hooks for the public side of the site.
+	 * - Addonify_Variation_Swatches_Rest_API. Defines all hooks for registering the admin side rest api.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -114,6 +116,18 @@ class Addonify_Variation_Swatches {
 		 * of the plugin.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-addonify-variation-swatches-i18n.php';
+
+		/**
+		 * The class responsible for defining rest api functionality
+		 * of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-addonify-variation-swatches-rest-api.php';
+
+		/**
+		 * The class responsible for defining admin settings functionality
+		 * of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/setting-functions/settings.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
@@ -180,6 +194,17 @@ class Addonify_Variation_Swatches {
 
 		// show "type" in "attributes" page in admin.
 		$this->loader->add_filter( 'product_attributes_type_selector', $plugin_admin, 'product_attributes_types_callback' );
+	}
+
+	/**
+	 * Register rest api endpoints for admin settings page.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function rest_api() {
+
+		new Addonify_Variation_Swatches_Rest_API();
 	}
 
 	/**

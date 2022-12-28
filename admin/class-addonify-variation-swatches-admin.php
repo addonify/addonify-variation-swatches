@@ -804,7 +804,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 * Show custom "column" in term table
 	 *
 	 * @since    1.0.0
-	 * @param string $columns Name of columns for term table.
+	 * @param array $columns Name of columns for term table.
 	 */
 	public function custom_column_heading_for_attributes( $columns ) {
 
