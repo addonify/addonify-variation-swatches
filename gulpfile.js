@@ -38,7 +38,7 @@ const scriptpath = {
 
     script_dist: "./public/assets/build/js/",
 }
-const output_js_file_name = "addonify-wishlist-public.js";
+const output_js_file_name = "addonify-variation-swatches-public.js";
 
 var conditional__script__path = {
     conditional__script__src: [
@@ -55,7 +55,7 @@ const sasspath = {
     sass_src: "./public/assets/src/scss/**/*.scss",
     sass_dist: "./public/assets/build/css/",
 }
-const compiled_sass_css_file_name = "addonify-wishlist-public.css";
+const compiled_sass_css_file_name = "addonify-variation-swatches-public.css";
 
 var conditional__sass__path = {
     conditional__sass__src: [
@@ -75,7 +75,7 @@ const rtlcsspath = {
 
 // 4# zip file path
 
-var output__compressed__file = 'addonify-wishlist.zip';
+var output__compressed__file = 'addonify-variation-swatches.zip';
 
 const source__files__folders__to__compress = {
 

@@ -15,10 +15,10 @@
 	const proStore = useProductStore();
 	const { slug, name, thumb, description, status } = props;
 
-	const activate = __("Activate now", "addonify-wishlist");
-	const activiting = __("Activating...", "addonify-wishlist");
-	const install = __("Install now", "addonify-wishlist");
-	const installing = __("Installing...", "addonify-wishlist");
+	const activate = __("Activate now", "addonify-variation-swatches");
+	const activiting = __("Activating...", "addonify-variation-swatches");
+	const install = __("Install now", "addonify-variation-swatches");
+	const installing = __("Installing...", "addonify-variation-swatches");
 </script>
 
 <template>

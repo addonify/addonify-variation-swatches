@@ -21,7 +21,9 @@
 				<Navigation />
 			</aside>
 			<section class="adfy-col end site-primary">
-				<p>{{ __("Coming soon.....", "addonify-wishlist") }}</p>
+				<p>
+					{{ __("Coming soon.....", "addonify-variation-swatches") }}
+				</p>
 				<!--<Loading
 					v-if="
 						proStore.isFetching === true ||

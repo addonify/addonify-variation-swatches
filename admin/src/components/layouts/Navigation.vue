@@ -17,7 +17,7 @@
 							/>
 						</svg>
 					</span>
-					{{ __("Settings", "addonify-wishlist") }}
+					{{ __("Settings", "addonify-variation-swatches") }}
 				</router-link>
 			</li>
 			<li>
@@ -33,7 +33,7 @@
 							/>
 						</svg>
 					</span>
-					{{ __("Styles", "addonify-wishlist") }}
+					{{ __("Styles", "addonify-variation-swatches") }}
 				</router-link>
 			</li>
 			<li>
@@ -49,7 +49,7 @@
 							/>
 						</svg>
 					</span>
-					{{ __("Tools", "addonify-wishlist") }}
+					{{ __("Tools", "addonify-variation-swatches") }}
 				</router-link>
 			</li>
 			<li>
@@ -65,7 +65,7 @@
 							/>
 						</svg>
 					</span>
-					{{ __("Products", "addonify-wishlist") }}
+					{{ __("Products", "addonify-variation-swatches") }}
 				</router-link>
 			</li>
 		</ul>
