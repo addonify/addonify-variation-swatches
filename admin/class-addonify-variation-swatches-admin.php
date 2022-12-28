@@ -162,7 +162,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 			wp_localize_script(
 				"{$this->plugin_name}-main",
-				'ADDONIFY_WISHLIST_LOCOLIZER',
+				'ADDONIFY_V_SWATCHES_LOCOLIZER',
 				array(
 					'admin_url'      => admin_url( '/' ),
 					'ajax_url'       => admin_url( 'admin-ajax.php' ),

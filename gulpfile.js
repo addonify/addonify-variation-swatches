@@ -14,8 +14,6 @@ const autoprefixer = require('autoprefixer');
 const sourcemaps = require('gulp-sourcemaps');
 const sass = require('gulp-sass')(require('sass'));
 
-// npm install gulp@4.0.2 gulp-shell gulp-sourcemaps gulp-sass sass gulp-concat gulp-uglify gulp-postcss autoprefixer cssnano gulp-notify gulp-plumber gulp-rtlcss gulp-rename gulp-zip --save-dev
-
 /*
 ===========================================================
 =

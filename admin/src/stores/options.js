@@ -8,7 +8,7 @@ const { isEqual, cloneDeep } = lodash;
 const { apiFetch } = wp;
 
 // Wordpress localize data.
-const BASE_API_URL = ADDONIFY_WISHLIST_LOCOLIZER.rest_namespace;
+const BASE_API_URL = ADDONIFY_V_SWATCHES_LOCOLIZER.rest_namespace;
 
 // Store old options & values.
 let oldOptions = {};
