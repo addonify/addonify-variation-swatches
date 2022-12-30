@@ -9,6 +9,16 @@
  * @author     Addonify <contact@addonify.com>
  */
 
+/**
+ * Include settings options fields.
+ */
+require_once trailingslashit( plugin_dir_path( dirname( __FILE__ ) ) ) . 'setting-functions/fields/settings-tab.php';
+
+/**
+ * Include styles options fields.
+ */
+require_once trailingslashit( plugin_dir_path( dirname( __FILE__ ) ) ) . 'setting-functions/fields/styles-tab.php';
+
 if ( ! function_exists( 'addonify_variation_settings_defaults' ) ) {
 	/**
 	 * Default Settings
@@ -20,29 +30,65 @@ if ( ! function_exists( 'addonify_variation_settings_defaults' ) ) {
 		$defaults = apply_filters(
 			'addonify_variation_setting_defaults',
 			array(
-				'show_on_archives'              => true,
-				'archive_show_single_attribute' => false,
-				'archive_visible_attributes'    => '',
-				'display_position'              => 'after_add_to_cart',
-				'swatches_align'                => 'left',
-				'archive_attribute_width'       => 30,
-				'archive_attribute_height'      => 30,
-				'archive_attribute_font_size'   => 16,
-				'archive_attributes_limit'      => 0,
+				'enable_swatches'                        => true,
 
-				'load_styles_from_plugin'       => false,
+				'convert_dropdown_as'                    => 'default',
+				'behaviour_for_disabled_variation'       => 'default',
+				'behaviour_for_out_of_stock_variation'   => 'default',
+				'deselect_reselected_attribute'          => false,
 
-				'tooltip_text_color'            => '#ffffff',
-				'tooltip_bck_color'             => '#000000',
-				'item_text_color'               => '#000000',
-				'item_bck_color'                => '#ffffff',
-				'item_text_color_hover'         => '#000000',
-				'item_bck_color_hover'          => '#ffffff',
-				'selected_item_text_color'      => '#000000',
-				'selected_item_bck_color'       => '#ffffff',
-				'selected_item_border_color'    => '#000000',
+				'show_swatches_on_archives'              => false,
+				'align_swatches_on_archives'             => 'left',
+				'display_variation_name_and_variations_on_archives' => 'default',
+				'display_variation_description_on_archives' => false,
 
-				'custom_css'                    => '',
+				'show_swatches_on_single'                => false,
+				'align_swatches_on_single'               => 'left',
+				'display_variation_name_and_variations_on_single' => 'default',
+
+				'load_styles_from_plugin'                => false,
+
+				'enable_tooltip_in_color_attribute'      => false,
+				'color_attribute_height'                 => 0,
+				'color_attribute_width'                  => 0,
+				'color_attribute_border_width'           => 0,
+				'color_attribute_border_style'           => 'none',
+				'color_attribute_border_color'           => '#000000',
+				'color_attribute_border_color_on_hover'  => '#000000',
+				'color_attribute_css_classes'            => '#000000',
+
+				'enable_tooltip_in_image_attribute'      => false,
+				'image_attribute_height'                 => 0,
+				'image_attribute_width'                  => 0,
+				'image_attribute_background_color'       => '#000000',
+				'image_attribute_border_width'           => 0,
+				'image_attribute_border_style'           => 'none',
+				'image_attribute_border_color'           => '#000000',
+				'image_attribute_border_color_on_hover'  => '#000000',
+				'image_attribute_padding'                => 0,
+				'image_attribute_css_classes'            => '',
+
+				'enable_tooltip_in_button_attribute'     => false,
+				'button_attribute_height'                => 0,
+				'button_attribute_width'                 => 0,
+				'button_attribute_background_color'      => '#000000',
+				'button_attribute_text_color'            => '#000000',
+				'button_attribute_background_color_on_hover' => '#000000',
+				'button_attribute_text_color_on_hover'   => '#000000',
+				'button_attribute_border_width'          => 0,
+				'button_attribute_border_style'          => 'none',
+				'button_attribute_border_color'          => '#000000',
+				'button_attribute_border_color_on_hover' => '#000000',
+				'button_attribute_padding'               => 0,
+				'button_attribute_font_size'             => 0,
+				'button_attribute_css_classes'           => '',
+
+				'tooltip_background_color'               => '#000000',
+				'tooltip_text_color'                     => '#000000',
+				'tooltip_padding'                        => 0,
+				'tooltip_font_size'                      => 0,
+
+				'custom_css'                             => '',
 			)
 		);
 
@@ -179,6 +225,26 @@ if ( ! function_exists( 'addonify_variation_settings_fields' ) ) {
  */
 function addonify_variation_add_fields_to_settings_fields( $settings_fields ) {
 
+	$settings_fields = array_merge( $settings_fields, addonify_variation_swatches_general_option_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_swatches_attribute_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_swatches_shop_catalog_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_swatches_product_single_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_general_styles_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_color_type_attribute_styles_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_image_type_attribute_styles_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_button_type_attribute_styles_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_tooltip_styles_settings_fields() );
+
+	$settings_fields = array_merge( $settings_fields, addonify_variation_custom_styles_settings_fields() );
+
 	return $settings_fields;
 }
 add_filter( 'addonify_variation_settings_fields', 'addonify_variation_add_fields_to_settings_fields' );
@@ -198,10 +264,62 @@ if ( ! function_exists( 'addonify_variation_get_settings_fields' ) ) {
 			'tabs'            => array(
 				'settings' => array(
 					'title'    => __( 'Settings', 'addonify-variation' ),
-					'sections' => array(),
+					'sections' => array(
+						'general'        => array(
+							'title'  => __( 'General Options', 'addonify-wishlist' ),
+							'fields' => addonify_variation_swatches_general_option_fields(),
+						),
+						'attributes'     => array(
+							'title'  => __( 'Attributes Options', 'addonify-wishlist' ),
+							'fields' => addonify_variation_swatches_attribute_settings_fields(),
+						),
+						'shop_catalog'   => array(
+							'title'  => __( 'Shop catalogue Options', 'addonify-wishlist' ),
+							'fields' => addonify_variation_swatches_shop_catalog_settings_fields(),
+						),
+						'single_product' => array(
+							'title'  => __( 'Single Product Options', 'addonify-wishlist' ),
+							'fields' => addonify_variation_swatches_product_single_settings_fields(),
+						),
+					),
 				),
 				'styles'   => array(
-					'sections' => array(),
+					'sections' => array(
+						'general'               => array(
+							'title'  => __( 'General', 'addonify-wishlist' ),
+							'fields' => addonify_variation_general_styles_settings_fields(),
+						),
+						'color_type_attribute'  => array(
+							'title'     => __( 'Color Type Attribute', 'addonify-wishlist' ),
+							'type'      => 'options-box',
+							'dependent' => array( 'load_styles_from_plugin' ),
+							'fields'    => addonify_variation_color_type_attribute_styles_settings_fields(),
+						),
+						'image_type_attribute'  => array(
+							'title'     => __( 'Image Type Attribute', 'addonify-wishlist' ),
+							'type'      => 'options-box',
+							'dependent' => array( 'load_styles_from_plugin' ),
+							'fields'    => addonify_variation_image_type_attribute_styles_settings_fields(),
+						),
+						'button_type_attribute' => array(
+							'title'     => __( 'Button Type Attribute', 'addonify-wishlist' ),
+							'type'      => 'options-box',
+							'dependent' => array( 'load_styles_from_plugin' ),
+							'fields'    => addonify_variation_button_type_attribute_styles_settings_fields(),
+						),
+						'tooltip'               => array(
+							'title'     => __( 'Tooltip', 'addonify-wishlist' ),
+							'type'      => 'options-box',
+							'dependent' => array( 'load_styles_from_plugin' ),
+							'fields'    => addonify_variation_tooltip_styles_settings_fields(),
+						),
+						'custom'                => array(
+							'title'     => __( 'Custom CSS', 'addonify-wishlist' ),
+							'type'      => 'options-box',
+							'dependent' => array( 'load_styles_from_plugin' ),
+							'fields'    => addonify_variation_custom_styles_settings_fields(),
+						),
+					),
 				),
 				'products' => array(
 					'recommended' => array(
