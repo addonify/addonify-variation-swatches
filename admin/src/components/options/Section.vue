@@ -24,7 +24,7 @@
 		class="option-box-title"
 		v-if="props.section.title !== ''"
 		v-show="
-			props.sectionId == 'general' ? true : store.options.enable_wishlist
+			props.sectionId == 'general' ? true : store.options.enable_swatches
 		"
 	>
 		{{ props.section.title }}
@@ -33,7 +33,7 @@
 		v-for="(field, fieldKey) in props.section.fields"
 		class="adfy-options-item"
 		v-show="
-			fieldKey === 'enable_wishlist'
+			fieldKey === 'enable_swatches'
 				? true
 				: store.optionBoxVisibility(field)
 		"
