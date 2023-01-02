@@ -40,7 +40,7 @@
 			<div class="adfy-col end">
 				<div class="buttons">
 					<a
-						href="https://docs.addonify.com/kb/woocommerce-wishlist/"
+						href="https://docs.addonify.com/kb/variation-swatches/"
 						class="adfy-button fake-button has-underline"
 						target="_blank"
 					>

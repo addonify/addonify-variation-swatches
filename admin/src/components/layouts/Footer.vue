@@ -8,7 +8,7 @@
 		<div class="adfy-row">
 			<div class="adfy-col left">
 				<p class="text">
-					© 2020 - {{ thisYear }} Addonify WooCommerce Wishlist
+					© {{ thisYear }} Addonify Variation Swatches
 					<span class="version"
 						>{{ __("Version", "addonify-variation-swatches") }}:
 						{{ versionNumber }}</span
