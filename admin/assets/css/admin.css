@@ -32,7 +32,7 @@
   /* -------------------------------------------------------------------------- 
    Typography variables
   -------------------------------------------------------------------------- */
-  --addonify_system_font_family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, Inter, Roboto, Segoe ui, System ui, sans-serif;
+  --addonify_system_font_family: -apple-system, BlinkMacSystemFont, Ubuntu, Gill Sans, System Ui, "Helvetica", Arial, "Inter", Roboto, "Segoe Ui", sans-serif;
   --addonify_monospace_font_family: monospace;
   --addonify_button_font_size: 15px;
   --addonify_button_font_weight: normal;
@@ -315,8 +315,9 @@
   position: relative;
   margin: 0 0 0 -20px;
   padding: 0;
-  font-weight: var(--addonify_system_font_family);
+  font-family: var(--addonify_system_font_family);
   font-weight: normal;
+  line-height: 1.5;
   box-sizing: border-box;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
