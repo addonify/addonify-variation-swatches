@@ -32,7 +32,7 @@
   /* -------------------------------------------------------------------------- 
    Typography variables
   -------------------------------------------------------------------------- */
-  --addonify_system_font_family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, Inter, Roboto, Segoe ui, System ui, sans-serif;
+  --addonify_system_font_family: -apple-system, BlinkMacSystemFont, Ubuntu, Gill Sans, System Ui, "Helvetica", Arial, "Inter", Roboto, "Segoe Ui", sans-serif;
   --addonify_monospace_font_family: monospace;
   --addonify_button_font_size: 15px;
   --addonify_button_font_weight: normal;
@@ -87,19 +87,19 @@
 /* -------------------------------------------------------------------------- 
 	Forms
   -------------------------------------------------------------------------- */
-[class*=page_addonify_wishlist] input[type=date],
-[class*=page_addonify_wishlist] input[type=datetime-local],
-[class*=page_addonify_wishlist] input[type=datetime],
-[class*=page_addonify_wishlist] input[type=email],
-[class*=page_addonify_wishlist] input[type=month],
-[class*=page_addonify_wishlist] input[type=number],
-[class*=page_addonify_wishlist] input[type=password],
-[class*=page_addonify_wishlist] input[type=search],
-[class*=page_addonify_wishlist] input[type=tel],
-[class*=page_addonify_wishlist] input[type=text],
-[class*=page_addonify_wishlist] input[type=time],
-[class*=page_addonify_wishlist] input[type=url],
-[class*=page_addonify_wishlist] input[type=week] {
+[class*=addonify_page_addonify_variation_swatches] input[type=date],
+[class*=addonify_page_addonify_variation_swatches] input[type=datetime-local],
+[class*=addonify_page_addonify_variation_swatches] input[type=datetime],
+[class*=addonify_page_addonify_variation_swatches] input[type=email],
+[class*=addonify_page_addonify_variation_swatches] input[type=month],
+[class*=addonify_page_addonify_variation_swatches] input[type=number],
+[class*=addonify_page_addonify_variation_swatches] input[type=password],
+[class*=addonify_page_addonify_variation_swatches] input[type=search],
+[class*=addonify_page_addonify_variation_swatches] input[type=tel],
+[class*=addonify_page_addonify_variation_swatches] input[type=text],
+[class*=addonify_page_addonify_variation_swatches] input[type=time],
+[class*=addonify_page_addonify_variation_swatches] input[type=url],
+[class*=addonify_page_addonify_variation_swatches] input[type=week] {
   padding: 0;
   margin: 0;
   line-height: var(--el-input-inner-height);
@@ -112,26 +112,26 @@
   background-color: transparent;
   color: var(--el-input-text-color, var(--el-text-color-regular));
 }
-[class*=page_addonify_wishlist] input[type=date]:focus,
-[class*=page_addonify_wishlist] input[type=datetime-local]:focus,
-[class*=page_addonify_wishlist] input[type=datetime]:focus,
-[class*=page_addonify_wishlist] input[type=email]:focus,
-[class*=page_addonify_wishlist] input[type=month]:focus,
-[class*=page_addonify_wishlist] input[type=number]:focus,
-[class*=page_addonify_wishlist] input[type=password]:focus,
-[class*=page_addonify_wishlist] input[type=search]:focus,
-[class*=page_addonify_wishlist] input[type=tel]:focus,
-[class*=page_addonify_wishlist] input[type=text]:focus,
-[class*=page_addonify_wishlist] input[type=time]:focus,
-[class*=page_addonify_wishlist] input[type=url]:focus,
-[class*=page_addonify_wishlist] input[type=week]:focus {
+[class*=addonify_page_addonify_variation_swatches] input[type=date]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=datetime-local]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=datetime]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=email]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=month]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=number]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=password]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=search]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=tel]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=text]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=time]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=url]:focus,
+[class*=addonify_page_addonify_variation_swatches] input[type=week]:focus {
   outline: none;
   box-shadow: none;
 }
-[class*=page_addonify_wishlist] input.readonly,
-[class*=page_addonify_wishlist] input[readonly],
-[class*=page_addonify_wishlist] textarea.readonly,
-[class*=page_addonify_wishlist] textarea[readonly] {
+[class*=addonify_page_addonify_variation_swatches] input.readonly,
+[class*=addonify_page_addonify_variation_swatches] input[readonly],
+[class*=addonify_page_addonify_variation_swatches] textarea.readonly,
+[class*=addonify_page_addonify_variation_swatches] textarea[readonly] {
   -el-input-inner-height: calc(var(--el-input-height, 40px) - 2px);
   background-color: transparent;
 }
@@ -315,8 +315,9 @@
   position: relative;
   margin: 0 0 0 -20px;
   padding: 0;
-  font-weight: var(--addonify_system_font_family);
+  font-family: var(--addonify_system_font_family);
   font-weight: normal;
+  line-height: 1.5;
   box-sizing: border-box;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -520,11 +521,11 @@
   justify-content: stretch;
 }
 
-[class*=page_addonify_wishlist] #wpbody-content {
+[class*=addonify_page_addonify_variation_swatches] #wpbody-content {
   padding-bottom: 30px;
 }
 
-[class*=page_addonify_wishlist] #wpfooter {
+[class*=addonify_page_addonify_variation_swatches] #wpfooter {
   display: none;
 }
 

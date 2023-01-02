@@ -1,12 +1,12 @@
-
 #___adfy-variation-swatches-app___ {
 
     display: block;
     position: relative;
     margin: 0 0 0 -20px;
     padding: 0;
-    font-weight: var(--addonify_system_font_family);
+    font-family: var(--addonify_system_font_family);
     font-weight: normal;
+    line-height: 1.5;
     box-sizing: border-box;
     @include better_font_rendering();
 
@@ -249,12 +249,12 @@
     }
 }
 
-[class*="page_addonify_wishlist"] #wpbody-content {
+[class*="addonify_page_addonify_variation_swatches"] #wpbody-content {
 
     padding-bottom: 30px;
 }
 
-[class*="page_addonify_wishlist"] #wpfooter {
+[class*="addonify_page_addonify_variation_swatches"] #wpfooter {
 
     display: none;
 }
