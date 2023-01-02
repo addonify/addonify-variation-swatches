@@ -85,17 +85,13 @@
 
 		function init(){
 
-			if ( addonify_vs_object.enable_tooltip == 1 ) {
+			// Tooltip.
+			$( '.addonify-vs-attributes-options li[data-title]' ).each(function(){
+				tippy( this, {
+					content: $(this).data( 'title' ),
+				});
 
-				// Tooltip.
-				$( '.addonify-vs-attributes-options li[data-title]' ).each(function(){
-					tippy( this, {
-						content: $(this).data( 'title' ),
-					});
-
-				})
-			}
-
+			})
 		}
 
 		// toggle between "add to cart" button and "select options" button if attributes is selected
@@ -103,9 +99,6 @@
 
 			// continue only if is shop page or archive page
 			if ( ! parseInt( addonify_vs_object.is_shop_page ) ) return;
-
-			// continue if, "show_single_attribute" is not enabled
-			if ( parseInt( addonify_vs_object.show_single_attribute ) ) return;
 
 			var $parent = $(sel).parents( 'table.variations' );
 
@@ -200,7 +193,7 @@
 					}
 
 				}
- 
+
 			});
 
 			return return_data;
@@ -251,7 +244,7 @@
 					}
 
 				}
- 
+
 			});
 
 		}

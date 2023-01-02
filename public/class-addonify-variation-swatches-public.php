@@ -40,15 +40,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	private $version;
 
 	/**
-	 * Is Tooltip enabled ?
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $enable_tooltip    Is tooltip enabled ?
-	 */
-	private $enable_tooltip;
-
-	/**
 	 * Show in archive ?
 	 *
 	 * @since    1.0.0
@@ -56,15 +47,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @var      string    $show_in_archive    Show in archive or shop page ?
 	 */
 	private $show_in_archive;
-
-	/**
-	 * Show single attribute ?
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $show_single_attribute    Show single attribute ?
-	 */
-	private $show_single_attribute;
 
 	/**
 	 * Display position of variation in shop or archives
@@ -88,10 +70,8 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$this->version     = $version;
 
 		if ( ! is_admin() ) {
-			$this->enable_tooltip           = intval( $this->get_db_values( 'enable_tooltip' ) );
-			$this->show_in_archive          = intval( $this->get_db_values( 'show_on_archives' ) );
-			$this->show_single_attribute    = intval( $this->get_db_values( 'archive_show_single_attribute' ) );
-			$this->display_position_in_shop = strval( $this->get_db_values( 'display_position' ) );
+			$this->show_in_archive          = intval( addonify_variation_get_option( 'show_swatches_on_archives' ) );
+			$this->display_position_in_shop = 'before_add_to_cart';
 		}
 
 	}
@@ -120,23 +100,18 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 */
 	public function enqueue_scripts() {
 
-		if ( $this->enable_tooltip ) {
+		// popper js.
+		wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), $this->version, false );
 
-			// popper js.
-			wp_enqueue_script( '__ADDONIFY__CORE__POPPER__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/popper.min.js', array( 'jquery' ), $this->version, false );
-
-			// tippy js.
-			wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), $this->version, false );
-		}
+		// tippy js.
+		wp_enqueue_script( '__ADDONIFY__CORE__TIPPY__', plugin_dir_url( __FILE__ ) . 'assets/build/js/conditional/tippy-bundle.min.js', array( 'jquery' ), $this->version, false );
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), $this->version, false );
 
 		$localize_args = array(
-			'ajax_url'              => admin_url( 'admin-ajax.php' ),
-			'enable_tooltip'        => $this->enable_tooltip,
-			'show_single_attribute' => $this->show_single_attribute,
-			'is_shop_page'          => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
-			'shop_page_url'         => wc_get_page_permalink( 'shop' ),
+			'ajax_url'      => admin_url( 'admin-ajax.php' ),
+			'is_shop_page'  => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
+			'shop_page_url' => wc_get_page_permalink( 'shop' ),
 		);
 
 		// localize script.
@@ -175,8 +150,8 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		}
 
 		// If auto dropdown to Button is enabled.
-		$auto_dropdown_to_btn = intval( $this->get_db_values( 'auto_dropdown_to_btn' ) );
-		if ( $auto_dropdown_to_btn ) {
+		$convert_dropdown_as = addonify_variation_get_option( 'convert_dropdown_as' );
+		if ( 'button' === $convert_dropdown_as ) {
 			if ( 'select' === $attribute_type || empty( $attribute_type ) ) {
 				$attribute_type = 'button';
 			}
@@ -239,7 +214,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	public function filter_variation_dropdown_html_callback( $args ) {
 
 		// if "auto dropdown to button" is disabled.
-		if ( 1 !== intval( $this->get_db_values( 'auto_dropdown_to_btn' ) ) ) {
+		if ( 1 !== intval( addonify_variation_get_option( 'convert_dropdown_as' ) ) ) {
 
 			$attribute_type = '';
 
@@ -266,14 +241,16 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @since    1.0.0
 	 */
 	private function generate_custom_styles_callback() {
-
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return;
+		}
 		// add attribute options as css class into body tag.
 		add_filter(
 			'body_class',
 			function( $classes ) {
 				$css_classes = array(
-					'addonify-vs-attributes-style-' . $this->get_db_values( 'shape' ),
-					'addonify-vs-disabled-' . $this->get_db_values( 'attribute_behavior' ),
+					'addonify-vs-attributes-style-' . addonify_variation_get_option( 'shape' ),
+					'addonify-vs-disabled-' . addonify_variation_get_option( 'attribute_behavior' ),
 				);
 
 				return array_merge( $classes, $css_classes );
@@ -314,7 +291,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				'body_class',
 				function( $classes ) {
 					$css_classes = array(
-						'addonify-vs-archive-align-' . $this->get_db_values( 'swatches_align' ),
+						'addonify-vs-archive-align-' . addonify_variation_get_option( 'swatches_align' ),
 					);
 					return array_merge( $classes, $css_classes );
 				}
@@ -337,11 +314,11 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		}
 
 		// do not continue if plugin styles are disabled.
-		if ( ! $this->get_db_values( 'load_styles_from_plugin' ) ) {
+		if ( ! addonify_variation_get_option( 'load_styles_from_plugin' ) ) {
 			return;
 		}
 
-		$custom_css = $this->get_db_values( 'custom_css' );
+		$custom_css = addonify_variation_get_option( 'custom_css' );
 
 		$style_args = array(
 			'ul.addonify-vs-attributes-options li'       => array(
@@ -445,7 +422,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @param string $template_path Template path.
 	 */
 	public function override_woo_template( $template, $template_name, $template_path ) {
-
 		// Do not continue, if "Show on archives" options is not activated.
 		if ( 1 !== $this->show_in_archive ) {
 			return $template;

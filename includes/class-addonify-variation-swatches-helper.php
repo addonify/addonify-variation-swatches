@@ -74,36 +74,6 @@ class Addonify_Variation_Swatches_Helper {
 		return class_exists( 'WooCommerce' );
 	}
 
-
-	/**
-	 * This will create settings section, fields and register that settings in a database from the provided array data
-	 *
-	 * @since    1.0.0
-	 * @param array $args Options for settings field.
-	 */
-	protected function create_settings( $args ) {
-
-		add_settings_section( $args['section_id'], $args['section_label'], $args['section_callback'], $args['screen'] );
-
-		foreach ( $args['fields'] as $field ) {
-			// create label.
-			add_settings_field( $field['field_id'], $field['field_label'], $field['field_callback'], $args['screen'], $args['section_id'], $field['field_callback_args'] );
-
-			foreach ( $field['field_callback_args'] as $sub_field ) {
-				$this->default_input_values[ $sub_field['name'] ] = ( isset( $sub_field['default'] ) ) ? $sub_field['default'] : '';
-
-				register_setting(
-					$args['settings_group_name'],
-					$sub_field['name'],
-					array(
-						'sanitize_callback' => ( isset( $sub_field['sanitize_callback'] ) ) ? array( $this, $sub_field['sanitize_callback'] ) : 'sanitize_text_field',
-					)
-				);
-			}
-		}
-	}
-
-
 	/**
 	 * This will return array of all attributes used in woocommerce
 	 *
