@@ -22,6 +22,15 @@
 class Addonify_Variation_Swatches_Helper {
 
 	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	protected $plugin_name;
+
+	/**
 	 * Default values for input fields in admin screen
 	 *
 	 * @since    1.0.0
@@ -60,7 +69,6 @@ class Addonify_Variation_Swatches_Helper {
 	 */
 	protected function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
 	}
 
 
@@ -242,45 +250,6 @@ class Addonify_Variation_Swatches_Helper {
 
 	}
 
-
-	/**
-	 * Generate style markups
-	 *
-	 * @since 1.0.0
-	 * @param array $style_args    Style args to be processed.
-	 */
-	protected function generate_styles_markups( $style_args ) {
-		$custom_styles_output = '';
-		foreach ( $style_args as $css_sel => $property_value ) {
-
-			$properties = '';
-
-			foreach ( $property_value as $property => $db_field ) {
-
-				$css_unit = '';
-
-				if ( is_array( $db_field ) ) {
-					$default  = isset( $db_field[2] ) ? $db_field[2] : '';
-					$db_value = $this->get_db_values( $db_field[0], $default );
-					$css_unit = isset( $db_field[1] ) ? $db_field[1] : '';
-				} else {
-					$db_value = $this->get_db_values( $db_field );
-				}
-
-				if ( $db_value ) {
-					$properties .= $property . ': ' . $db_value . $css_unit . '; ';
-				}
-			}
-
-			if ( $properties ) {
-				$custom_styles_output .= $css_sel . ' {' . $properties . '}';
-			}
-		}
-
-		return $custom_styles_output;
-	}
-
-
 	/**
 	 * Require proper templates for use in front end.
 	 *
@@ -320,55 +289,6 @@ class Addonify_Variation_Swatches_Helper {
 	// -------------------------------------------------
 
 	/**
-	 * Output markups for text field
-	 *
-	 * @since    1.0.0
-	 * @param array $arguments Options for generating contents.
-	 */
-	public function text_box( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$default  = isset( $args['default'] ) ? $args['default'] : '';
-			$db_value = get_option( $args['name'], $default );
-
-			if ( ! isset( $args['css_class'] ) ) {
-				$args['css_class'] = '';
-			}
-
-			if ( ! isset( $args['type'] ) ) {
-				$args['type'] = 'text';
-			}
-
-			if ( ! isset( $args['end_label'] ) ) {
-				$args['end_label'] = '';
-			}
-
-			if ( ! isset( $args['other_attr'] ) ) {
-				$args['other_attr'] = '';
-			}
-
-			if ( ! isset( $args['label'] ) ) {
-				$args['label'] = '';
-			}
-
-			require dirname( __FILE__, 2 ) . '/admin/templates/input-textbox.php';
-		}
-	}
-
-	/**
-	 * Output markups for toggle switch
-	 *
-	 * @since    1.0.0
-	 * @param array $arguments Options for generating contents.
-	 */
-	public function toggle_switch( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$args['attr'] = ' class="lc_switch"';
-			$this->checkbox( $args );
-		}
-	}
-
-
-	/**
 	 * Output markups for color picker input field
 	 *
 	 * @since    1.0.0
@@ -383,62 +303,6 @@ class Addonify_Variation_Swatches_Helper {
 			require dirname( __FILE__, 2 ) . '/admin/templates/input-colorpicker.php';
 		}
 	}
-
-
-	/**
-	 * Output markups for checkbox input field
-	 *
-	 * @since    1.0.0
-	 * @param array $args Options for generating contents.
-	 */
-	public function checkbox( $args ) {
-		$default  = array_key_exists( 'default', $args ) ? $args['default'] : '';
-		$db_value = intval( get_option( $args['name'], $default ) );
-		$attr     = ( array_key_exists( 'attr', $args ) ) ? $args['attr'] : '';
-
-		if ( 1 === $db_value ) {
-			$attr .= 'checked="checked"';
-		}
-
-		$end_label = ( array_key_exists( 'end_label', $args ) ) ? $args['end_label'] : '';
-
-		require dirname( __FILE__, 2 ) . '/admin/templates/input-checkbox.php';
-	}
-
-
-	/**
-	 * Output markups for select input field
-	 *
-	 * @since    1.0.0
-	 * @param array $arguments Options for generating contents.
-	 */
-	public function select( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$options  = ( array_key_exists( 'options', $args ) ) ? $args['options'] : array();
-			$default  = ( array_key_exists( 'default', $args ) ) ? $args['default'] : '';
-			$db_value = get_option( $args['name'], $default );
-
-			require dirname( __FILE__, 2 ) . '/admin/templates/input-select.php';
-		}
-	}
-
-
-	/**
-	 * Output markups for text area
-	 *
-	 * @since    1.0.0
-	 * @param array $arguments Options for generating contents.
-	 */
-	public function text_area( $arguments ) {
-		foreach ( $arguments as $args ) {
-			$placeholder = isset( $args['placeholder'] ) ? $args['placeholder'] : '';
-			$db_value    = get_option( $args['name'], $placeholder );
-			$attr        = isset( $args['attr'] ) ? $args['attr'] : '';
-
-			require dirname( __FILE__, 2 ) . '/admin/templates/input-textarea.php';
-		}
-	}
-
 
 	/**
 	 * Output markups for media select input field

@@ -49,6 +49,15 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	private $show_in_archive;
 
 	/**
+	 * Show in single ?
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $show_in_single    Show in single or shop page ?
+	 */
+	private $show_in_single;
+
+	/**
 	 * Display position of variation in shop or archives
 	 *
 	 * @since    1.0.0
@@ -71,6 +80,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 
 		if ( ! is_admin() ) {
 			$this->show_in_archive          = intval( addonify_variation_get_option( 'show_swatches_on_archives' ) );
+			$this->show_in_single           = intval( addonify_variation_get_option( 'show_swatches_on_single' ) );
 			$this->display_position_in_shop = 'before_add_to_cart';
 		}
 
@@ -82,15 +92,11 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
 		if ( is_rtl() ) {
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public-rtl.css', array(), $this->version );
 		} else {
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), $this->version );
 		}
-
-		$this->generate_custom_styles_callback();
-
 	}
 
 	/**
@@ -109,9 +115,13 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), $this->version, false );
 
 		$localize_args = array(
-			'ajax_url'      => admin_url( 'admin-ajax.php' ),
-			'is_shop_page'  => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
-			'shop_page_url' => wc_get_page_permalink( 'shop' ),
+			'ajax_url'                               => admin_url( 'admin-ajax.php' ),
+			'is_shop_page'                           => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
+			'shop_page_url'                          => wc_get_page_permalink( 'shop' ),
+			'enable_tooltip_in_color_attribute'      => addonify_variation_get_option( 'enable_tooltip_in_color_attribute' ),
+			'enable_tooltip_in_image_attribute'      => addonify_variation_get_option( 'enable_tooltip_in_image_attribute' ),
+			'enable_tooltip_in_button_attribute'     => addonify_variation_get_option( 'enable_tooltip_in_button_attribute' ),
+			'show_variation_description_on_archives' => addonify_variation_get_option( 'display_variation_description_on_archives' ),
 		);
 
 		// localize script.
@@ -204,7 +214,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		return $html;
 	}
 
-
 	/**
 	 * Filter markups of main variation dropdown field.
 	 *
@@ -214,7 +223,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	public function filter_variation_dropdown_html_callback( $args ) {
 
 		// if "auto dropdown to button" is disabled.
-		if ( 1 !== intval( addonify_variation_get_option( 'convert_dropdown_as' ) ) ) {
+		if ( 'button' !== addonify_variation_get_option( 'convert_dropdown_as' ) ) {
 
 			$attribute_type = '';
 
@@ -233,118 +242,6 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		$args['class'] = 'hide hidden addonify-vs-attributes-options-select';
 		return $args;
 	}
-
-
-	/**
-	 * Generate custom style tag and print it in header of the website
-	 *
-	 * @since    1.0.0
-	 */
-	private function generate_custom_styles_callback() {
-		if ( ! class_exists( 'WooCommerce' ) ) {
-			return;
-		}
-		// add attribute options as css class into body tag.
-		add_filter(
-			'body_class',
-			function( $classes ) {
-				$css_classes = array(
-					'addonify-vs-attributes-style-' . addonify_variation_get_option( 'shape' ),
-					'addonify-vs-disabled-' . addonify_variation_get_option( 'attribute_behavior' ),
-				);
-
-				return array_merge( $classes, $css_classes );
-			}
-		);
-
-		// CSS for attributes width, height and font size.
-		$style_args = array(
-
-			// tooltip.
-			'.tippy-box'                           => array(
-				'background-color' => 'tooltip_bck_color',
-				'color'            => 'tooltip_text_color',
-			),
-			'.tippy-box > .tippy-arrow::before'    => array(
-				'border-top-color' => array( 'tooltip_bck_color', ' !important' ),
-			),
-			'.tippy-box > .tippy-svg-arrow'        => array(
-				'fill' => 'tooltip_bck_color',
-			),
-			'ul.addonify-vs-attributes-options li .adfy-vs' => array(
-				'width'  => array( 'attribute_width', 'px', 30 ),
-				'height' => array( 'attribute_height', 'px', 30 ),
-			),
-			'ul.addonify-vs-attributes-options li' => array(
-				'font-size' => array( 'attribute_font_size', 'px', 16 ),
-			),
-		);
-
-		// append custom styles into main plugin css file.
-		wp_add_inline_style( $this->plugin_name, $this->generate_styles_markups( $style_args ) );
-
-		// CSS for archive or shop page.
-		if ( $this->show_in_archive && ( is_shop() || is_archive() ) ) {
-
-			// add attribute options as css class into body tag.
-			add_filter(
-				'body_class',
-				function( $classes ) {
-					$css_classes = array(
-						'addonify-vs-archive-align-' . addonify_variation_get_option( 'swatches_align' ),
-					);
-					return array_merge( $classes, $css_classes );
-				}
-			);
-
-			// css styles.
-			$style_args = array(
-				'ul.addonify-vs-attributes-options li .adfy-vs' => array(
-					'width'  => array( 'archive_attribute_width', 'px', 30 ),
-					'height' => array( 'archive_attribute_height', 'px', 30 ),
-				),
-
-				'ul.addonify-vs-attributes-options li' => array(
-					'font-size' => array( 'archive_attribute_font_size', 'px', 16 ),
-				),
-			);
-
-			// appnend custom styles into main plugin css file.
-			wp_add_inline_style( $this->plugin_name, $this->generate_styles_markups( $style_args ) );
-		}
-
-		// do not continue if plugin styles are disabled.
-		if ( ! addonify_variation_get_option( 'load_styles_from_plugin' ) ) {
-			return;
-		}
-
-		$custom_css = addonify_variation_get_option( 'custom_css' );
-
-		$style_args = array(
-			'ul.addonify-vs-attributes-options li'       => array(
-				'color'            => 'item_text_color',
-				'background-color' => 'item_bck_color',
-			),
-			'ul.addonify-vs-attributes-options li:hover' => array(
-				'color'            => 'item_text_color_hover',
-				'background-color' => 'item_bck_color_hover',
-			),
-			'ul.addonify-vs-attributes-options li.selected' => array(
-				'color'            => 'selected_item_text_color',
-				'background-color' => 'selected_item_bck_color',
-				'border-color'     => 'selected_item_border_color',
-			),
-		);
-
-		$custom_styles_output = $this->generate_styles_markups( $style_args );
-
-		// avoid empty style tags.
-		if ( $custom_styles_output || $custom_css ) {
-			// append custom styles into main plugin css file.
-			wp_add_inline_style( $this->plugin_name, $custom_styles_output . $custom_css );
-		}
-	}
-
 
 	/**
 	 * Disable out of stock variations
@@ -423,12 +320,12 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 */
 	public function override_woo_template( $template, $template_name, $template_path ) {
 		// Do not continue, if "Show on archives" options is not activated.
-		if ( 1 !== $this->show_in_archive ) {
+		if ( 1 !== $this->show_in_archive && is_archive() ) {
 			return $template;
 		}
 
-		// Continue, only if is shop or is archive template.
-		if ( ! is_shop() && ! is_archive() ) {
+		// Do not continue, if "Show on single" options is not activated.
+		if ( 1 !== $this->show_in_single && is_singular() ) {
 			return $template;
 		}
 
@@ -500,41 +397,5 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		return $button;
 
 	}
-
-
-	/**
-	 * Get Database values for selected fields
-	 *
-	 * @since    1.0.0
-	 * @param string $field_name                Database Option Name.
-	 * @param array  $default                   Default Value.
-	 * @param bool   $get_default_automatically Get default value if "$default" is empty.
-	 */
-	protected function get_db_values( $field_name, $default = null, $get_default_automatically = true ) {
-
-		if ( empty( $default ) && true === $get_default_automatically ) {
-
-			$default = $this->get_default_values( $field_name );
-		}
-
-		return get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name, $default );
-	}
-
-
-	/**
-	 * Get Default values for selected options in admin page
-	 *
-	 * @since    1.0.0
-	 * @param    string $field_name Database Option Name.
-	 */
-	private function get_default_values( $field_name ) {
-
-		if ( empty( $this->default_input_values ) ) {
-			$this->default_input_values = get_option( ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . 'default_values' );
-		}
-
-		return $this->default_input_values[ ADDONIFY_VARIATION_SWATCHES_DB_INITIALS . $field_name ];
-	}
-
 
 }

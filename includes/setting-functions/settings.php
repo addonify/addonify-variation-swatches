@@ -48,7 +48,7 @@ if ( ! function_exists( 'addonify_variation_settings_defaults' ) ) {
 
 				'load_styles_from_plugin'                => false,
 
-				'enable_tooltip_in_color_attribute'      => false,
+				'enable_tooltip_in_color_attribute'      => true,
 				'color_attribute_height'                 => 0,
 				'color_attribute_width'                  => 0,
 				'color_attribute_border_width'           => 0,
@@ -57,7 +57,7 @@ if ( ! function_exists( 'addonify_variation_settings_defaults' ) ) {
 				'color_attribute_border_color_on_hover'  => '#000000',
 				'color_attribute_css_classes'            => '#000000',
 
-				'enable_tooltip_in_image_attribute'      => false,
+				'enable_tooltip_in_image_attribute'      => true,
 				'image_attribute_height'                 => 0,
 				'image_attribute_width'                  => 0,
 				'image_attribute_background_color'       => '#000000',
@@ -68,7 +68,7 @@ if ( ! function_exists( 'addonify_variation_settings_defaults' ) ) {
 				'image_attribute_padding'                => 0,
 				'image_attribute_css_classes'            => '',
 
-				'enable_tooltip_in_button_attribute'     => false,
+				'enable_tooltip_in_button_attribute'     => true,
 				'button_attribute_height'                => 0,
 				'button_attribute_width'                 => 0,
 				'button_attribute_background_color'      => '#000000',

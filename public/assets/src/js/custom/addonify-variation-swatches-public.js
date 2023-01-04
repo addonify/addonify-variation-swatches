@@ -5,24 +5,29 @@
 
 		var default_product_images = {};
 
+		let attribute_types = [ 'button', 'images', 'color' ];
+
 		init();
 
 		// on attribute option select
 		$( '.addonify-vs-attributes-options li' ).click(function(){
-			
+
 			// Do not select disabled item.
 			if ( $(this).hasClass( 'disabled' ) ) return;
-			
+
 			var sel_value = $(this).data( 'value' );
 			var $parent = $(this).parents( 'td' );
 			var $woo_dropdown = $parent.find( 'select.addonify-vs-attributes-options-select' );
-			
+
 			// remove other selected items
 			$parent.find( 'li.selected' ).removeClass( 'selected' );
 
 			// mark item as selected
 			$(this).addClass( 'selected' );
 			$woo_dropdown.val( sel_value ).change();
+			if ($('body').hasClass('archive') && ! addonify_vs_object.show_variation_description_on_archives) {
+				$('.woocommerce-variation-description').hide();
+			}
 		})
 
 
@@ -36,6 +41,7 @@
 
 			// allow some time for dom changes
 			setTimeout( function(){
+				console.log($( '.addonify-vs-attributes-options-select' ))
 				$( '.addonify-vs-attributes-options-select' ).each(function(){
 
 					var $variation_options = $(this).siblings( '.addonify-vs-attributes-options' ).first();
@@ -43,8 +49,8 @@
 					// mark all variation as disabled by default.
 					$variation_options.find( 'li:not(.addonify-vs-item-more)' ).addClass( 'disabled' );
 
+					console.log($( 'option', this ))
 					$( 'option', this ).each( function(){
-
 						if ( $(this).attr( 'value' ).length ){
 
 							// match option value with custom attribute elements
@@ -84,14 +90,16 @@
 
 
 		function init(){
-
-			// Tooltip.
-			$( '.addonify-vs-attributes-options li[data-title]' ).each(function(){
-				tippy( this, {
-					content: $(this).data( 'title' ),
-				});
-
-			})
+			attribute_types.forEach( function ( val ) {
+				if (addonify_vs_object['enable_tooltip_in_'+val+'_attribute']) {
+					// Tooltip in buttons.
+					$( '.addonify-vs-attributes-options-'+val+' li[data-title]' ).each(function(){
+						tippy( this, {
+							content: $(this).data( 'title' ),
+						});
+					})
+				}
+			} );
 		}
 
 		// toggle between "add to cart" button and "select options" button if attributes is selected
@@ -135,8 +143,6 @@
 
 			// get variation id from selected variations and append it into "add to cart" button.
 			update_add_to_cart_btn_property( $parent, attr_names, attr_values );
-
-
 		}
 
 		function change_featured_image_on_attributes_selection( $parent, attr_values ){
@@ -159,7 +165,6 @@
 
 		}
 
-		
 		function get_variation_thumbnail( product_id, selected_attributes ){
 
 			// continue only if archive page
@@ -232,7 +237,7 @@
 						}
 
 						if ( cond_passed === attr_values.length ) {
-							return false;
+							return false; // for breaking 'each' loop.
 						}
 
 					})
@@ -240,7 +245,7 @@
 					if ( cond_passed === attr_values.length ) {
 						let new_url = addonify_vs_object.shop_page_url + '?add-to-cart=' + value.variation_id;
 						$( '.addonify_vs-add_to_cart-button[data-product_id="' + product_id + '"]' ).attr( 'data-product_id', value.variation_id ).attr('href', new_url );
-						return false;
+						return false; // for breaking 'each' loop.
 					}
 
 				}
