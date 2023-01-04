@@ -18,7 +18,7 @@ if ( ! function_exists( 'addonify_variation_swatches_general_option_fields' ) ) 
 	function addonify_variation_swatches_general_option_fields() {
 		return array(
 			'enable_swatches' => array(
-				'label' => __( 'Enable Swatches.', 'addonify-variation' ),
+				'label' => __( 'Enable Swatches', 'addonify-variation' ),
 				'type'  => 'switch',
 				'value' => addonify_variation_get_option( 'enable_swatches' ),
 			),
@@ -37,7 +37,7 @@ if ( ! function_exists( 'addonify_variation_swatches_attribute_settings_fields' 
 			'convert_dropdown_as'                  => array(
 				'type'        => 'select',
 				'label'       => __( 'Convert Dropdown Select To', 'addonify-variation' ),
-				'description' => __( 'Convert all dropdown selects to the selected type.', 'addonify-variation' ),
+				'description' => __( 'Convert all dropdown selects to the selected type', 'addonify-variation' ),
 				'choices'     => array(
 					'default' => __( 'Dropdown Select', 'addonify-variation' ),
 					'button'  => __( 'Button', 'addonify-variation' ),
@@ -68,8 +68,8 @@ if ( ! function_exists( 'addonify_variation_swatches_attribute_settings_fields' 
 				'value'     => addonify_variation_get_option( 'behaviour_for_disabled_variation' ),
 			),
 			'deselect_reselected_attribute'        => array(
-				'label'       => __( 'Deselect Reselected Attribute.', 'addonify-variation' ),
-				'description' => __( 'An attribute that has already been selected is selected again, will deselect it.', 'addonify-variation' ),
+				'label'       => __( 'Deselect Reselected Attribute', 'addonify-variation' ),
+				'description' => __( 'An attribute that has already been selected is selected again, will deselect it', 'addonify-variation' ),
 				'type'        => 'switch',
 				'dependent'   => array( 'enable_swatches' ),
 				'value'       => addonify_variation_get_option( 'deselect_reselected_attribute' ),

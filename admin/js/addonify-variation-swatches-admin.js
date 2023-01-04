@@ -2,22 +2,9 @@
 	'use strict';
 
 	$(document).ready(function(){
-
-		// ios style switch
-		if( $('input.lc_switch').length ){
-			$('input.lc_switch').lc_switch();
-		}
-
-
-		// initiate wp color picker
-		if( $('.color-picker').length ){
-			$('.color-picker').wpColorPicker();
-		}
-
-
 		// wp media uploader ----------
 		var wp_media_obj;
- 
+
 		$('.addonify-vs_select_image_button').click(function(e) {
 			e.preventDefault();
 
@@ -63,33 +50,6 @@
 		})
 
 		// end wp media uploader -----------
-
-
-
-		// Toggle single selection optinos
-		var $show_single_atribute_option = $('#addonify_variation_swatches_archive_show_single_attribute');
-		var $single_option_selection_option = $('#addonify_variation_swatches_archive_visible_attributes').parents( 'tr' );
-
-		$('body').delegate('#addonify_variation_swatches_archive_show_single_attribute', 'lcs-statuschange', function() {
-			toggle_single_option_selection_option();
-		});
-
-		toggle_single_option_selection_option();
-
-		function toggle_single_option_selection_option() {
-
-			let state = $show_single_atribute_option.is(":checked") 
-
-			if( state ){
-				$single_option_selection_option.fadeIn();
-			}
-			else{
-				$single_option_selection_option.fadeOut();
-			}
-
-		}
-		
-
 
 		// code editor
 		if( $('#addonify_variation_swatches_custom_css').length ) {
