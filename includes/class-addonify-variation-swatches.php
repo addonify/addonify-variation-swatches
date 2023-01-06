@@ -215,6 +215,10 @@ class Addonify_Variation_Swatches {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
+		if ( ! (bool) addonify_variation_get_option( 'enable_swatches' ) ) {
+			return;
+		}
+
 		$plugin_public = new Addonify_Variation_Swatches_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
@@ -236,7 +240,7 @@ class Addonify_Variation_Swatches {
 		$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_variation_after_add_to_cart_in_loop_callback', 20 );
 
 		// make woocommerce to load template file from our plugin.
-		$this->loader->add_filter( 'woocommerce_locate_template', $plugin_public, 'override_woo_template', 10, 3 );
+		$this->loader->add_filter( 'woocommerce_locate_template', $plugin_public, 'override_woo_template', 21, 3 );
 
 		// show "custom" add to cart button in shop / archive.
 		$this->loader->add_filter( 'woocommerce_loop_add_to_cart_link', $plugin_public, 'show_add_to_cart_btn_in_shop_page', 10, 2 );

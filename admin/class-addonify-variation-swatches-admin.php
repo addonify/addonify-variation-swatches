@@ -61,7 +61,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-		$this->helper      = new Addonify_Variation_Swatches_Helper( $plugin_name, $version );
 
 	}
 
@@ -73,7 +72,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	public function enqueue_styles() {
 
 		// load styles in this plugin page only.
-		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) {
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) { // phpcs:ignore
 
 			wp_enqueue_style(
 				"{$this->plugin_name}-icon",
@@ -91,33 +90,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 				'all'
 			);
 		}
-
-		// load styles in this plugin page only.
-		// if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
-
-		// 	// toggle switch.
-		// 	wp_enqueue_style( 'lc_switch', plugin_dir_url( __FILE__ ) . 'css/lc_switch.css', array(), $this->version );
-
-		// 	/*
-		// 		Built in wp color picker
-		// 		Requires atleast WordPress 3.5
-		// 	*/
-		// 	wp_enqueue_style( 'wp-color-picker' );
-
-		// 	// admin css.
-		// 	wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
-
-		// } elseif ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) ) {
-
-		// 	wp_enqueue_style( 'wp-color-picker' );
-
-		// 	// admin css.
-		// 	wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/addonify-variation-swatches-admin.css', array(), $this->version, 'all' );
-		// }
-
-		// // admin menu icon fix.
-		// wp_enqueue_style( 'addonify-icon-fix', plugin_dir_url( __FILE__ ) . 'css/addonify-icon-fix.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -138,7 +110,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		wp_register_script(
 			"{$this->plugin_name}-vendor",
 			plugin_dir_url( __FILE__ ) . 'assets/js/vendor.js',
-			array(  "{$this->plugin_name}-manifest" ),
+			array( "{$this->plugin_name}-manifest" ),
 			$this->version,
 			true
 		);
@@ -146,13 +118,13 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		wp_register_script(
 			"{$this->plugin_name}-main",
 			plugin_dir_url( __FILE__ ) . 'assets/js/main.js',
-			array("{$this->plugin_name}-vendor", 'lodash', 'wp-i18n', 'wp-api-fetch' ),
+			array( "{$this->plugin_name}-vendor", 'lodash', 'wp-i18n', 'wp-api-fetch' ),
 			$this->version,
 			true
 		);
 
 		// load scripts in plugin page only.
-		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) {
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) { // phpcs:ignore
 
 			wp_enqueue_script( "{$this->plugin_name}-manifest" );
 
@@ -174,28 +146,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		wp_set_script_translations( "{$this->plugin_name}-main", $this->plugin_name );
 
-		// load scripts in plugin page only.
-		// if ( isset( $_GET['page'] ) && $_GET['page'] === $this->settings_page_slug ) {
-
-		// 	if ( isset( $_GET['tabs'] ) && 'styles' === $_GET['tabs'] ) {
-		// 		// requires atleast WordPress 4.9.0.
-		// 		wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
-		// 		wp_enqueue_script( 'wp-color-picker' );
-		// 	}
-
-		// 	// toggle switch.
-		// 	wp_enqueue_script( 'lc_switch', plugin_dir_url( __FILE__ ) . 'js/lc_switch.min.js', array( 'jquery' ), $this->version, false );
-
-		// 	wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/addonify-variation-swatches-admin.js', array( 'jquery' ), time(), false );
-
-		// } else {}
-		
-		if ( 
-			isset( $_GET['taxonomy'] ) &&
-			isset( $_GET['post_type'] ) &&
-			'product' === sanitize_text_field( wp_unslash( $_GET['post_type'] )
-			)
-		) {
+		if ( isset( $_GET['taxonomy'] ) && isset( $_GET['post_type'] ) && 'product' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) { // phpcs:ignore
 			wp_enqueue_script( 'wp-color-picker' );
 			wp_enqueue_media();
 			wp_enqueue_script(
@@ -318,7 +269,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 * @since    1.0.0
 	 */
 	public function form_submission_notification_callback() {
-		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) {
+		if ( isset( $_GET['page'] ) && $_GET['page'] == $this->settings_page_slug ) { // phpcs:ignore
 			settings_errors();
 		}
 	}
@@ -351,7 +302,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function product_attributes_types_callback( $selector ) {
 
-		if ( isset( $_GET['page'] ) && 'product_attributes' == $_GET['page'] ) {
+		if ( isset( $_GET['page'] ) && 'product_attributes' == $_GET['page'] ) { // phpcs:ignore
 			foreach ( $this->available_attributes_types() as $key => $options ) {
 				$selector[ $key ] = $options['title'];
 			}
@@ -415,7 +366,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		$attribute_type = '';
 		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
-			if ( isset( $_GET['taxonomy'] ) && 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) {
+			if ( isset( $_GET['taxonomy'] ) && 'pa_' . $attr->attribute_name === $_GET['taxonomy'] ) { // phpcs:ignore
 				$attribute_type = strtolower( $attr->attribute_type );
 				break;
 			}
@@ -443,11 +394,11 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 
 		$option_key = '';
 
-		if ( ! isset( $_POST ) ) {
+		if ( ! isset( $_POST ) ) { // phpcs:ignore
 			return;
 		}
 
-		foreach ( $_POST as $post_key => $post_val ) {
+		foreach ( $_POST as $post_key => $post_val ) { // phpcs:ignore
 			if ( 0 === strpos( $post_key, $this->plugin_name ) ) {
 
 				$option_key = $post_key;
@@ -506,7 +457,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function custom_column_heading_for_attributes( $columns ) {
 
-		$taxonomy = isset( $_REQUEST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['taxonomy'] ) ) : null;
+		$taxonomy = isset( $_REQUEST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['taxonomy'] ) ) : null; // phpcs:ignore
 
 		if ( empty( $taxonomy ) ) {
 			return $columns;
@@ -527,7 +478,7 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 		$new = array();
 		foreach ( $columns as $key => $title ) {
 
-			if ( 'name' === $key && in_array( $attribute_type, array( 'color', 'image' ) ) ) {
+			if ( 'name' === $key && in_array( $attribute_type, array( 'color', 'image' ), true ) ) {
 				$new['addonify_custom_attr'] = '';
 			}
 
@@ -548,21 +499,6 @@ class Addonify_Variation_Swatches_Admin extends Addonify_Variation_Swatches_Help
 	 */
 	public function my_custom_taxonomy_columns_content( $content, $column_name, $term_id ) {
 		return $this->get_attr_type_preview_for_term( $column_name, $term_id );
-	}
-
-
-	/**
-	 * Get all attributes to show in select dropdown.
-	 *
-	 * @since    1.0.0
-	 */
-	private function get_all_attributes_dropdown() {
-		$return_data = array();
-		foreach ( $this->get_all_attribute_taxonomies() as $attr ) {
-			$return_data[ $attr->attribute_name ] = $attr->attribute_label;
-		}
-
-		return $return_data;
 	}
 
 	/**

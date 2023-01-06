@@ -2,6 +2,11 @@
 	'use strict';
 
 	$(document).ready(function(){
+
+		if( $('.color-picker').length ){
+			$('.color-picker').wpColorPicker();
+		}
+		
 		// wp media uploader ----------
 		var wp_media_obj;
 

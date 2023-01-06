@@ -3,11 +3,11 @@
 
 	$( document ).ready(function(){
 
-		var default_product_images = {};
+		let default_product_images = {};
 
 		let attribute_types = [ 'button', 'images', 'color' ];
 
-		init();
+		let { behaviour_for_disabled_variation } = addonify_vs_object;
 
 		// on attribute option select
 		$( '.addonify-vs-attributes-options li' ).click(function(){
@@ -25,9 +25,6 @@
 			// mark item as selected
 			$(this).addClass( 'selected' );
 			$woo_dropdown.val( sel_value ).change();
-			if ($('body').hasClass('archive') && ! addonify_vs_object.show_variation_description_on_archives) {
-				$('.woocommerce-variation-description').hide();
-			}
 		})
 
 
@@ -38,23 +35,21 @@
 
 		// monitor woocommerce dropdown change
 		$( '.addonify-vs-attributes-options-select' ).change(function(){
-
+			let this_form = $(this).closest('form')
 			// allow some time for dom changes
 			setTimeout( function(){
-				console.log($( '.addonify-vs-attributes-options-select' ))
-				$( '.addonify-vs-attributes-options-select' ).each(function(){
+				$( '.addonify-vs-attributes-options-select', this_form ).each(function(){
 
 					var $variation_options = $(this).siblings( '.addonify-vs-attributes-options' ).first();
 
 					// mark all variation as disabled by default.
-					$variation_options.find( 'li:not(.addonify-vs-item-more)' ).addClass( 'disabled' );
+					$variation_options.find( 'li:not(.addonify-vs-item-more)' ).addClass( 'disabled ' + behaviour_for_disabled_variation );
 
-					console.log($( 'option', this ))
 					$( 'option', this ).each( function(){
 						if ( $(this).attr( 'value' ).length ){
 
 							// match option value with custom attribute elements
-							$( '.addonify-vs-attributes-options li[data-value="'+ $(this).val() +'"]' ).show().removeClass( 'disabled' );
+							$( '.addonify-vs-attributes-options li[data-value="'+ $(this).val() +'"]' ).show().removeClass( 'disabled' ).removeClass( behaviour_for_disabled_variation );
 						}
 					})
 
@@ -87,7 +82,6 @@
 				$product_image_sel.attr( 'srcset', default_product_images[ product_id ] );
 			}
 		})
-
 
 		function init(){
 			attribute_types.forEach( function ( val ) {
@@ -204,8 +198,6 @@
 			return return_data;
 		}
 
-
-
 		// get variation id from selection variation options.
 		function update_add_to_cart_btn_property( $parent, attr_names, attr_values ) {
 
@@ -253,6 +245,14 @@
 			});
 
 		}
+
+		init();
+
+		$( 'a.reset_variations' ).each( function (i, val) {
+			setTimeout( function () {
+				val.click();
+			}, 100)
+		})
 
 	})
 

@@ -238,7 +238,10 @@ class Addonify_Variation_Swatches_Helper {
 			} elseif ( 'image' === $attribute_type ) {
 
 				$attachment_id = get_option( "{$this->plugin_name}_attr_image_{$term_id}" );
-				$img_url       = wp_get_attachment_image_src( $attachment_id )[0];
+				$img_url       = 'http://addonify.local/wp-content/plugins/addonify-variation-swatches//admin/images/placeholder.png';
+				if ( is_array( $attachment_id ) ) {
+					$img_url = wp_get_attachment_image_src( $attachment_id )[0];
+				}
 
 				return sprintf(
 					'<div class="addonify-vs-image-preview" ><img src="%2$s" width="35" height="35" ></div>',
