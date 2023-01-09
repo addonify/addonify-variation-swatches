@@ -152,8 +152,8 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			'enable_tooltip_in_color_attribute'    => addonify_variation_get_option( 'enable_tooltip_in_color_attribute' ),
 			'enable_tooltip_in_image_attribute'    => addonify_variation_get_option( 'enable_tooltip_in_image_attribute' ),
 			'enable_tooltip_in_button_attribute'   => addonify_variation_get_option( 'enable_tooltip_in_button_attribute' ),
-			'behaviour_for_disabled_variation'     => 'addonify-variation-swatches-disabled-' . addonify_variation_get_option( 'behaviour_for_disabled_variation' ),
-			'behaviour_for_out_of_stock_variation' => addonify_variation_get_option( 'behaviour_for_out_of_stock_variation' ),
+			'behaviour_for_disabled_variation'     => 'addonify-variation-swatches-disable-' . addonify_variation_get_option( 'behaviour_for_disabled_variation' ),
+			'behaviour_for_out_of_stock_variation' => 'addonify-variation-swatches-disable-' . addonify_variation_get_option( 'behaviour_for_out_of_stock_variation' ),
 		);
 
 		// localize script.
