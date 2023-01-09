@@ -97,6 +97,37 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		} else {
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/css/addonify-variation-swatches-public.css', array(), $this->version );
 		}
+		if ( is_archive() || is_shop() ) {
+			if ( ! addonify_variation_get_option( 'display_variation_description_on_archives' ) ) {
+				$custom_css = '
+				.woocommerce-variation-description {
+					display:none;
+				}
+				';
+				wp_add_inline_style( $this->plugin_name, $custom_css );
+			}
+			if ( addonify_variation_get_option( 'display_variation_name_and_variations_on_archives' ) === 'next_line' ) {
+				$custom_css = '
+				.variations_form table.variations td {
+					display:block;float:left;width:100%;
+				}
+				';
+				wp_add_inline_style( $this->plugin_name, $custom_css );
+			}
+		}
+		if ( is_singular() ) {
+			if ( addonify_variation_get_option( 'display_variation_name_and_variations_on_single' ) === 'next_line' ) {
+				$custom_css = '
+				.variations_form table.variations th {
+					display:block;float:left;width:100%;
+				}
+				.variations_form table.variations td {
+					display:block;float:left;width:100%;
+				}
+				';
+				wp_add_inline_style( $this->plugin_name, $custom_css );
+			}
+		}
 	}
 
 	/**
@@ -115,13 +146,14 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'assets/build/js/addonify-variation-swatches-public.min.js', array( 'jquery' ), $this->version, false );
 
 		$localize_args = array(
-			'ajax_url'                               => admin_url( 'admin-ajax.php' ),
-			'is_shop_page'                           => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
-			'shop_page_url'                          => wc_get_page_permalink( 'shop' ),
-			'enable_tooltip_in_color_attribute'      => addonify_variation_get_option( 'enable_tooltip_in_color_attribute' ),
-			'enable_tooltip_in_image_attribute'      => addonify_variation_get_option( 'enable_tooltip_in_image_attribute' ),
-			'enable_tooltip_in_button_attribute'     => addonify_variation_get_option( 'enable_tooltip_in_button_attribute' ),
-			'show_variation_description_on_archives' => addonify_variation_get_option( 'display_variation_description_on_archives' ),
+			'ajax_url'                             => admin_url( 'admin-ajax.php' ),
+			'is_shop_page'                         => ( ( is_shop() || is_archive() ) ? 1 : 0 ),
+			'shop_page_url'                        => wc_get_page_permalink( 'shop' ),
+			'enable_tooltip_in_color_attribute'    => addonify_variation_get_option( 'enable_tooltip_in_color_attribute' ),
+			'enable_tooltip_in_image_attribute'    => addonify_variation_get_option( 'enable_tooltip_in_image_attribute' ),
+			'enable_tooltip_in_button_attribute'   => addonify_variation_get_option( 'enable_tooltip_in_button_attribute' ),
+			'behaviour_for_disabled_variation'     => 'addonify-variation-swatches-disable-' . addonify_variation_get_option( 'behaviour_for_disabled_variation' ),
+			'behaviour_for_out_of_stock_variation' => 'addonify-variation-swatches-disable-' . addonify_variation_get_option( 'behaviour_for_out_of_stock_variation' ),
 		);
 
 		// localize script.
@@ -162,7 +194,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		// If auto dropdown to Button is enabled.
 		$convert_dropdown_as = addonify_variation_get_option( 'convert_dropdown_as' );
 		if ( 'button' === $convert_dropdown_as ) {
-			if ( 'select' === $attribute_type || empty( $attribute_type ) ) {
+			if ( 'color' !== $attribute_type ) {
 				$attribute_type = 'button';
 			}
 		} else {
@@ -193,8 +225,13 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			} else {
 
 				if ( $term ) {
-					// Data to outout.
-					$data[ $option ] = $term->name;
+					if ( 'color' === $attribute_type ) {
+						$data[ $option ]['color'] = get_option( "{$this->plugin_name}_attr_color_{$term->term_id}", $term->name );
+						$data[ $option ]['title'] = $term->name;
+					} else {
+						// Data to outout.
+						$data[ $option ] = $term->name;
+					}
 				} else {
 					// Data to outout.
 					$data[ $option ] = $option;
@@ -319,13 +356,13 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 	 * @param string $template_path Template path.
 	 */
 	public function override_woo_template( $template, $template_name, $template_path ) {
-		// Do not continue, if "Show on archives" options is not activated.
+		// Do not continue if "Show on archives" options is not activated.
 		if ( 1 !== $this->show_in_archive && is_archive() ) {
 			return $template;
 		}
 
-		// Do not continue, if "Show on single" options is not activated.
-		if ( 1 !== $this->show_in_single && is_singular() ) {
+		// Do not override if singular page.
+		if ( is_singular() ) {
 			return $template;
 		}
 

@@ -27,17 +27,22 @@ if ( $is_edit ) : ?>
 			<label for="<?php echo esc_attr( $name ); ?>">Addonify <?php echo esc_html( $label ); ?></label>
 		</th>
 		<td>
-			<?php echo $input_field_markups; ?>
+			<?php echo $input_field_markups; // phpcs:ignore ?>
 			<p class="description"><?php echo esc_html( $description ); ?></p>
 		</td>
 	</tr>
 
 <?php else : ?>
-	
 	<div class="form-field">
 		<label for="<?php echo esc_attr( $name ); ?>">Addonify <?php echo esc_html( $label ); ?></label>
-		<?php echo $input_field_markups; ?>
-		<p class="description"><?php echo esc_html( $description ); ?></p>
+		<?php echo $input_field_markups; // phpcs:ignore ?>
+		<?php
+		if ( ! empty( $description ) || '' !== $description ) {
+			?>
+			<p class="description"><?php echo esc_html( $description ); ?></p>
+			<?php
+		}
+		?>
 	</div>
 
 <?php endif; ?>

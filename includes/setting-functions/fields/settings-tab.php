@@ -49,7 +49,7 @@ if ( ! function_exists( 'addonify_variation_swatches_attribute_settings_fields' 
 				'type'      => 'select',
 				'label'     => __( 'Behaviour for Disabled Variation', 'addonify-variation' ),
 				'choices'   => array(
-					'default'         => __( 'Hide', 'addonify-variation' ),
+					'hide'            => __( 'Hide', 'addonify-variation' ),
 					'blur'            => __( 'Blur', 'addonify-variation' ),
 					'blur_with_cross' => __( 'Blur with Cross', 'addonify-variation' ),
 				),
@@ -60,7 +60,7 @@ if ( ! function_exists( 'addonify_variation_swatches_attribute_settings_fields' 
 				'type'      => 'select',
 				'label'     => __( 'Behaviour for Out of Stock Variation', 'addonify-variation' ),
 				'choices'   => array(
-					'default'         => __( 'Hide', 'addonify-variation' ),
+					'hide'            => __( 'Hide', 'addonify-variation' ),
 					'blur'            => __( 'Blur', 'addonify-variation' ),
 					'blur_with_cross' => __( 'Blur with Cross', 'addonify-variation' ),
 				),

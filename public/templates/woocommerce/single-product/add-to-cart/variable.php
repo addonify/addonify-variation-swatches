@@ -25,14 +25,6 @@ $attribute_keys  = array_keys( $attributes );
 $variations_json = wp_json_encode( $available_variations );
 $variations_attr = function_exists( 'wc_esc_json' ) ? wc_esc_json( $variations_json ) : _wp_specialchars( $variations_json, ENT_QUOTES, 'UTF-8', true );
 
-$display_variation_position = 'default';
-if ( is_archive() ) {
-	$display_variation_position = addonify_variation_get_option( 'display_variation_name_and_variations_on_archives' );
-}
-if ( is_singular() ) {
-	$display_variation_position = addonify_variation_get_option( 'display_variation_name_and_variations_on_single' );
-}
-
 do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
 <form class="variations_form cart addonify_plugin_template" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo $variations_attr; //phpcs:ignore  ?>">
@@ -45,32 +37,23 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 			<tbody>
 				<?php foreach ( $attributes as $attribute_name => $options ) : ?>
 					<tr>
-						<td class="label" <?php echo ( 'default' === $display_variation_position ) ? '' : 'style="display:none;"'; ?>>
+						<td class="label">
 							<label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>">
 								<?php echo wc_attribute_label( $attribute_name ); //phpcs:ignore ?>
 							</label>
 						</td>
 						<td class="value">
-					<?php
-					if ( 'default' !== $display_variation_position ) {
-						?>
-						<p>
-							<label for="<?php echo esc_attr( sanitize_title( $attribute_name ) ); ?>">
-								<?php echo wc_attribute_label( $attribute_name ); //phpcs:ignore ?>
-							</label>
-						</p>
 						<?php
-					}
-						wc_dropdown_variation_attribute_options(
-							array(
-								'options'   => $options,
-								'attribute' => $attribute_name,
-								'product'   => $product,
-								'id'        => sanitize_title( $attribute_name ) . '-' . get_the_ID(),
-								'class'     => 'addonify-vs-attributes-options-select',
-							)
-						);
-					?>
+							wc_dropdown_variation_attribute_options(
+								array(
+									'options'   => $options,
+									'attribute' => $attribute_name,
+									'product'   => $product,
+									'id'        => sanitize_title( $attribute_name ) . '-' . get_the_ID(),
+									'class'     => 'addonify-vs-attributes-options-select',
+								)
+							);
+						?>
 						</td>
 					</tr>
 					<?php
@@ -86,7 +69,6 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 				 * Hook: woocommerce_before_single_variation.
 				 */
 				do_action( 'woocommerce_before_single_variation' );
-
 				/**
 				 * Hook: woocommerce_single_variation. Used to output the cart button and placeholder for variation data.
 				 *

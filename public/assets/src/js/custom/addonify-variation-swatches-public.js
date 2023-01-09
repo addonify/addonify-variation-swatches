@@ -3,30 +3,35 @@
 
 	$( document ).ready(function(){
 
-		var default_product_images = {};
+		let default_product_images = {};
 
 		let attribute_types = [ 'button', 'images', 'color' ];
 
-		init();
+		let { 
+			behaviour_for_disabled_variation,
+			behaviour_for_out_of_stock_variation
+		} = addonify_vs_object;
 
 		// on attribute option select
 		$( '.addonify-vs-attributes-options li' ).click(function(){
 
 			// Do not select disabled item.
 			if ( $(this).hasClass( 'disabled' ) ) return;
+			let sel_value = $(this).data( 'value' );
+			let $parent = $(this).parents( 'td' );
+			let $woo_dropdown = $parent.find( 'select.addonify-vs-attributes-options-select' );
 
-			var sel_value = $(this).data( 'value' );
-			var $parent = $(this).parents( 'td' );
-			var $woo_dropdown = $parent.find( 'select.addonify-vs-attributes-options-select' );
-
-			// remove other selected items
-			$parent.find( 'li.selected' ).removeClass( 'selected' );
-
-			// mark item as selected
-			$(this).addClass( 'selected' );
-			$woo_dropdown.val( sel_value ).change();
-			if ($('body').hasClass('archive') && ! addonify_vs_object.show_variation_description_on_archives) {
-				$('.woocommerce-variation-description').hide();
+			if ( $(this).hasClass( 'selected' ) ) {
+				$(this).removeClass( 'selected' );
+				$woo_dropdown.val(null).change();
+			} else {
+	
+				// remove other selected items
+				$parent.find( 'li.selected' ).removeClass( 'selected' );
+	
+				// mark item as selected
+				$(this).addClass( 'selected' );
+				$woo_dropdown.val( sel_value ).change();
 			}
 		})
 
@@ -38,23 +43,24 @@
 
 		// monitor woocommerce dropdown change
 		$( '.addonify-vs-attributes-options-select' ).change(function(){
-
+			let this_form = $(this).closest('form')
 			// allow some time for dom changes
 			setTimeout( function(){
-				console.log($( '.addonify-vs-attributes-options-select' ))
-				$( '.addonify-vs-attributes-options-select' ).each(function(){
+				$( '.addonify-vs-attributes-options-select', this_form ).each(function(){
 
 					var $variation_options = $(this).siblings( '.addonify-vs-attributes-options' ).first();
 
 					// mark all variation as disabled by default.
-					$variation_options.find( 'li:not(.addonify-vs-item-more)' ).addClass( 'disabled' );
+					$variation_options.find( 'li:not(.addonify-vs-item-more)' ).addClass( 'disabled ' + behaviour_for_disabled_variation );
 
-					console.log($( 'option', this ))
 					$( 'option', this ).each( function(){
-						if ( $(this).attr( 'value' ).length ){
+						if ( $(this).attr( 'value' ).length){
 
 							// match option value with custom attribute elements
-							$( '.addonify-vs-attributes-options li[data-value="'+ $(this).val() +'"]' ).show().removeClass( 'disabled' );
+							$( '.addonify-vs-attributes-options li[data-value="'+ $(this).val() +'"]', this_form ).show().removeClass( 'disabled' ).removeClass( behaviour_for_disabled_variation );
+						}
+						if ( ! $(this).hasClass('enabled') ) {
+							$( '.addonify-vs-attributes-options li[data-value="'+ $(this).val() +'"]', this_form ).show().addClass( 'disabled' ).addClass( behaviour_for_out_of_stock_variation );
 						}
 					})
 
@@ -87,7 +93,6 @@
 				$product_image_sel.attr( 'srcset', default_product_images[ product_id ] );
 			}
 		})
-
 
 		function init(){
 			attribute_types.forEach( function ( val ) {
@@ -204,8 +209,6 @@
 			return return_data;
 		}
 
-
-
 		// get variation id from selection variation options.
 		function update_add_to_cart_btn_property( $parent, attr_names, attr_values ) {
 
@@ -253,6 +256,62 @@
 			});
 
 		}
+
+		function disableOutOfStockAttribute( this_form ) {
+			let selected_variations = getSelectedVariations(this_form)
+			if (selected_variations.size) {
+				let variations = this_form.data('product_variations')
+				console.log(variations)
+				console.log(selected_variations)
+				if ($( '.addonify-vs-attributes-options-select', this_form ).length === selected_variations.size + 1) {
+					$.each( variations, function(i, value) {
+						let match = 0
+						selected_variations.forEach( function(val, i){
+							if(value.attributes[i] === val){
+								match++
+							}
+						} )
+						if (match === selected_variations.size) {
+							if (value.is_in_stock === false){
+								value.attributes.forEach(function(val, indx){
+									if (!selected_variations.has(indx)) {
+										disableAttributeValue(val, this_form)
+									}
+								})
+							}
+						}
+					} )
+				}
+			}
+		}
+
+		/**
+		 * Returns all user-selected variations as a Map Object.
+		 * 
+		 * @param {Object} form_el Jquery Form object
+		 * @returns Map
+		 */
+		function getSelectedVariations(form_el) {
+			let arr = new Map;
+			form_el.find('select.addonify-vs-attributes-options-select').each(function() {
+				if ($(this).val() !== '') {
+					arr.set($(this).prop('name'), $(this).val());
+				}
+			})
+			return arr
+		}
+
+		function disableAttributeValue( val, this_form ) {
+			$('ul.addonify-vs-attributes-options li[data-value='+val+']', this_form).addClass('disabled ' + behaviour_for_disabled_variation)
+		}
+
+		init();
+
+		$( 'a.reset_variations' ).each( function (i, val) {
+			setTimeout( function () {
+				val.click();
+			}, 100)
+		})
 
 	})
 

@@ -33,8 +33,8 @@ if ( ! function_exists( 'addonify_variation_settings_defaults' ) ) {
 				'enable_swatches'                        => true,
 
 				'convert_dropdown_as'                    => 'default',
-				'behaviour_for_disabled_variation'       => 'default',
-				'behaviour_for_out_of_stock_variation'   => 'default',
+				'behaviour_for_disabled_variation'       => 'hide',
+				'behaviour_for_out_of_stock_variation'   => 'hide',
 				'deselect_reselected_attribute'          => false,
 
 				'show_swatches_on_archives'              => false,
