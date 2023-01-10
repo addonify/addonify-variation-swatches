@@ -69,34 +69,6 @@
 			);
 			var editor = wp.codeEditor.initialize( $('#addonify_variation_swatches_custom_css'), editorSettings );
 		}
-
-
-
-		// show hide content colors ------------------------------
-
-		let $style_options_sel = $('#addonify_variation_swatches_load_styles_from_plugin');
-		let $content_colors_sel = $('#addonify-content-colors-container');
-
-		// self activate
-		show_hide_content_colors();
-
-		// detect state change
-		$('body').delegate('#addonify_variation_swatches_load_styles_from_plugin', 'lcs-statuschange', function() {
-			show_hide_content_colors();
-		});
-
-		
-		function show_hide_content_colors(){
-
-			let state = $style_options_sel.is(":checked") 
-
-			if( state ){
-				$content_colors_sel.slideDown();
-			}
-			else{
-				$content_colors_sel.slideUp();
-			}
-		}
 	
 	})
 
