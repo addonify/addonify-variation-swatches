@@ -195,11 +195,11 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 		// If auto dropdown to Button is enabled.
 		$convert_dropdown_as = addonify_variation_get_option( 'convert_dropdown_as' );
 		if ( 'button' === $convert_dropdown_as ) {
-			if ( 'color' !== $attribute_type ) {
+			if ( 'select' === $attribute_type || empty( $attribute_type ) ) {
 				$attribute_type = 'button';
 			}
 		} else {
-			if ( empty( $attribute_type ) ) {
+			if ( empty( $attribute_type ) || 'select' === $attribute_type ) {
 				return $html;
 			}
 		}
@@ -217,12 +217,11 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				$attachment_id = intval( get_option( "{$this->plugin_name}_attr_image_{$term->term_id}" ) );
 
 				if ( ! $attachment_id ) {
-					return $html;
+					$data[ $option ] = array( '', $term->name );
+				} else {
+					// Data to outout.
+					$data[ $option ] = array( wp_get_attachment_image_src( $attachment_id )[0], $term->name );
 				}
-
-				// Data to outout.
-				$data[ $option ] = array( wp_get_attachment_image_src( $attachment_id )[0], $term->name );
-
 			} else {
 
 				if ( $term ) {
@@ -272,7 +271,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 				}
 			}
 
-			if ( empty( $attribute_type ) ) {
+			if ( empty( $attribute_type ) || 'select' === $attribute_type ) {
 				return $args;
 			}
 		}
@@ -378,7 +377,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			$template_path = $woocommerce->template_url;
 		}
 
-		$theme_path  = untrailingslashit( get_stylesheet_directory() . '/addonify/' . $this->plugin_name . '/woocommerce/' );
+		$theme_path  = untrailingslashit( get_stylesheet_directory() ) . '/addonify/' . $this->plugin_name . '/woocommerce/';
 		$plugin_path = untrailingslashit( plugin_dir_path( __DIR__ ) ) . '/public/templates/woocommerce/';
 
 		// first look in themes/addonify/plugin_name/woocommerce/ as first priority.
