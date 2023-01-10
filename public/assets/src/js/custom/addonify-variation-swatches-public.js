@@ -9,7 +9,8 @@
 
 		let { 
 			behaviour_for_disabled_variation,
-			behaviour_for_out_of_stock_variation
+			behaviour_for_out_of_stock_variation,
+			deselect_reselected_attribute
 		} = addonify_vs_object;
 
 		// on attribute option select
@@ -20,15 +21,14 @@
 			let sel_value = $(this).data( 'value' );
 			let $parent = $(this).parents( 'td' );
 			let $woo_dropdown = $parent.find( 'select.addonify-vs-attributes-options-select' );
-
-			if ( $(this).hasClass( 'selected' ) ) {
+			if (deselect_reselected_attribute && $(this).hasClass( 'selected' )) {
 				$(this).removeClass( 'selected' );
 				$woo_dropdown.val(null).change();
 			} else {
-	
+
 				// remove other selected items
 				$parent.find( 'li.selected' ).removeClass( 'selected' );
-	
+
 				// mark item as selected
 				$(this).addClass( 'selected' );
 				$woo_dropdown.val( sel_value ).change();

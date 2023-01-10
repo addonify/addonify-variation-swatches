@@ -154,6 +154,7 @@ class Addonify_Variation_Swatches_Public extends Addonify_Variation_Swatches_Hel
 			'enable_tooltip_in_button_attribute'   => addonify_variation_get_option( 'enable_tooltip_in_button_attribute' ),
 			'behaviour_for_disabled_variation'     => 'addonify-variation-swatches-disable-' . addonify_variation_get_option( 'behaviour_for_disabled_variation' ),
 			'behaviour_for_out_of_stock_variation' => 'addonify-variation-swatches-disable-' . addonify_variation_get_option( 'behaviour_for_out_of_stock_variation' ),
+			'deselect_reselected_attribute'        => (bool) addonify_variation_get_option( 'deselect_reselected_attribute' ),
 		);
 
 		// localize script.
